@@ -1,0 +1,26 @@
+.searchBar{
+  top: 5px;
+  width: 350px !important
+}
+
+.profilePic{
+    width: 25px;
+    height: 25px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+}
+.userName{
+    text-decoration: none;
+    margin: 10px;
+    font-weight: bold;
+    color: rgb(27, 185, 185) !important;
+
+}
+.logo{
+    margin: 10px;
+    font-weight: bold;
+    color: rgb(27, 185, 185) !important;
+}
+
+

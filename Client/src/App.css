@@ -1,0 +1,622 @@
+body{
+margin: 0;
+padding: 0;
+background-color:#F8F9FA;
+
+}
+* {
+  box-sizing: border-box;
+
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.navigation-bar {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+
+.profilePic {
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}
+.userName {
+  text-decoration: none;
+  margin: 10px;
+  font-weight: bold;
+  color: rgb(27, 185, 185) !important;
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+}
+.logo {
+  margin: 0.2rem;
+  font-weight: bold;
+  color: rgb(27, 185, 185) !important;
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+}
+.sidenav {
+  height: 100%; /* Full-height: remove this if you want "auto" height */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1; /* Stay on top */
+  left: 0;
+  background-color: white; /* Black */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.sidenav a {
+  text-decoration: none;
+  font-size: 15px;
+  color: #818181;
+  display: flex;
+  margin-left: 5px;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #1bb9b9;
+}
+
+/* Style page content */
+.main {
+  margin-left: 160px; /* Same as the width of the sidebar */
+  padding: 0px 10px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+.container {
+  max-width: 100% !important;
+}
+.sidebarOption {
+  display: flex;
+  flex-direction: row;
+  margin-left: 12px;
+  margin-right: 12px;
+  padding-top: 25px;
+  justify-content: left;
+}
+.PostCard {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  width: 100%;
+  margin-top: 25px;
+  border-radius: 2px;
+}
+.postbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.mutualFcard {
+  margin-top: 25px;
+}
+#postbar a {
+  text-decoration: none;
+}
+
+#postbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+}
+#postbar a:hover {
+  color: black;
+}
+.buttons1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 12px;
+  text-decoration: none;
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+}
+
+.buttons1 Button {
+  text-decoration: none;
+  background-color: #1bb9b9;
+  width: 130px;
+  height: 40px;
+}
+
+.buttons1 Button svg {
+  margin: 10px;
+}
+
+.postImage {
+  border-radius: 15px;
+  padding: 10px;
+  width: 100%;
+}
+.LikeComment {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+  color: #818181;
+  font-size: 15px;
+  height: 20px;
+}
+
+.like {
+  display: flex;
+  flex-direction: row;
+  margin: 3px;
+  font-weight: bold;
+}
+
+#circles {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: wheat;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+#circles img {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: wheat;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+#circle2 {
+  position: relative;
+  left: 15px;
+  background-color: wheat;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+#circle2 img {
+  position: relative;
+  left: 15px;
+  background-color: wheat;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+#circle3 {
+  position: relative;
+  left: 15px;
+  background-color: orange;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+#circle4 {
+  position: relative;
+  left: 15px;
+  background-color: #ff60a3;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  font-size: 12px;
+  padding: 6px;
+  color: white;
+  font-weight: bold;
+}
+
+.lcs {
+  height: 25px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.lcs button {
+  text-decoration: none;
+  color: #1bb9b9;
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+}
+
+.lcs button svg {
+  margin: 10px;
+}
+.commentbox {
+  display: flex;
+  flex-direction: row;
+}
+
+#Cbox {
+  width: 100%;
+  height: 25px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.commentbox button {
+  background-color: #bbb;
+}
+
+.postCaption {
+  padding-left: 15px;
+}
+
+.eventDetails {
+  background-color: #e8edf2;
+  padding: 10px;
+  border-radius: 15px;
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+  font-size: 13px;
+}
+
+.rhombus-1 {
+  width: 25px;
+  height: 25px;
+  transform: rotate(45deg);
+  background: #b7f5dc;
+  border: 1px solid #67d4a8;
+}
+#rbox {
+  display: block;
+  background-color: #b7f5dc;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+#point {
+  width: 5px;
+  height: 5px;
+  background-color: #67d4a8;
+  position: absolute;
+  top: 40%;
+  left: 40%;
+}
+
+#eventTime {
+  font-size: 12px;
+}
+
+#img2 {
+  position: relative;
+  right: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+#img3 {
+  position: relative;
+  right: 25%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+#img4 {
+  position: relative;
+  right: 30%;
+  background-color: #d8a5bb;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  font-size: 10px;
+  padding: 6px;
+  color: white;
+}
+.groupCard {
+  border-radius: 10px;
+  padding: 2px;
+}
+.card-img,
+.card-img-top {
+  border-radius: 10px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+.rounded-circle {
+  height: 90px;
+  width: 90px;
+  background-color: rebeccapurple;
+  z-index: 1;
+  position: absolute;
+  left: 13%;
+  top: 55%;
+}
+#eventheading {
+  margin-left: 25px;
+}
+
+.pt-3 {
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+}
+
+#col1 {
+  background-image: linear-gradient(to right bottom, #ddebad, #b6d59f, #92bf93, #70a988, #51927d, #4c8f80, #488b82, #468884, #5a9895, #6fa8a7, #83b8b8, #98c8ca);}
+#cardCol {
+  display: flex;
+  justify-content: center;
+  background-color: #f7f7f7;
+}
+
+.signupCard {
+  margin: 7rem;
+  border-radius: 25px !important;
+  box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+}
+
+.bg-video {
+  object-fit: cover;
+  filter: brightness(30%);
+}
+
+.video-container {
+  width: 100vw;
+  position: relative;
+  text-align: center;
+  font-family: "Lato", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-family: "Roboto Slab", serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.loginCard {
+  display: flex;
+  align-items: center;
+  width: 25rem;
+  position: absolute;
+  left: 30%;
+  border-radius: 25px !important;
+  margin: 12rem;
+  margin-left: 4.5rem;
+  box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+}
+.loginCard #tagLine {
+  opacity: 0.5;
+  font-size: 15px;
+}
+.loginCard .btnDiv #btn1 {
+  width: 8rem;
+  margin-left: 10px;
+  background-color: #f7f7f7;
+  border-radius: 20px;
+  border: 0;
+  color: black;
+}
+.loginCard .btnDiv #btn1:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(131, 58, 180, 1) 0%,
+    rgba(253, 29, 29, 1) 50%,
+    rgba(252, 176, 69, 1) 100%
+  );
+}
+.loginCard .btnDiv #btn2:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(131, 58, 180, 1) 0%,
+    rgba(253, 29, 29, 1) 50%,
+    rgba(252, 176, 69, 1) 100%
+  );
+}
+.loginCard .btnDiv #btn2 {
+  width: 8rem;
+  margin-left: 10px;
+  background-color: #f7f7f7;
+  border-radius: 20px;
+  border: 0;
+  color: black;
+}
+
+.loginCardCOl {
+  background-color: #f7f7f7 !important;
+  border: 1px solid black;
+}
+
+
+
+.slider-thumb::before {
+  position: absolute;
+  content: "";
+  left: 15%;
+  top: 20%;
+  width: 450px;
+  height: 450px;
+  background: #17141d;
+  border-radius: 62% 47% 82% 35% / 45% 45% 80% 66%;
+  will-change: border-radius, transform, opacity;
+  animation: sliderShape 5s linear infinite;
+  display: block;
+  z-index: -1;
+  -webkit-animation: sliderShape 5s linear infinite;
+}
+@keyframes sliderShape {
+  0%,
+  100% {
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: translate3d(0, 0, 0) rotateZ(0.01deg);
+  }
+  34% {
+    border-radius: 70% 30% 46% 54% / 30% 29% 71% 70%;
+    transform: translate3d(0, 5px, 0) rotateZ(0.01deg);
+  }
+  50% {
+    transform: translate3d(0, 0, 0) rotateZ(0.01deg);
+  }
+  67% {
+    border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%;
+    transform: translate3d(0, -3px, 0) rotateZ(0.01deg);
+  }
+}
+
+.post{
+  border: 2px solid black;
+}
+
+@media screen and (max-width: 767px) {
+  .nav-item{
+    display: none;
+  }
+  #logoNew {
+    width: 12%; 
+    height: 9%;
+  }
+  #UserSearch{
+    display: none;
+
+  }
+}
+
+@media screen and (min-width: 1025px) and (max-width: 2560px) {
+  .tabs .nav-item {
+    margin-right: 5rem; 
+  }
+}
+
+
+.no-arrow::after {
+  display: none !important;
+}
+
+#dropdown-basic{
+  background-color: #F0F2F5;
+  border-radius: 25px;
+  outline: none;
+  border: 0;
+}
+
+#searchInput{
+  background-color: #F0F2F5;
+  outline: none;
+  border: 0;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.hover-focus-button:hover{
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  color: red;
+
+}
+.hover-focus-button{
+  height: 2rem;
+  border-radius: 50%;
+}
+
+.chat-window {
+  display: none;
+  position: absolute;
+  top: 75px; /* Adjust as needed */
+  right: 0;
+  width: 700px; /* Adjust width as needed */
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  max-height: 35rem; /* Set your preferred height */
+  overflow-y: auto; /* Enable vertical scrollbar */
+}
+
+/* .sticky-navbar-container {
+  position: relative;
+
+} */
+
+.navbar{
+  position: sticky;
+  box-shadow: rgba(60, 64, 67, 0.1)  0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
+.sidebar{
+  box-shadow: rgba(60, 64, 67, 0.1) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  display:inline-block;
+  margin: 0;
+  padding: 0;
+  
+
+}
+.sidebar .navlink:hover{
+  background-color: rgb(244, 241, 241);
+  color: black;
+}
+.sidebar .navlink strong{
+  color: black;
+  font-weight:500;
+}
