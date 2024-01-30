@@ -13,7 +13,7 @@ import url from 'url'
 
 const app = express();
 const PORT = process.env.PORT || 4600
-const DATABASE_URL = "mongodb+srv://socialbook:kHzMbpGAPAoE9b3D@socialbook.gugsnwl.mongodb.net/";
+const DATABASE_URL = process.env.DATABASE_URL;
 
 //database connection
 connectDB(DATABASE_URL)
