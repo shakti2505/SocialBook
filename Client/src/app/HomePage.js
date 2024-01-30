@@ -69,7 +69,7 @@ const HomePage = (props) => {
       formData.append('cloud_name', process.env.REACT_APP_CLOUD_NAME);
       const uploadPromises = postImages.map(async (item) => {
         formData.append('file', item);
-        let response1 = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_UPLOAD_PRESET}/image/upload`, {
+        let response1 = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`, {
           method: "post",
           body: formData
         });
