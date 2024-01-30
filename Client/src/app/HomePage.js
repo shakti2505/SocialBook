@@ -64,12 +64,12 @@ const HomePage = (props) => {
       setisloading(true)
       let imageURL = []
       let formData = new FormData();
-      formData.append('upload_preset', process.env.REACT_APP_Cloudnary_upload_preset);
-      formData.append('folder', process.env.REACT_APP_folder);
-      formData.append('cloud_name', process.env.REACT_APP_cloud_name);
+      formData.append('upload_preset', process.env.REACT_APP_UPLOAD_PRESET);
+      formData.append('folder', process.env.REACT_APP_FOLDER);
+      formData.append('cloud_name', process.env.REACT_APP_CLOUD_NAME);
       const uploadPromises = postImages.map(async (item) => {
         formData.append('file', item);
-        let response1 = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_Cloudnary_upload_preset}/image/upload`, {
+        let response1 = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_UPLOAD_PRESET}/image/upload`, {
           method: "post",
           body: formData
         });
