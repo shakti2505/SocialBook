@@ -35,5 +35,11 @@ export const apiVariables = {
 getPendingFriendRequest:{
   url:"/services/get_received_friendRequests"
 },
+getAllUsers:{
+  url:"/services/all_users"
+},
+sendFriendRequest:{
+  url:"/services/receieve_friend_requests"
+},
 }
 

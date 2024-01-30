@@ -50,7 +50,7 @@ const LandingPage = () => {
 
   return (
     <>
-      <div className='container vh-100'  >
+      <div className='container vh-100'>
         <div className='row d-flex justify-content-center align-self-center'>
           <h1 className='text-center fw-bold mt-5' >Welcome to Social Book</h1>
           <div className='col-md-4 mt-5' style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px", borderRadius: "15px", background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(58,69,83,1) 100%)', opacity:"0.7"}}>

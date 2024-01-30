@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/static/css/main.25055075.css",
+    "main.js": "/static/js/main.5c64da65.js",
+    "static/media/event1.jpg": "/static/media/event1.16fdfb6179147f936f02.jpg",
+    "static/media/user3.jpg": "/static/media/user3.bbace1ff38bd51a4220b.jpg",
+    "static/media/user1.jpg": "/static/media/user1.ec9671444feba8053236.jpg",
+    "static/media/user2.jpg": "/static/media/user2.063851efe1ce473c6c7d.jpg",
+    "static/media/logo-no-background.png": "/static/media/logo-no-background.9a7914fad67b4cef8744.png",
+    "static/media/eventp1.jpg": "/static/media/eventp1.2e2a89c0384df7a3011a.jpg",
+    "static/media/SocialBook_logo1.png": "/static/media/SocialBook_logo1.6e2e9c4308da24eaa0bc.png",
+    "index.html": "/index.html",
+    "main.25055075.css.map": "/static/css/main.25055075.css.map",
+    "main.5c64da65.js.map": "/static/js/main.5c64da65.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.25055075.css",
+    "static/js/main.5c64da65.js"
+  ]
+}

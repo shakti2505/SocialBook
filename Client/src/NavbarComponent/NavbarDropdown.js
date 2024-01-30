@@ -16,8 +16,6 @@ const renderTooltip = (props) => (
     </Tooltip>
 );
 
-
-
 const NavbarDropdown = () => {
 
     const navigate = useNavigate()

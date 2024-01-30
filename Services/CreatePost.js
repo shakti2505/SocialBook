@@ -53,7 +53,5 @@ router.get('/search_potential_connetion', authorization, async (req, res) => {
     } else {
         res.sendStatus(500)
     }
-
-
 })
 export default router;
