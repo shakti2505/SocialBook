@@ -98,38 +98,89 @@ router.post('/createUser', async (req, res) => {
 });
 
 //login
+// router.post('/login', async (req, res) => {
+//     const { email, phone, password } = req.body
+//     const searchCriteria = {
+//         $or: [
+//             { email: email },
+//             { phone: phone }
+//         ],
+//     }
+//     const existingUser = await userModel.findOne(searchCriteria)
+//     if (existingUser==null || undefined) {
+//         res.status(404).send({ success: false, message: "email not found" })
+//     }
+//     try {
+//         const passMatch = await bcrypt.compare(password, existingUser.password)
+//         if (existingUser.email == email || existingUser.phone == phone && passMatch) {
+//             const token = creatToken(existingUser._id)
+//             res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 })
+//             const loggedInUser = {
+//                 firstName: existingUser.firstName,
+//                 LastName: existingUser.LastName,
+//                 DOB: existingUser.DateOfBirth,
+//             }
+//             res.status(200).send({ success: true, message: "Login successfull!", loggedInUser })
+//         } else {
+//             res.status(401).send({ success: false, message: "Unauthorized Access" })
+//         }
+
+//     } catch (error) {
+//         console.log(error)
+//     }
+// });
+
+//login
 router.post('/login', async (req, res) => {
-    const { email, phone, password } = req.body
-    const searchCriteria = {
-        $or: [
-            { email: email },
-            { phone: phone }
-        ],
-    }
-    const existingUser = await userModel.findOne(searchCriteria)
-    if (existingUser==null || undefined) {
-        res.status(404).send({ success: false, message: "email not found" })
+    const { email, phone, password } = req.body;
+
+    // Check if either email or phone `is` provided
+    if (!email && !phone) {
+        return res.status(400).send({ success: false, message: "Email or phone is required" });
     }
     try {
-       
-        const passMatch = await bcrypt.compare(password, existingUser.password)
-        if (existingUser.email == email || existingUser.phone == phone && passMatch) {
-            const token = creatToken(existingUser._id)
-            res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 })
-            const loggedInUser = {
-                firstName: existingUser.firstName,
-                LastName: existingUser.LastName,
-                DOB: existingUser.DateOfBirth,
-            }
-            res.status(200).send({ success: true, message: "Login successfull!", loggedInUser })
-        } else {
-            res.status(401).send({ success: false, message: "Unauthorized Access" })
+        let searchCriteria = {};
+        if (email) searchCriteria.email = email;
+        if (phone) searchCriteria.phone = phone;
+
+        const existingUser = await userModel.findOne(searchCriteria);
+        // Check if user exists
+        if (!existingUser) {
+            return res.status(404).send({ success: false, message: "User not found" });
         }
 
+        // Compare passwords
+        const passMatch = await bcrypt.compare(password, existingUser.password);
+
+        if (passMatch) {
+            // Destructure existingUser for simplicity
+            const { firstName, lastName, DateOfBirth } = existingUser;
+
+            // Create token
+            const token = creatToken(existingUser._id);
+
+            // Set JWT token in cookie
+            res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+
+            // Send response
+            return res.status(200).send({
+                success: true,
+                message: "Login successful!",
+                loggedInUser: {
+                    firstName,
+                    lastName,
+                    DateOfBirth
+                }
+            });
+        } else {
+            return res.status(401).send({ success: false, message: "Unauthorized Access" });
+        }
     } catch (error) {
-        res.status(500).send("Internal Server Error")
+        console.error("Error:", error);
+        return res.status(500).send({ success: false, message: "Internal Server Error" });
     }
 });
+
 
 //logout
 router.get('/logout', authorization, async (req, res) => {
