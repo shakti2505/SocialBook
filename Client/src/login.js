@@ -37,8 +37,8 @@ const Login = () => {
         setIsemail(false)
     }
 
-    const LoginUser = () => {
-        const result = axios.post(BASE_URL_API + apiVariables.signin.url, credentials,
+    const LoginUser = async() => {
+        const result = await axios.post(BASE_URL_API + apiVariables.signin.url, credentials,
             {
                 withCredentials: 'include',
                 headers: {
@@ -48,54 +48,21 @@ const Login = () => {
                 }
             }
         )
-        result
-            .then((response) => {
-                console.log('response from login API', response)
-                if (response.data.success) {
-                    navitage('/home');
-                } else {
-                    setIserror(true)
-                    setError(response.data.message)
-                    console.log('error occured')
-                }
-            })
+        if(result.data.message == 'unauthorized access'){
+            setIserror(true);
+            setError(result.data.message)
+        }else{
+            navitage('/home')
+        }
     }
 
     const NavigateToSignPage = () =>{
         navitage('/')
     }
-    // const LoginUser=()=>{
-
-    //     const result = fetch(`${BASE_URL_API}${apiVariables.signin.url}`,{
-    //         method: "POST",
-    //         credentials: 'include',
-    //         headers: {
-    //             Accept: 'application/json',
-    // 			'Content-Type': 'application/json',
-    // 			'Access-Control-Allow-Credentials': true
-    //         },
-    //         body: JSON.stringify(credentials), 
-    //     })
-    //     result
-    //             .then((response) => {
-    //                 console.log(response)
-    //                 if (response.data.success) {
-    //                     navitage('/home');
-    //                 } else {
-    //                     setIserror(true)
-    //                     setError(response.data.message)
-    //                     console.log('error occured')
-    //                 }
-    //             })
-    // }
-
     return (
         <>
             <Container>
                 <Row>
-                    <Col sm={6}>
-                        {/* images */}
-                    </Col>
                     <Col sm={6}>
                         <Card className='loginCard'>
                             <Card.Body >
@@ -141,12 +108,14 @@ const Login = () => {
                                             <Button style={{ textDecoration: "none" }} onClick={NavigateToSignPage} variant="link">Create New account.</Button>
                                         </div>
                                     </CardGroup>
+                                    {
+                                        isError &
+                                        <p>{error}</p>
+                                    }
                                 </Form>
-                                <p>{error && isError}</p>
                             </Card.Body>
                         </Card>
                     </Col>
-
                 </Row>
             </Container>
         </>

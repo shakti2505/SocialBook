@@ -9,7 +9,7 @@ import PostRoutes from './Services/CreatePost.js'
 import FriendRequestRoutes from './Services/FrientRequest.js'
 import path from 'path';
 import url from 'url'
-
+import userModel from './models/user.js';
 
 const app = express();
 const PORT = process.env.PORT || 4600

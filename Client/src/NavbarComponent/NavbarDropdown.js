@@ -17,7 +17,7 @@ const renderTooltip = (props) => (
 );
 
 const NavbarDropdown = () => {
-
+    const loggedInUser = useContext(UserDataContext)
     const navigate = useNavigate()
 
     const logout = async () => {
@@ -30,8 +30,6 @@ const NavbarDropdown = () => {
             console.log('error in logging out.')
         }
     }
-
-    const user = useContext(UserDataContext)
 
     const [UserProfilePicture, setUserProfilePicture] = useState([])
     const changeBodybg = () => {
@@ -86,6 +84,10 @@ const NavbarDropdown = () => {
     useEffect(() => {
         getUserProfilePicture()
     }, [])
+
+    useEffect(()=>{
+        console.log('profilePic', loggedInUser)
+    },[loggedInUser])
     return (
         <>
             <div className='d-flex flex-row justify-content-between mt-1'>
@@ -213,15 +215,7 @@ const NavbarDropdown = () => {
                     <Dropdown>
                         <Dropdown.Toggle className='hover-focus-button' variant="light" size='sm' id="dropdown-basic">
                             <div>
-                                {
-                                    UserProfilePicture.length !== 0 && UserProfilePicture.map((item, index) => {
-                                        return (
-                                            <>
-                                                <img className='profilePic' alt='' src={item.displayPictureUrl} height='1rem' width="1rem" />
-                                            </>
-                                        )
-                                    })
-                                }
+                            <img className='profilePic' alt='' src={loggedInUser.profilePic} height='1rem' width="1rem" />
                             </div>
                         </Dropdown.Toggle>
 

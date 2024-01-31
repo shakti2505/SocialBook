@@ -1,3 +1,4 @@
+import { timeStamp } from "console";
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
@@ -35,13 +36,51 @@ const UserSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    profilePic:{
+        type:String
+    },
+    livesIn:{
+        type:String
+    },
+    city:{
+        type:String
+    },
+    state:{
+        type:String
+    },
+    country:{
+        type:String
+    },
+    highSchool:{
+        type:String
+    },
+    college:{
+        type:String
+    },
+    relationShipStatus:{
+        type:String
+    },
+    hobbies:{
+        type:[]
+    },
+    likes:{
+        type:[]
+    },
+    dislikes:{
+        type:[]
+    },
+    bio:{
+        type:String
+    },
     password: {
         type: String,
         minlength: 6,
         required: true,
     },
-  
 },
+{
+    timestamps: true
+}
    );
 
 const userModel = mongoose.model('User', UserSchema)

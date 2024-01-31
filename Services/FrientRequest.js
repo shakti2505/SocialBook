@@ -46,7 +46,6 @@ router.post('/receieve_friend_requests', async (req, res) => {
 router.get('/get_received_friendRequests', authorization, async (req, res) => {
     try {
         const UserId = req.userId;
-        console.log(UserId)
         // const { UserId } = req.body
         const loggedInUser = await userModel.findById(UserId);
         const pending_friend_request = await friendRequestModal.find({ requestReceiverID: UserId });
@@ -103,7 +102,8 @@ router.get('/all_users',  authorization,async (req, res) => {
     // const { UserId } = req.body;
     const loggedInUser = await userModel.findById(UserId);
     if (loggedInUser) {
-        const all_users = await userModel.find({});
+        const result = await userModel.find({});
+        const all_users =  result.filter((item)=>item._id!=UserId)
         res.status(200).send(all_users);
     }else{
         res.status(500).send("internal Server Error")

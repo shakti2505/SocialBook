@@ -22,7 +22,8 @@ const UserState = (props) => {
             if(response.data.message=='unauthorized access'){
                 navigate('/login')
             }else{
-                setLoggedInUser(response.data.User)
+                console.log('response',response);
+                setLoggedInUser(response.data.loggedInUser);
             }
         }).catch((err)=>{
             console.log(err)
@@ -32,8 +33,8 @@ const UserState = (props) => {
 
     useEffect(() => {
         getLoggedInUserData();
-    }, [])
-    
+    }, []);
+
     return (
         <UserContext.Provider value={loggedInUser}>
             {props.children}

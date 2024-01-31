@@ -145,7 +145,7 @@ const FriendsListpage = () => {
                   return (
                     <div key={index} className='mx-2 mt-2' >
                       <Card style={{ width: '16rem', height: '25rem', boxShadow: "rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px" }} >
-                        <Card.Img src={item.profilePic} width="100%" height="50%" />
+                        <Card.Img src={item.profilePic} width="100%" height="50%" style={{objectFit:"cover"}} />
                         <Card.Body>
                           <Card.Title>{item.firstName} {item.LastName}</Card.Title>
                           <Card.Text>

@@ -7,14 +7,15 @@ import axios from 'axios';
 import BASE_URL_API from './utilities/baseURL.js';
 import { apiVariables } from './utilities/apiVariables.js';
 import Dropdown from 'react-bootstrap/Dropdown';
-
+import UserDataContext from './Context/UserContext.js';
 const Navbars = () => {
+
+  const loggedInUser = useContext(UserDataContext)
   const [show, setShow] = useState(false);
   const [SerchedUsers, setSerchedUsers] = useState([])
 
   const [searchUser, setSearchUser] = useState('');
   const searchPotentialConnetion = async (apivar) => {
-    console.log(apivar.url)
     if (searchUser.length !== 0) {
       const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
         withCredentials: 'include',
@@ -36,6 +37,8 @@ const Navbars = () => {
   useEffect(() => {
     searchPotentialConnetion(apiVariables.searchPotentialConnetion(searchUser));
   }, [searchUser])
+
+
 
   return (
     <>
@@ -62,7 +65,6 @@ const Navbars = () => {
                   }
                 </Dropdown.Menu>
               }
-
             </Dropdown>
           </div>
           {/* <form className="d-flex mx-2" role="search">

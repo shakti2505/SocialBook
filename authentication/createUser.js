@@ -10,7 +10,7 @@ import { authorization } from '../middleware/AuthMiddleware.js';
 import fs from 'fs'
 const router = express.Router()
 const storage = multer.memoryStorage();
-const uploadDP = multer({ storage: storage, limits:{fileSize:300 * 300 *2} } )
+const uploadDP = multer({ storage: storage, limits: { fileSize: 300 * 300 * 2 } })
 
 //token
 const maxAge = 3 * 60 * 60
@@ -19,6 +19,51 @@ const creatToken = (id) => {
         expiresIn: maxAge
     })
 }
+
+
+// update User
+router.put('/updateUserInfo', async (req, res) => {
+    const { UserId,
+        profilePic,
+        livesIn,
+        city,
+        State,
+        country,
+        highSchool,
+        college,
+        relationShipStatus,
+        hobbies,
+        likes,
+        dislikes,
+        bio } = req.body;
+
+    const loggedInUser = await userModel.findById(UserId);
+    if (!loggedInUser) {
+        res.status(400).send("No User found to update");
+    }
+    try {
+        const updateUserInfo = await userModel.findByIdAndUpdate(UserId, {
+            profilePic: profilePic,
+            livesIn: livesIn,
+            city: city,
+            state: State,
+            country: country,
+            highSchool: highSchool,
+            college: college,
+            relationShipStatus: relationShipStatus,
+            hobbies: hobbies,
+            likes: likes,
+            dislikes: dislikes,
+            bio: bio,
+        })
+        const updatedUser = await updateUserInfo.save();
+        res.status(201).send(updatedUser);
+
+    } catch (error) {
+        res.status(500).send('Internal Server Error')
+    }
+});
+
 
 //create User
 router.post('/createUser', async (req, res) => {
@@ -48,7 +93,7 @@ router.post('/createUser', async (req, res) => {
         res.status(201).json({ response })
     }
     else {
-        res.status(404).send({message:'Email already exist!'})
+        res.status(404).send({ message: 'Email already exist!' })
     }
 });
 
@@ -62,7 +107,11 @@ router.post('/login', async (req, res) => {
         ],
     }
     const existingUser = await userModel.findOne(searchCriteria)
-    if (existingUser) {
+    if (existingUser==null || undefined) {
+        res.status(404).send({ success: false, message: "email not found" })
+    }
+    try {
+       
         const passMatch = await bcrypt.compare(password, existingUser.password)
         if (existingUser.email == email || existingUser.phone == phone && passMatch) {
             const token = creatToken(existingUser._id)
@@ -74,33 +123,34 @@ router.post('/login', async (req, res) => {
             }
             res.status(200).send({ success: true, message: "Login successfull!", loggedInUser })
         } else {
-            res.status(401).send({ success: false, message: "Unauthorized Access!" })
+            res.status(401).send({ success: false, message: "Unauthorized Access" })
         }
-    } else {
-        res.status(401).send({ success: false, message: "Invalind credentials!" })
+
+    } catch (error) {
+        res.status(500).send("Internal Server Error")
     }
-})
+});
 
 //logout
-router.get('/logout', authorization, async(req, res)=>{
+router.get('/logout', authorization, async (req, res) => {
     const UserId = req.userId;
     const loggedInUser = await userModel.findById(UserId);
     console.log(loggedInUser)
-    if(loggedInUser){
-        res.cookie('jwt', '', {expires: new Date(0)});
-        res.status(200).send({message:"logot Successfully"})
-    }else{
+    if (loggedInUser) {
+        res.cookie('jwt', '', { expires: new Date(0) });
+        res.status(200).send({ message: "logot Successfully" })
+    } else {
         res.status(500).send({ message: "Internal Server Error", });
     }
 });
 
 //uplaod DP
-router.post('/upload-dp',   async (req, res) => {
+router.post('/upload-dp', async (req, res) => {
     // const UserId = req.userId
-    const {displayPictureUrl, UserId} = req.body
-    let dpUrl 
-    displayPictureUrl.map((item)=>{
-        dpUrl=item
+    const { displayPictureUrl, UserId } = req.body
+    let dpUrl
+    displayPictureUrl.map((item) => {
+        dpUrl = item
     })
     try {
         if (!displayPictureUrl) {
@@ -110,14 +160,14 @@ router.post('/upload-dp',   async (req, res) => {
             });
         } else {
             const uploadObject = new displayPictureModel({
-                displayPictureUrl:dpUrl,
-                users:UserId
+                displayPictureUrl: dpUrl,
+                users: UserId
             });
             const uploadProcess = await uploadObject.save()
             res.status(201).json({
                 success: true,
                 message: "upload successfull",
-                obj:uploadProcess
+                obj: uploadProcess
             })
         }
     } catch (error) {
@@ -128,37 +178,24 @@ router.post('/upload-dp',   async (req, res) => {
 
 router.get('/getLoggedInUserData', authorization, async (req, res) => {
     const userID = req.userId
-    const loggedInUser = await userModel.findById(userID);
-    //reading the bianry data using fs module 
-    
-    const User = {
-        Name: loggedInUser.firstName,
-        LastName: loggedInUser.LastName,
-    }
+    // const {userID} = req.body;
+    const loggedInUser = await userModel.findById(userID).select('-phone -email -password');
+    console.log(loggedInUser)
     if (loggedInUser) {
-        res.status(200).send({ success: true, User })
+        res.status(200).send({ success: true, loggedInUser })
     } else {
         res.status(401).send({ success: false, message: "Unauthroriazied access" })
     }
 });
 
-// router.get('/logout', authorization, (req, res)=>{
-//    try {
-//     res.clearCookie('jwt').send({success:true, message:"logout successfully"})
-//     console.log('logout successfully')
-//    } catch (error) {
-//         res.status(500).send(error);
-//    }
-// })
-
-router.get('/user_profiel_picture', authorization, async(req,res)=>{
+router.get('/user_profiel_picture', authorization, async (req, res) => {
     const userID = req.userId
     try {
-        const UserProfilePicture = await displayPictureModel.find({users:userID});
-        if(!UserProfilePicture){
+        const UserProfilePicture = await displayPictureModel.find({ users: userID });
+        if (!UserProfilePicture) {
             return res.status(404).send('Image not found');
-        }else{
-            res.status(200).send({UserProfilePicture})
+        } else {
+            res.status(200).send({ UserProfilePicture })
         }
     } catch (error) {
         console.error(error);
