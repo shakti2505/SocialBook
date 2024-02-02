@@ -1,0 +1,135 @@
+/* #coverImage {
+  height: 20rem;
+  width: 100%;
+  object-fit: cover;
+  margin-right: 17rem;
+  margin-left: 17rem;
+  border-end-start-radius: 0.5rem;
+  border-end-end-radius: 0.5rem;
+}
+
+#cover {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+}
+
+#profilePicOnCover {
+  position: absolute;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  bottom: 0;
+  left: 20rem;
+  border: 0.2rem solid white;
+
+}
+.other{
+    display: flex;
+    align-items: center;
+    justify-content: space-ar;
+    border: 1px solid black;
+
+   
+}
+.other p{
+    color: rgb(87, 85, 85);
+    font-size: 1rem;
+} */
+
+/* Media queries for Mobile-S (320px), Mobile-M (375px), and Mobile-L (425px) */
+
+/* @media screen and (max-width: 320px) {
+  #coverImage {
+    width: 100%;
+
+  }
+  #cover{
+    width: 100%;
+  }
+  #profilePic {
+   display: flex;
+
+  }
+  #profilePicOnCover{
+    position: absolute;
+    left: 5rem;
+    top: 15rem;
+  }
+  .other{
+    display: block;
+    margin-top: 6rem;
+  }
+  
+}
+
+@media screen and (min-width: 321px) and (max-width: 375px) {
+  #coverImage {
+    height: 100%;
+  }
+  #cover{
+    width: 100%;
+  }
+  #profilePic {
+   display: flex;
+
+  }
+  #profilePicOnCover{
+    position: absolute;
+    left: 7rem;
+    top: 10rem;
+  }
+  .other{
+    display: block;
+    margin-top: 6rem;
+  }
+}
+
+@media screen and (min-width: 375px) and (max-width: 426px) {
+  #coverImage {
+    height: 100%;
+  }
+  #cover{
+    width: 100%;
+  }
+  #profilePic {
+   display: flex;
+
+  }
+  #profilePicOnCover{
+    position: absolute;
+    left: 8rem;
+    top: 12rem;
+  }
+  .other{
+    display: block;
+    margin-top: 8rem;
+  }
+}
+@media screen and (min-width: 427px) and (max-width: 767px) {
+  #coverImage {
+    height: 100%;
+  }
+  #cover{
+    width: 100%;
+  }
+  #profilePic {
+   display: flex;
+
+  }
+  #profilePicOnCover{
+    position: absolute;
+    left: 10rem;
+    top: 12rem;
+  }
+  .other{
+    display: block;
+    margin-top: 8rem;
+  } */
+/* 
+#coverImage{
+  background-image: url('https://res.cloudinary.com/dtbz1n84e/image/upload/v1705424794/cld-sample.jpg');
+} */

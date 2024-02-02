@@ -1,5 +1,8 @@
 import React from 'react'
+import { useNavigate } from "react-router-dom"
+
 const LeftBar = (props) => {
+    const navitage = useNavigate()
 
     // const ShowScroller = () =>{
     //         let scrollbar = document.getElementById('left-container')
@@ -14,7 +17,7 @@ const LeftBar = (props) => {
             <div className='col-3 ' id='left-container'  >
                 <div>
                     <div>
-                        <button className='btn btn-light w-100 d-flex justify-content-start'>
+                        <button className='btn btn-light w-100 d-flex justify-content-start' onClick={()=>navitage('/profile')}>
                             <img src={props.UserProfilePicture} alt='img' width='30' height='30' style={{ borderRadius: "100px" }} />
                             <h6 className='mt-1 mx-2'>Sunny Kashyap</h6>
                         </button>

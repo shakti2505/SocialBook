@@ -10,6 +10,7 @@ import FriendRequestRoutes from './Services/FrientRequest.js'
 import path from 'path';
 import url from 'url'
 import userModel from './models/user.js';
+import webpush from 'web-push'
 
 const app = express();
 const PORT = process.env.PORT || 4600
@@ -32,6 +33,18 @@ const __dirname = path.dirname(__filename);
 app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, 'build')));
 
+//push notificaiton setup
+webpush.setVapidDetails(
+  'mailto:kashyapshakti1994@gmail.com',
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.PrivateKey
+);
+app.post('/subscribe', (req, res) => {
+    const subscription = req.body;
+    res.status(201).json({});
+    const payload = JSON.stringify({ title: "Hello World", body: "This is your first push notification" });
+    webpush.sendNotification(subscription, payload).catch(console.log);
+})
 
 //load Router
 app.use('/authentication', authenticationRoutes)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
@@ -48,9 +48,9 @@ const Login = () => {
                 }
             }
         )
-        if(result.data.message == 'unauthorized access'){
-            setIserror(true);
-            setError(result.data.message)
+        if(result.data.message=='User not found'){
+            console.log('result data',result.data)
+            setError(result.data.message);
         }else{
             navitage('/home')
         }
@@ -59,6 +59,11 @@ const Login = () => {
     const NavigateToSignPage = () =>{
         navitage('/')
     }
+
+    useEffect(()=>{
+        console.log('error result::',error)
+    },[error])
+  
     return (
         <>
             <Container>
@@ -109,7 +114,7 @@ const Login = () => {
                                         </div>
                                     </CardGroup>
                                     {
-                                        isError &
+                                        isError &&
                                         <p>{error}</p>
                                     }
                                 </Form>

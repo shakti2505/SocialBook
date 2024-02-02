@@ -8,8 +8,7 @@ import LandingPage from './landingPage';
 import Login from './login';
 import { Routes, Route } from "react-router-dom";
 import FriendsListpage from './app/FriendsListpage.js';
-
-
+import Profilepage from './app/Component/profilePage/ProfilePage.js'
 
 function App() {
   return (
@@ -23,6 +22,7 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/home2' element={<SidebarV2/>}/>
         <Route path='/friends' element={<FriendsListpage/>}/>
+        <Route path='/profile' element={<Profilepage/>}/>
       </Routes>
       </UserState>
     </>

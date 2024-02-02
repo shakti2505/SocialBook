@@ -1,5 +1,5 @@
 import './Home.css'
-import React, { useContext,useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { apiVariables } from '../utilities/apiVariables.js';
 import axios from 'axios';
 import BASE_URL_API from '../utilities/baseURL';
@@ -176,9 +176,9 @@ const HomePage = (props) => {
               {stories.map((item, index) => {
                 return (
                   <>
-                  {/* <div className='story'> */}
-                  <img src={item} alt='images' className='story'/>
-                  {/* </div> */}
+                    {/* <div className='story'> */}
+                    <img src={item} alt='images' className='story' />
+                    {/* </div> */}
                   </>
                 )
               })
@@ -189,10 +189,14 @@ const HomePage = (props) => {
             {/* stories */}
             <div className=' d-flex justify-content-center mt-3'>
               <div className='Post-form p-2'>
-                <div className='d-flex mx-2 mt-2'>
-                <img src={loggedInUser.profilePic} alt='img' width='50' height='40' style={{ borderRadius: "50%" }} />
+                <div className='d-flex  mt-2'>
+                  <img src={loggedInUser.profilePic} alt='img' width='60' height='50' style={{ borderRadius: "50%", objectFit: "cover" }} />
 
-                  <button onClick={OpenPostModal} className='searchBtn btn btn-light mx-2 w-100 d-flex justify-content-start'>What's on you mind, {loggedInUser.firstName}?</button>
+                  <button onClick={OpenPostModal} className='searchBtn btn btn-light mx-2 w-100 d-flex justify-content-start'>
+                    {
+                      postCaption.length!==0 ? postCaption : `What's on you mind, ${loggedInUser.firstName}?`
+                    }
+                    </button>
                 </div>
                 <hr />
                 <div className='d-flex justify-content-center'>
@@ -228,7 +232,7 @@ const HomePage = (props) => {
                 </Modal.Header>
                 <Modal.Body style={{ maxHeight: '25rem', overflowY: "auto", position: 'relative' }}>
                   <div className='d-flex'>
-                    <img src={loggedInUser.profilePic} alt='img' width='50' height='50' style={{ borderRadius: "50px" }} />
+                    <img src={loggedInUser.profilePic} alt='img' width='50' height='50' style={{ borderRadius: "50%", objectFit: "cover" }} />
                     <div className='d-flex flex-column'>
                       <strong className='mx-2'> {loggedInUser.firstName} {loggedInUser.LastName}</strong>
                       <button onClick={OpenPostAudienceModal} className='btn btn-light btn-sm mx-2'>
@@ -236,7 +240,7 @@ const HomePage = (props) => {
                         <b className='mx-1'>Public</b>
                         <svg className='mb-1' xmlns="http://www.w3.org/2000/svg" height="16" width="20" viewBox="0 0 320 512"><path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" /></svg></button>
                     </div>
-                  </div>                  <textarea onChange={(e) => setPostCaption(e.target.value)} placeholder={"What's on your Mind, Sunny?"} className='w-100 mt-3' style={{ border: "0", outline: "none", fontSize: '25px', }}></textarea>
+                  </div><textarea onChange={(e) => setPostCaption(e.target.value)} placeholder={`What's on your Mind, ${loggedInUser.firstName}?`} className='w-100 mt-3' style={{ border: "0", outline: "none", fontSize: '25px', }} value={postCaption && postCaption}></textarea>
                   {/* PhotoUPloadModal starts */}
                   <div
                     className={(showAddPhotoModal || imagePreviews.length === 0) ? "mt-1 position-relative rounded mb-2" : 'd-none'}

@@ -83,12 +83,12 @@ router.post('/createUser', async (req, res) => {
             password: hashPassword
         });
         user.save()
-        const token = creatToken(user._id)
-        console.log(token)
+        const token = creatToken(user._id);
         res.cookie("jwt", token, { httpOnly: false, maxAge: maxAge * 1000 })
         const response = {
             success: true,
-            message: "account creation successfull"
+            message: "account creation successfull",
+            user
         }
         res.status(201).json({ response })
     }
@@ -186,7 +186,6 @@ router.post('/login', async (req, res) => {
 router.get('/logout', authorization, async (req, res) => {
     const UserId = req.userId;
     const loggedInUser = await userModel.findById(UserId);
-    console.log(loggedInUser)
     if (loggedInUser) {
         res.cookie('jwt', '', { expires: new Date(0) });
         res.status(200).send({ message: "logot Successfully" })
@@ -231,7 +230,6 @@ router.get('/getLoggedInUserData', authorization, async (req, res) => {
     const userID = req.userId
     // const {userID} = req.body;
     const loggedInUser = await userModel.findById(userID).select('-phone -email -password');
-    console.log(loggedInUser)
     if (loggedInUser) {
         res.status(200).send({ success: true, loggedInUser })
     } else {

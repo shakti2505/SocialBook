@@ -16,20 +16,20 @@ const PostModal = (props) => {
                     <div key={Math.random() + index} className="d-flex justify-content-center">
                         <div className='postContainer'>
                             <div className='d-flex mx-2 mt-3'>
-                                <img src={loggedInUser.profilePic} width='50' height='40' style={{ borderRadius: "50%" }} />
+                                <img src={loggedInUser.profilePic} width='40' height='40' style={{ borderRadius: "50%", objectFit:"cover" }} />
                                 <div className='d-flex flex-column'>
                                     <strong className='mx-2 '>{loggedInUser.firstName} {loggedInUser.LastName}</strong>
                                     <p style={{ fontSize: '0.8rem' }} className='mx-2'>{ConvertDateTime(item.createdAt)}</p>
                                 </div>
                             </div>
-                            {/* <p className='p-2'>{seeMore ? item.postCaption : `${item.postCaption.substring(0, 250)}`}
-                            </p> */}
+                            <p className='p-2'>{seeMore ? item.postCaption : `${item.postCaption.substring(0, 250)}`}
+                            </p>
                             {item.postImagesURls.length !== 0 &&
-                                <div className='d-flex flex-row vh-50' style={{ borderRadius: "10px", position: 'relative' }}>
+                                <div className='d-flex flex-row vh-50' style={{ borderRadius: "10px", position: 'relative',  }}>
                                     {
                                         item.postImagesURls.map((previewUrl, index) => (
                                             <div key={index + Math.random()}  >
-                                                <img src={previewUrl} style={{ height: "100%", width: "100%" }} />
+                                                <img src={previewUrl} style={{ height: "100%", width: "100%" ,objectFit:"cover"}} />
                                             </div>
                                         ))}
                                 </div>

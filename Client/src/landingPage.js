@@ -32,7 +32,7 @@ const LandingPage = () => {
     const result = axios.post(BASE_URL_API + apiVariables.signup.url, inputData)
     result.then((response) => {
       if (response.data.response.message === "account creation successfull") {
-        navitage('/upload-DP');
+        navitage('/home');
       }
     })
       .catch((error) => {

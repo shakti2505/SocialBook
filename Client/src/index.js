@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer, } from 'react-toastify';
 import App from './App';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import swDev from './serveiceWorkerDev.js'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,6 +15,11 @@ root.render(
     </BrowserRouter>   
   </React.StrictMode>
 );
+
+
+if('serviceWorker' in navigator) {
+  swDev().catch(console.log)
+}
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
