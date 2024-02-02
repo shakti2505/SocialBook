@@ -23,21 +23,38 @@ connectDB(DATABASE_URL)
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json());
-const corsOptions = {
-    origin: 'http://localhost:3000', // Replace with your client's origin
-    credentials: true, // Allow credentials,
-    
-};
+
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://socialbook-x3jq.onrender.com'
+]
+
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(cors(corsOptions));
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            // allow requests with no origin
+            // (like mobile apps or curl requests)
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.indexOf(origin) === -1) {
+                var msg =
+                    "The CORS policy for this site does not " +
+                    "allow access from the specified Origin.";
+                return callback(new Error(msg), false);
+            }
+            return callback(null, true);
+        },
+        credentials: true,
+    })
+); 
 app.use(express.static(path.join(__dirname, 'build')));
 
 //push notificaiton setup
 webpush.setVapidDetails(
-  'mailto:kashyapshakti1994@gmail.com',
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.PrivateKey
+    'mailto:kashyapshakti1994@gmail.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.PrivateKey
 );
 app.post('/subscribe', (req, res) => {
     const subscription = req.body;
@@ -52,7 +69,7 @@ app.use('/services', PostRoutes)
 app.use('/services', FriendRequestRoutes)
 
 app.get('/*', function (req, res) {
-	res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.listen(PORT, () => {

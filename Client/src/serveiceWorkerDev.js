@@ -1,7 +1,7 @@
 import BASE_URL_API from "./utilities/baseURL";
 const swDev = async () => {
     try {
-        let url = `${BASE_URL_API}/sw.js`
+        let url = 'http://localhost:3000/sw.js'
         const register = await navigator.serviceWorker.register(url);
         console.log('register', register)
         const subscription = await register.pushManager.subscribe({
