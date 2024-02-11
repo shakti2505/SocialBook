@@ -4,11 +4,13 @@ import UserDataContext from '../Context/UserContext';
 import axios from 'axios';
 import BASE_URL_API from '../utilities/baseURL';
 import { apiVariables } from '../utilities/apiVariables';
+import logo from '../images/logo/logo.png';
 import { useNavigate } from "react-router-dom"
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Modal from 'react-bootstrap/Modal';
 
 const renderTooltip = (props) => (
     <Tooltip id="button-tooltip"  {...props}>
@@ -17,44 +19,34 @@ const renderTooltip = (props) => (
 );
 
 const NavbarDropdown = () => {
-    const loggedInUser = useContext(UserDataContext)
+    const { loggedInUser } = useContext(UserDataContext);
+    const [notificationCount, setnotificationCount] = useState();
+    const [notification, setnotification] = useState([]);
+    const [SerchedUsers, setSerchedUsers] = useState([])
+    const [searchUser, setSearchUser] = useState('');
+
     const navigate = useNavigate()
 
-    const logout = async () => {
-        const apicall = await axios.get(BASE_URL_API + apiVariables.logout.url, {
-            withCredentials: "include"
-        })
-        if (apicall.status == 200) {
-            navigate('/login')
-        } else {
-            console.log('error in logging out.')
-        }
-    }
-
-    const [UserProfilePicture, setUserProfilePicture] = useState([])
-    const changeBodybg = () => {
-        document.body.style.backgroundColor = "white"
-        document.body.style.height = '0px'
-    }
-    const getUserProfilePicture = () => {
-        axios.get(BASE_URL_API + apiVariables.userProfilePicture.url, {
+    const get_notification_count = async (apivar) => {
+        const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
             withCredentials: 'include',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true
-            }
-        })
-            .then((response) => {
-                if (response.data.message == 'Image not found') {
-                    console.log(response.data.message)
-                } else {
-                    setUserProfilePicture(response.data.UserProfilePicture)
-                }
-            }).catch((err) => {
-                console.log(err)
-            })
+            },
 
+        })
+        if (apicall.status !== 200) {
+            console.log('Internal Error')
+        } else {
+            setnotificationCount(apicall.data.notificationCount);
+        }
+    }
+
+    const changeBodybg = () => {
+        document.body.style.backgroundColor = "white"
+        document.body.style.height = '0px'
     }
 
     const handleChatWindow = () => {
@@ -77,27 +69,77 @@ const NavbarDropdown = () => {
             console.log(err)
         })
     }
+    const searchPotentialConnetion = async (apivar) => {
+        if (searchUser.length !== 0) {
+            const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
+                withCredentials: 'include',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true
+                },
 
+            })
+            if (apicall.status !== 200) {
+                console.log('Internal Error')
+            } else {
+                setSerchedUsers(apicall.data)
+            }
+        }
+    }
 
 
 
     useEffect(() => {
-        getUserProfilePicture()
-    }, [])
+        searchPotentialConnetion(apiVariables.searchPotentialConnetion(searchUser));
+    }, [searchUser]);
 
-    useEffect(()=>{
-        console.log('profilePic', loggedInUser)
-    },[loggedInUser])
+    useEffect(() => {
+        get_notification_count(apiVariables.get_notification_count);
+    }, []);
+
     return (
         <>
-            <div className='d-flex flex-row justify-content-between mt-1'>
+            <div className='d-flex flex-row justify-content-around align-items-center mx-3' >
+                {/* search modal */}
+                <div id='searchDiv' >
+                    <img src={logo} width="30rem" height="30rem" alt='Social Book' />
+                    {/* <Button id='searchbtn' className='mx-2' variant='outline-light' size='sm' >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1.5rem" height="1.5rem"><path fill='#65676B' d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
+                    </Button> */}
+                    <div className='d-flex mt-1 mx-1' id='collapsibleSearch' >
+                        <Dropdown role='search' className='w-100' id='#UserSearch'>
+                            <Dropdown.Toggle className='btn btn-light' size='sm' id="dropdown-basic">
+                                <input onChange={(e) => setSearchUser(e.target.value)} type='text' id='searchInput' placeholder='Search Socialbook' className='w-100' />
+                            </Dropdown.Toggle>
+                            {
+                                SerchedUsers.length !== 0 &&
+                                <Dropdown.Menu className=''>
+                                    {
+                                        SerchedUsers.map((item, index) => {
+                                            return (
+                                                <>
+                                                    <Dropdown.Item href="#/action-1">{item.firstName}</Dropdown.Item>
+                                                </>
+                                            )
+                                        })
+
+                                    }
+                                </Dropdown.Menu>
+                            }
+                        </Dropdown>
+                    </div>
+                </div>
+                {/* search modal */}
                 <OverlayTrigger
                     placement="bottom"
                     delay={{ show: 100, hide: 100 }}
                     overlay={renderTooltip('Menu')}
                 >
-                    <Button className='hover-focus-button' onClick={handleChatWindow} variant="light" size='sm'>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" width="1.5rem" viewBox="0 0 448 512"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" /></svg>
+                    <Button id='btnNav' className='mx-1' onClick={handleChatWindow} variant='outline-light' size='sm' >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill='#000000' className="bi bi-grid-3x3-gap-fill" viewBox="0 0 16 16">
+                            <path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z" />
+                        </svg>
                     </Button>
                 </OverlayTrigger>
                 <div className="chat-window">
@@ -192,8 +234,10 @@ const NavbarDropdown = () => {
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip('Messages')}
                 >
-                    <Button variant='light' size='sm'>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" width="1.5rem" viewBox="0 0 512 512"><path d="M256.6 8C116.5 8 8 110.3 8 248.6c0 72.3 29.7 134.8 78.1 177.9 8.4 7.5 6.6 11.9 8.1 58.2A19.9 19.9 0 0 0 122 502.3c52.9-23.3 53.6-25.1 62.6-22.7C337.9 521.8 504 423.7 504 248.6 504 110.3 396.6 8 256.6 8zm149.2 185.1l-73 115.6a37.4 37.4 0 0 1 -53.9 9.9l-58.1-43.5a15 15 0 0 0 -18 0l-78.4 59.4c-10.5 7.9-24.2-4.6-17.1-15.7l73-115.6a37.4 37.4 0 0 1 53.9-9.9l58.1 43.5a15 15 0 0 0 18 0l78.4-59.4c10.4-8 24.1 4.5 17.1 15.6z" /></svg>
+                    <Button id='btnNav' className='mx-1' variant='outline-light' size='sm'>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1.3rem" width="1.3rem" viewBox="0 0 512 512"><path d="M256.6 8C116.5 8 8 110.3 8 248.6c0 72.3 29.7 134.8 78.1 177.9 8.4 7.5 6.6 11.9 8.1 58.2A19.9 19.9 0 0 0 122 502.3c52.9-23.3 53.6-25.1 62.6-22.7C337.9 521.8 504 423.7 504 248.6 504 110.3 396.6 8 256.6 8zm149.2 185.1l-73 115.6a37.4 37.4 0 0 1 -53.9 9.9l-58.1-43.5a15 15 0 0 0 -18 0l-78.4 59.4c-10.5 7.9-24.2-4.6-17.1-15.7l73-115.6a37.4 37.4 0 0 1 53.9-9.9l58.1 43.5a15 15 0 0 0 18 0l78.4-59.4c10.4-8 24.1 4.5 17.1 15.6z" />
+                        </svg>
+
                     </Button>
                 </OverlayTrigger>
                 <OverlayTrigger
@@ -201,8 +245,10 @@ const NavbarDropdown = () => {
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip('Notification')}
                 >
-                    <Button className='hover-focus-button' variant='light' size='sm'>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" width="1.5rem" viewBox="0 0 448 512"><path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" /></svg>
+                    <Button id='btnNav' variant='outline-light' size='sm' className='d-flex mx-1'>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1.3rem" width="1.3rem" viewBox="0 0 448 512"><path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
+                        </svg>
+                        <small style={{ color: "red" }}>{notificationCount!==0 ? notificationCount : '' }</small>
                     </Button>
                 </OverlayTrigger>
                 <OverlayTrigger
@@ -212,11 +258,9 @@ const NavbarDropdown = () => {
                 >
                     {/* <Button className='hover-focus-button' variant='light' size='sm'> */}
 
-                    <Dropdown>
-                        <Dropdown.Toggle className='hover-focus-button' variant="light" size='sm' id="dropdown-basic">
-                            <div>
-                            <img className='profilePic' alt='' src={loggedInUser.profilePic} height='1rem' width="1rem" />
-                            </div>
+                    <Dropdown id='btnNav' className='ml-2'>
+                        <Dropdown.Toggle variant='outline-light' size='sm' id="dropdown-basic">
+                            <img className='profilePic' alt='' src={loggedInUser.profilePic} />
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>

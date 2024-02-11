@@ -6,39 +6,51 @@ import userModel from "../models/user.js";
 import friendRequestModal from "../models/FrientRequest.js";
 import UserFriendList from "../models/FriendList.js";
 import displayPictureModel from "../models/displayPictures.js";
+import monitorRequests from "../ChangeStreams/ChangeStreams.js";
+import FriendRequestNotificationsModal from "../models/Notifications/FriendRequestNotificaitons.js";
 
 const router = express.Router()
 
+//close streams
+const closeChangeStreams = (changeStreams, timeInMS = 60000) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log("closing the change streams  ")
+            changeStreams.close()
+            resolve()
+        }, timeInMS);
+    });
+}
+
 // create friend request
-router.post('/receieve_friend_requests', async (req, res) => {
-    // const UserId = req.userId;
-    const { friendRequestStatus, requestReceiverId, UserId } = req.body;
+router.post('/receieve_friend_requests', authorization, async (req, res) => {
+    const UserId = req.userId;
+    const { friendRequestStatus, requestReceiverId, username, userDisplayPicture } = req.body;
     try {
-        if (!friendRequestStatus || !requestReceiverId ) {
-            res.status(404).json({ messsgae: "No request found!" });
+        if (!friendRequestStatus || !requestReceiverId || !username || !userDisplayPicture) {
+            return res.status(404).json({ messsgae: "No Data found!" });
         }
         const requestSender = await userModel.findById(UserId);
         const requestreceiver = await userModel.findById(requestReceiverId);
-        const requestAlreadyExisted = await friendRequestModal.find({requestReceiverID:requestReceiverId, frientRequestsenderID:UserId})
-
-        if ((requestSender && requestreceiver && friendRequestStatus) && requestAlreadyExisted.length==0) {
+        const requestAlreadyExisted = await friendRequestModal.find({ requestReceiverID: requestReceiverId, frientRequestsenderID: UserId })
+        if ((requestSender && requestreceiver && friendRequestStatus) && requestAlreadyExisted.length == 0) {
+            const ChangeStreams = await monitorRequests(friendRequestModal, 'Change Stream starts for Friend Requst Modal.....')
             const newFriendRequest = new friendRequestModal({
                 frientRequestsenderID: UserId,
                 frientRequestStatus: friendRequestStatus,
                 requestReceiverID: requestReceiverId,
-                frientRequestSenderName:requestSender.firstName + requestSender.LastName,
-                frientRequestSenderDP:requestSender.profilePic
-
+                senderName: username,
+                senderProfilePicture: userDisplayPicture
             });
             const savedNewfriendrequest = await newFriendRequest.save();
-            res.status(201).send({ message: "Friend request send", sentrequest: savedNewfriendrequest })
-
+            closeChangeStreams(ChangeStreams);
+            return res.status(201).send({ message: "Friend request sent", sentrequest: savedNewfriendrequest })
         } else {
-            res.status(404).send({ message: "No sender found or request already existed" })
+            return res.status(404).send({ message: "No sender found or request already existed" })
         }
 
     } catch (error) {
-        res.status(500).send('Internal Server Error')
+        return res.status(500).send('Internal Server Error')
     }
 });
 
@@ -46,26 +58,25 @@ router.post('/receieve_friend_requests', async (req, res) => {
 router.get('/get_received_friendRequests', authorization, async (req, res) => {
     try {
         const UserId = req.userId;
-        // const { UserId } = req.body
         const loggedInUser = await userModel.findById(UserId);
         const pending_friend_request = await friendRequestModal.find({ requestReceiverID: UserId });
         if (loggedInUser && pending_friend_request) {
-            res.status(200).send(pending_friend_request);
+            return res.status(200).json(pending_friend_request);
         } else {
-            res.status(400).send('No Logged in User found')
+            return res.status(400).send('No Logged in User found')
         }
     } catch (error) {
-        res.status(500).send({ error })
+        return res.status(500).send({ error })
     }
 });
 
 //action of frient request
 
-router.post('/accept_reject_friend_request', authorization,async (req, res) => {
+router.post('/accept_reject_friend_request', authorization, async (req, res) => {
     try {
         let status = ['pending', 'rejected', 'accepted']
         const UserId = req.userId;
-        const { frientRequestID, frientRequestStatus,  friendName, FriendDp } = req.body
+        const { frientRequestID, frientRequestStatus, friendName, FriendDp } = req.body
         const loggedInUser = await userModel.findById(UserId);
         const pending_friend_request = await friendRequestModal.findById(frientRequestID);
         if (!pending_friend_request || !loggedInUser || !status.includes(frientRequestStatus)) {
@@ -78,8 +89,8 @@ router.post('/accept_reject_friend_request', authorization,async (req, res) => {
             const newlyAddedFriendDoc = new UserFriendList({
                 user: pending_friend_request.requestReceiverID,
                 friendID: pending_friend_request.frientRequestsenderID,
-                friendName:friendName,
-                FriendDp:FriendDp
+                friendName: friendName,
+                FriendDp: FriendDp
             });
             const newlyAddedfriend = await newlyAddedFriendDoc.save();
             const acceptedFriendRequest = await friendRequestModal.findByIdAndRemove(frientRequestID);
@@ -97,17 +108,36 @@ router.post('/accept_reject_friend_request', authorization,async (req, res) => {
 
 // get all Users
 
-router.get('/all_users',  authorization,async (req, res) => {
+router.get('/all_users', authorization, async (req, res) => {
     const UserId = req.userId
     // const { UserId } = req.body;
     const loggedInUser = await userModel.findById(UserId);
     if (loggedInUser) {
         const result = await userModel.find({});
-        const all_users =  result.filter((item)=>item._id!=UserId)
+        const all_users = result.filter((item) => item._id != UserId)
         res.status(200).send(all_users);
-    }else{
+    } else {
         res.status(500).send("internal Server Error")
     }
 });
+
+//getFriend request Notification'
+router.get('/get_notification_count', authorization, async (req, res)=>{
+    const UserId = req.userId
+    // const {UserId} = req.body
+    console.log(UserId)
+    const noti = await FriendRequestNotificationsModal.find({userID:UserId});
+    console.log(noti)
+    if(!noti){
+        return res.status(401).send({message:"No logged in user found"});
+    } 
+    try {
+        res.status(200).send({notificationCount:noti.length});
+    } catch (error) {
+        return res.status(500).send({message:"Internal server error"})
+    }
+
+
+})
 
 export default router;

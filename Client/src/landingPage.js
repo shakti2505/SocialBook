@@ -1,11 +1,11 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import BASE_URL_API from './utilities/baseURL.js'
 import { apiVariables } from './utilities/apiVariables.js';
 import { useNavigate } from "react-router-dom"
-import Logo from './images/logo/SocialBook_logo1.png'
+import Logo from './images/logo/logo.png'
 
 const LandingPage = () => {
 
@@ -27,21 +27,21 @@ const LandingPage = () => {
   }
 
   const handleSubmit = (e) => {
-    if(inputData.fname.length!==0 &&inputData.Lname.length!==0 && inputData.email.length!==0 && inputData.dob.length!==0 && inputData.gender.length!==0 &&inputData.password.length!==0){
+    if (inputData.fname.length !== 0 && inputData.Lname.length !== 0 && inputData.email.length !== 0 && inputData.dob.length !== 0 && inputData.gender.length !== 0 && inputData.password.length !== 0) {
       e.preventDefault();
-    const result = axios.post(BASE_URL_API + apiVariables.signup.url, inputData)
-    result.then((response) => {
-      if (response.data.response.message === "account creation successfull") {
-        navitage('/home');
-      }
-    })
-      .catch((error) => {
-        alert(error.data.response.message)
+      const result = axios.post(BASE_URL_API + apiVariables.signup.url, inputData)
+      result.then((response) => {
+        if (response.data.response.message === "account creation successfull") {
+          navitage('/login');
+        }
       })
-    }else{
+        .catch((error) => {
+          alert(error.data.response.message)
+        })
+    } else {
       alert("Please fill all field!")
     }
-    
+
   }
 
   const NavigateToLoginPage = () => {
@@ -53,15 +53,15 @@ const LandingPage = () => {
       <div className='container vh-100'>
         <div className='row d-flex justify-content-center align-self-center'>
           <h1 className='text-center fw-bold mt-5' >Welcome to Social Book</h1>
-          <div className='col-md-4 mt-5' style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px", borderRadius: "15px", background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(58,69,83,1) 100%)', opacity:"0.7"}}>
+          <div className='col-md-4 mt-5' style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px", borderRadius: "15px", background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(58,69,83,1) 100%)', opacity: "0.7" }}>
             <div className='d-flex justify-content-center'>
             </div>
             <div className='m-3'>
-              <Form.Control type="text" name='fname' value={inputData.fname} onChange={handleChange} placeholder="First Name" required/>
+              <Form.Control type="text" name='fname' value={inputData.fname} onChange={handleChange} placeholder="First Name" required />
             </div>
 
             <div className='m-3'>
-              <Form.Control type="text" name='Lname' value={inputData.Lname} onChange={handleChange} placeholder="Last Name" required/>
+              <Form.Control type="text" name='Lname' value={inputData.Lname} onChange={handleChange} placeholder="Last Name" required />
             </div>
 
             <div className='m-3'>
@@ -73,20 +73,20 @@ const LandingPage = () => {
               </Form.Select>
             </div>
             <div className='m-3'>
-              <Form.Control type="date" name='dob' value={inputData.dob} onChange={handleChange} placeholder="DD/MM/YYYY" required/>
+              <Form.Control type="date" name='dob' value={inputData.dob} onChange={handleChange} placeholder="DD/MM/YYYY" required />
             </div>
 
             <div className='m-3'>
-              <Form.Control type="text" name='phone' value={inputData.phone} onChange={handleChange} placeholder="Phone No." required/>
+              <Form.Control type="text" name='phone' value={inputData.phone} onChange={handleChange} placeholder="Phone No." required />
             </div>
 
             <div className='m-3'>
-              <Form.Control type="text" name='email' value={inputData.email} onChange={handleChange} placeholder="Email address" required/>
+              <Form.Control type="text" name='email' value={inputData.email} onChange={handleChange} placeholder="Email address" required />
             </div>
             <div className='m-3'>
-              <Form.Control type="password" name='password' value={inputData.password} onChange={handleChange} placeholder="New Password" required/>
-            </div>  
-          
+              <Form.Control type="password" name='password' value={inputData.password} onChange={handleChange} placeholder="New Password" required />
+            </div>
+
             <div className='m-3 d-flex justify-content-center'>
               <Button size='small' className='w-100' onClick={handleSubmit} >Sign Up</Button>
             </div>

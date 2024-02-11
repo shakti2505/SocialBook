@@ -41,5 +41,11 @@ getAllUsers:{
 sendFriendRequest:{
   url:"/services/receieve_friend_requests"
 },
+uploadDP:{
+  url:"/authentication/updateUserInfo"
+},
+get_notification_count:{
+  url:"/services/get_notification_count"
+}
 }
 

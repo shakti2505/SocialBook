@@ -67,12 +67,12 @@ width: 0;
   height: 17rem
 }
 .Post-form {
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
   border-radius: 8px;
   width: 85%;
 }
-.Post-form .searchBtn {
-  border-radius: 25px;
+.searchBtn {
+  border-radius: 50px;
   background: #f0f2f5;
 }
 
@@ -125,9 +125,9 @@ width: 0;
 
 .postContainer{
   border-radius: 10px;
-  margin-top: 1rem;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  width: 85%;
+  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+  width: 100%;
+
 }
 
 

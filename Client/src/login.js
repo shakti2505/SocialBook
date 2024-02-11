@@ -19,7 +19,7 @@ const Login = () => {
         email: "",
         password: "",
         phone: ""
-    })
+    });
 
     // const [LoginUserData, setLoginUserData] = useState({})
 
@@ -49,10 +49,10 @@ const Login = () => {
             }
         )
         if(result.data.message=='User not found'){
-            console.log('result data',result.data)
             setError(result.data.message);
         }else{
-            navitage('/home')
+            navitage('/home');
+
         }
     }
 

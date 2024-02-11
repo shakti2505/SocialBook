@@ -7,7 +7,10 @@ import displayPictureModel from '../models/displayPictures.js'
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import { authorization } from '../middleware/AuthMiddleware.js';
-import fs from 'fs'
+import friendRequestModal from '../models/FrientRequest.js';
+import postModel from '../models/Post.js';
+import { SendFriendRequestNotification } from '../Services/Notifications/UserSpecificNotification.js';
+
 const router = express.Router()
 const storage = multer.memoryStorage();
 const uploadDP = multer({ storage: storage, limits: { fileSize: 300 * 300 * 2 } })
@@ -19,23 +22,13 @@ const creatToken = (id) => {
         expiresIn: maxAge
     })
 }
+//update User Profile picture
+router.put('/updateUserProfilePicture', authorization, async (req, res) => {
+    const UserId = req.userId;
 
-
-// update User
-router.put('/updateUserInfo', async (req, res) => {
-    const { UserId,
+    const {
         profilePic,
-        livesIn,
-        city,
-        State,
-        country,
-        highSchool,
-        college,
-        relationShipStatus,
-        hobbies,
-        likes,
-        dislikes,
-        bio } = req.body;
+    } = req.body;
 
     const loggedInUser = await userModel.findById(UserId);
     if (!loggedInUser) {
@@ -65,6 +58,58 @@ router.put('/updateUserInfo', async (req, res) => {
 });
 
 
+
+// update User
+router.put('/updateUserInfo', authorization, async (req, res) => {
+    const UserId = req.userId;
+    const {
+        profilePic,
+        livesIn,
+        city,
+        State,
+        country,
+        highSchool,
+        college,
+        relationShipStatus,
+        hobbies,
+        likes,
+        dislikes,
+        bio } = req.body;
+    const loggedInUser = await userModel.findById(UserId);
+    if (!loggedInUser) {
+        res.status(400).send("No User found to update");
+    }
+    try {
+        let profilePicture
+        profilePic && profilePic.map((item) => {
+            profilePicture = item;
+        });
+        const updateUserInfo = await userModel.findByIdAndUpdate(UserId, {
+            profilePic: profilePicture,
+            livesIn: livesIn,
+            city: city,
+            state: State,
+            country: country,
+            highSchool: highSchool,
+            college: college,
+            relationShipStatus: relationShipStatus,
+            hobbies: hobbies,
+            likes: likes,
+            dislikes: dislikes,
+            bio: bio,
+        })
+        const updatedUser = await updateUserInfo.save();
+        // await monitorRequests(userModel);
+        console.log(updatedUser)
+        return res.status(201).send(updatedUser);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send('Internal Server Error')
+
+    }
+});
+
+
 //create User
 router.post('/createUser', async (req, res) => {
     const { fname, mName, Lname, email, phone, gender, dob, password } = req.body
@@ -82,9 +127,10 @@ router.post('/createUser', async (req, res) => {
             DateOfBirth: dob,
             password: hashPassword
         });
-        user.save()
+        await user.save()
         const token = creatToken(user._id);
-        res.cookie("jwt", token, { httpOnly: false, maxAge: maxAge * 1000 })
+        console.log('token', token)
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
         const response = {
             success: true,
             message: "account creation successfull",
@@ -161,7 +207,7 @@ router.post('/login', async (req, res) => {
 
             // Set JWT token in cookie
             res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-
+            SendFriendRequestNotification(existingUser._id);
             // Send response
             return res.status(200).send({
                 success: true,

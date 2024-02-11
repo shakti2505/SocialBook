@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react';
 import { useNavigate } from "react-router-dom"
+import UserDataContext from '../Context/UserContext.js';
 
 const LeftBar = (props) => {
     const navitage = useNavigate()
+    const {loggedInUser} = useContext(UserDataContext)
 
     // const ShowScroller = () =>{
     //         let scrollbar = document.getElementById('left-container')
@@ -18,8 +20,8 @@ const LeftBar = (props) => {
                 <div>
                     <div>
                         <button className='btn btn-light w-100 d-flex justify-content-start' onClick={()=>navitage('/profile')}>
-                            <img src={props.UserProfilePicture} alt='img' width='30' height='30' style={{ borderRadius: "100px" }} />
-                            <h6 className='mt-1 mx-2'>Sunny Kashyap</h6>
+                            <img src={loggedInUser.profilePic} alt='img' width='30' height='30' style={{ borderRadius: "100px" }} />
+                            <h6 className='mt-1 mx-2'>{loggedInUser.firstName} {loggedInUser.LastName}</h6>
                         </button>
                     </div>
                     <div>

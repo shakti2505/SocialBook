@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import Nav from 'react-bootstrap/Nav';
 import Navbars from '../Navbar';
 import { useNavigate } from "react-router-dom"
@@ -7,13 +7,21 @@ import Card from 'react-bootstrap/Card';
 import axios from 'axios';
 import BASE_URL_API from '../utilities/baseURL.js';
 import { apiVariables } from '../utilities/apiVariables.js';
+import UserDataContext from '../Context/UserContext.js';
+// import LoadingSpinner from './LoadingSpinner.js'
+import Spinner from 'react-bootstrap/Spinner';
+
 const FriendsListpage = () => {
+  const { loggedInUser } = useContext(UserDataContext);
+  const [isLoading, setisLoading] = useState(false);
   const [pendingRequest, setPendingRequest] = useState([])
   const [allUsers, setAllUsers] = useState([])
-
+  const [isfriendRequestSend, setIsfriendRequestsend] = useState(false)
+  const [requestData, setRequestData] = useState({})
   const navigate = useNavigate()
 
   const getPendingFriendRequests = async (apivar) => {
+    setisLoading(true)
     const apicall = await axios.get(`${BASE_URL_API}${apivar}`, {
       withCredentials: 'include',
       headers: {
@@ -24,13 +32,15 @@ const FriendsListpage = () => {
 
     })
     if (apicall.status !== 200) {
-      console.log('Internal Error')
+      console.log('Internal Error');
     } else {
-      setPendingRequest(apicall.data)
+      setPendingRequest(apicall.data);
+      setisLoading(false);
     }
   }
 
   const getPeopleYouMayKnow = async (apivar) => {
+    setisLoading(true)
     const apicall = await axios.get(`${BASE_URL_API}${apivar}`, {
       withCredentials: 'include',
       headers: {
@@ -41,22 +51,23 @@ const FriendsListpage = () => {
 
     })
     if (apicall.status !== 200) {
-      console.log('Internal Error')
+      console.log('Internal Error');
     } else {
-      setAllUsers(apicall.data)
+      setAllUsers(apicall.data);
+      setisLoading(false);
     }
   }
 
-  const addFriend = async (firstName, lastName, requestreceiver, displayPicture) => {
+  const addFriend = async (requestreceiver) => {
     const apicall = await axios.post(BASE_URL_API + apiVariables.sendFriendRequest.url,
       {
         friendRequestStatus: 'pending',
         requestReceiverId: requestreceiver,
-        username: firstName + lastName,
-        userDisplayPicture: displayPicture
+        username: loggedInUser.firstName + ' ' + loggedInUser.LastName,
+        userDisplayPicture: loggedInUser.profilePic
       },
       {
-        withCredentials: 'include',
+        withCredentials: "include",
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
@@ -65,8 +76,12 @@ const FriendsListpage = () => {
 
       }
     );
-    const result = await apicall.data
-    console.log('result', result)
+    if (apicall.status !== 201) {
+      throw new Error("Error in while Creating request")
+    } else {
+      setRequestData(apicall.data.sentrequest)
+      setIsfriendRequestsend(true);
+    }
   }
 
 
@@ -80,7 +95,6 @@ const FriendsListpage = () => {
     <>
 
       <Navbars />
-
       <div className='container-fluid'>
         <div className='row'>
           <div className='col-lg-3 col-md-12'>
@@ -112,56 +126,78 @@ const FriendsListpage = () => {
 
             </Nav>
           </div>
-          <div className='col-lg-8 col-md-12 m-4'>
-            <h4 className='fw-bold'>Friend request</h4>
-            <div className='d-flex justify-content-start flex-wrap' >
-              {
-                pendingRequest.length !== 0 && pendingRequest.map((item, index) => {
-                  return (
-                    <>
-                      <Card style={{ width: '16rem', height: '25rem', boxShadow: "rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px" }}>
-                        <Card.Img src={item.frientRequestSenderDP} width="100%" height="50%" />
-                        <Card.Body>
-                          <Card.Title>{item.frientRequestSenderName}</Card.Title>
-                          <Card.Text>
-                            9 Mutual Friends
-                          </Card.Text>
+          {isLoading ?
+            <>
+              <div className='d-flex justify-content-center align-items-center'>
+                <Spinner className='text-center' animation="border" variant="primary" />
 
-                          <Button size='md' variant="primary" className='w-100'>Confirm </Button>
-                          <Button size='md' variant="light" className='w-100 mt-1'>Delete</Button>
-                        </Card.Body>
-                      </Card>
-                    </>
-                  );
-                })
-              }
+              </div>
+            </>
+            :
+            <div className='col-lg-8 col-md-12 m-4'>
+              <h4 className='fw-bold'>Friend request</h4>
+              <div className='d-flex justify-content-start flex-wrap mx-2' >
+                {
+                  pendingRequest.length !== 0 && pendingRequest.map((item, index) => {
+                    return (
+                      <>
+                        <div key={index} className='mx-2 mt-2' >
+                          <Card style={{ width: '16rem', height: '25rem' }}>
+                            {
+                              isLoading ?
+                                <Spinner animation="grow" variant="primary" />
+                            :
+                            <Card.Img src={item.senderProfilePicture} style={{ objectFit: "cover" }} width="100%" height="50%" />
+                            }
+                            <Card.Body>
+                              <Card.Title>{item.senderName}</Card.Title>
+                              <Card.Text>
+                                9 Mutual Friends
+                              </Card.Text>
+                              <Button size='md' variant="primary" className='w-100'>Confirm </Button>
+                              <Button size='md' variant="light" className='w-100 mt-1'>Delete</Button>
+                            </Card.Body>
+                          </Card>
+                        </div>
+                      </>
+                    );
+                  })
+                }
+              </div >
+
+              <hr />
+              <h4 className='fw-bold mx-2'>People you may know</h4>
+              <div className='d-flex justify-content-start flex-wrap' >
+                {allUsers.length !== 0 &&
+                  allUsers.map((item, index) => {
+                    return (
+                      <div key={index} className='mx-2 mt-2' >
+                        <Card style={{ width: '16rem', height: '25rem' }} >
+                          {
+                            isLoading ? <Spinner animation="grow" variant="primary" />
+                              :
+                              <Card.Img src={item.profilePic} width="100%" height="50%" style={{ objectFit: "cover" }} />
+                          }
+                          <Card.Body>
+                            <Card.Title>{item.firstName} {item.LastName}</Card.Title>
+                            <Card.Text>
+                              9 Mutual Friends
+                            </Card.Text>
+                            <Button size='md' disabled={(isfriendRequestSend && requestData.requestReceiverID === item._id) ? true : false} variant="primary" onClick={() => addFriend(item._id)} className='w-100'>{(isfriendRequestSend && requestData.requestReceiverID === item._id) ? 'Request Sent' : 'Add friend'}</Button>
+                            {
+                              !isfriendRequestSend && <Button size='md' variant="light" className='w-100 mt-1'>Remove</Button>
+
+                            }
+                          </Card.Body>
+                        </Card>
+                      </div>
+                    );
+                  })
+                }
+              </div>
+
             </div>
-
-            <hr />
-            <h4 className='fw-bold'>People you may know</h4>
-            <div className='d-flex justify-content-start flex-wrap' >
-              {allUsers.length !== 0 &&
-                allUsers.map((item, index) => {
-                  return (
-                    <div key={index} className='mx-2 mt-2' >
-                      <Card style={{ width: '16rem', height: '25rem', boxShadow: "rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px" }} >
-                        <Card.Img src={item.profilePic} width="100%" height="50%" style={{objectFit:"cover"}} />
-                        <Card.Body>
-                          <Card.Title>{item.firstName} {item.LastName}</Card.Title>
-                          <Card.Text>
-                            9 Mutual Friends
-                          </Card.Text>
-                          <Button size='md' variant="primary" onClick={() => addFriend(item.firstname, item.lastname, item.User_id, item.displayPicture)} className='w-100'>Add Friend </Button>
-                          <Button size='md' variant="light" className='w-100 mt-1'>Remove</Button>
-                        </Card.Body>
-                      </Card>
-                    </div>
-                  );
-                })
-              }
-            </div>
-
-          </div>
+          }
         </div>
       </div>
 

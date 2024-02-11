@@ -1,23 +1,30 @@
 import BASE_URL_API from "./utilities/baseURL";
+import axios from 'axios';
+
 const swDev = async () => {
     try {
-        let url = 'http://localhost:3000/sw.js'
+        let url = `${BASE_URL_API}/sw.js`
         const register = await navigator.serviceWorker.register(url);
         console.log('register', register)
         const subscription = await register.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: process.env.REACT_APP_PUBLIC_VAPID_KEY,
         });
-        const response = await fetch("http://localhost:4600/subscribe", {
-            method: "POST",
-            body: JSON.stringify(subscription),
-            headers: {
-                "Content-Type": "application/json",
+        const response = await axios.post("http://localhost:4600/services/subscribe-for-push-notification", JSON.stringify({ subscription }),
+            {
+                withCredentials: 'include',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true
+                }
             }
-        });
+        );
 
-        if (!response.ok) {
+        if (!response.status==200) {
             throw new Error('Failed to subscribe to push notifications');
+        }else{
+            return response.data.sub
         }
     } catch (error) {
         console.error('Error subscribing to push notifications:', error);

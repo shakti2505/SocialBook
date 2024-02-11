@@ -6,7 +6,20 @@ import BASE_URL_API from "../utilities/baseURL.js";
 import { useNavigate } from "react-router-dom"
 
 const UserState = (props) => {
-    const [loggedInUser, setLoggedInUser] = useState({})
+    const [loggedInUser, setLoggedInUser] = useState({});
+    const [posts, setposts] = useState([]);
+    const [modalShow, setModalShow] = useState(false);
+
+    const OpenPostModal = () => {
+      setModalShow(true)
+    }
+  
+    const ClosePostModal = ()=>{
+      setModalShow(false)
+    }
+  
+
+
     const navigate = useNavigate()
 
     const getLoggedInUserData =  () => {
@@ -31,12 +44,33 @@ const UserState = (props) => {
        
     }
 
+    const getPosts = () => {
+        axios.get(BASE_URL_API + apiVariables.getPosts.url, {
+          withCredentials: 'include',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true
+          }
+        })
+          .then((response) => {
+            if (response.status!==200) {
+            } else {
+              setposts(response.data)
+            }
+          }).catch((err) => {
+            console.log(err)
+          })
+      }
+    
+
     useEffect(() => {
         getLoggedInUserData();
+        getPosts();
     }, []);
 
     return (
-        <UserContext.Provider value={loggedInUser}>
+        <UserContext.Provider value={{loggedInUser, posts, OpenPostModal, ClosePostModal, modalShow}}>
             {props.children}
         </UserContext.Provider>
     )

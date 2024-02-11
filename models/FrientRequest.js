@@ -15,6 +15,12 @@ const FrientRequests = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: userModel,
         required: true
+    },
+    senderProfilePicture:{
+        type:String
+    },
+    senderName:{
+        type:String
     }
 },
     {
@@ -22,4 +28,5 @@ const FrientRequests = new mongoose.Schema({
     });
 
 const friendRequestModal = mongoose.model('Frient Requests', FrientRequests)
+
 export default friendRequestModal;
