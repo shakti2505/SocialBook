@@ -248,7 +248,7 @@ const NavbarDropdown = () => {
                     <Button id='btnNav' variant='outline-light' size='sm' className='d-flex mx-1'>
                         <svg xmlns="http://www.w3.org/2000/svg" height="1.3rem" width="1.3rem" viewBox="0 0 448 512"><path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
                         </svg>
-                        <small style={{ color: "red" }}>{notificationCount!==0 ? notificationCount : '' }</small>
+                        <small style={{ color: "red" }}>{notificationCount !== 0 ? notificationCount : ''}</small>
                     </Button>
                 </OverlayTrigger>
                 <OverlayTrigger
@@ -262,11 +262,18 @@ const NavbarDropdown = () => {
                         <Dropdown.Toggle variant='outline-light' size='sm' id="dropdown-basic">
                             <img className='profilePic' alt='' src={loggedInUser.profilePic} />
                         </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
+                        <Dropdown.Menu className='shadow-lg'>
+                            <div className='shadow-md rounded-md mx-2 mt-2' style={{ width: "18rem"  }}>
+                                <div className='d-flex justify-content-betweem align-items-center mx-2'  style={{ cursor: "pointer" }}>
+                                    <img style={{borderRadius:"50%"}} height="32px" width="32px"  className='mx-2 mt-2'  alt='' src={loggedInUser.profilePic} />
+                                    {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="1.5rem" height="1.5rem"><path d="M320 32c0-9.9-4.5-19.2-12.3-25.2S289.8-1.4 280.2 1l-179.9 45C79 51.3 64 70.5 64 92.5V448H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H96 288h32V480 32zM256 256c0 17.7-10.7 32-24 32s-24-14.3-24-32s10.7-32 24-32s24 14.3 24 32zm96-128h96V480c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H512V128c0-35.3-28.7-64-64-64H352v64z"/></svg> */}
+                                    <h6 className='mt-3 mx-1'><strong>{loggedInUser.firstName} {loggedInUser.LastName}</strong></h6>
+                                </div>
+                                <hr className='mx-2'/>
+                                <a href="" className='text-decoration-none mx-2'>See all profiles</a>
+                            </div>
+                            <Dropdown.Item onClick={() => navigate('/profile')}>Profile</Dropdown.Item>
                             <Dropdown.Item onClick={logoutUSer}>Logout</Dropdown.Item>
-                            <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                            <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                     {/* </Button> */}

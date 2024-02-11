@@ -5,9 +5,15 @@ body {
   margin: 0;
   padding: 0;
   background-color: #efefef;
+  color: red;
 }
 * {
   box-sizing: border-box;
+  /* font-family: 'Lato', sans-serif; */
+  font-family: 'Montserrat', sans-serif;
+  color: black;
+  /* font-size: 0.8rem; */
+
 }
 
 .App {

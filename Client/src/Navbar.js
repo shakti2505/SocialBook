@@ -9,7 +9,9 @@ import { apiVariables } from './utilities/apiVariables.js';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import UserDataContext from './Context/UserContext.js';
+import { useNavigate } from "react-router-dom"
 const Navbars = () => {
+  const navigate = useNavigate()
 
   const { loggedInUser } = useContext(UserDataContext)
   const [show, setShow] = useState(false);
@@ -101,7 +103,7 @@ const Navbars = () => {
       {/* <div className='container w-100'> */}
       <nav className='navbar navbar-expand-lg bg-body-tertiary sticky-top d-flex justify-content-between align-items-center' >
         <div className='searchLarge' id=''>
-          <img id='logoNew' src={logo} height="32px" width="32px" alt='Social Book' />
+          <img id='logoNew' src={logo} height="32px" width="32px" alt='Social Book' onClick={()=>navigate('/profile')}/>
           <div className='d-flex mt-1 mx-1'>
             <Dropdown role='search' id='#UserSearch'>
               <Dropdown.Toggle className='btn btn-light mx-2' size='md' id="dropdown-basic" >
