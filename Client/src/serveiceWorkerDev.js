@@ -12,7 +12,7 @@ const swDev = async () => {
             userVisibleOnly: true,
             applicationServerKey: process.env.REACT_APP_PUBLIC_VAPID_KEY,
         });
-        const response = await axios.post("http://localhost:4600/services/subscribe-for-push-notification", JSON.stringify({ subscription }),
+        const response = await axios.post(`${BASE_URL_API}/services/subscribe-for-push-notification`, JSON.stringify({ subscription }),
             {
                 withCredentials: 'include',
                 headers: {
