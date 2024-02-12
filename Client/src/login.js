@@ -21,8 +21,6 @@ const Login = () => {
         phone: ""
     });
 
-    // const [LoginUserData, setLoginUserData] = useState({})
-
     const [isError, setIserror] = useState(false)
     const [error, setError] = useState("")
 
@@ -51,6 +49,7 @@ const Login = () => {
         if(result.data.message=='User not found'){
             setError(result.data.message);
         }else{
+            localStorage.setItem('user', result.data.loggedInUser.email)
             navitage('/home');
 
         }

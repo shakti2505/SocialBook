@@ -19,7 +19,6 @@ const Navbars = () => {
   const [openSearchModal, setOpenSearchModal] = useState(false)
   const [searchUser, setSearchUser] = useState('');
   
-
   const searchPotentialConnetion = async (apivar) => {
     if (searchUser.length !== 0) {
       const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {

@@ -17,8 +17,6 @@ const UserState = (props) => {
     const ClosePostModal = ()=>{
       setModalShow(false)
     }
-  
-
 
     const navigate = useNavigate()
 

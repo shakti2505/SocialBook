@@ -200,7 +200,7 @@ router.post('/login', async (req, res) => {
 
         if (passMatch) {
             // Destructure existingUser for simplicity
-            const { firstName, lastName, DateOfBirth } = existingUser;
+            const { firstName, lastName, DateOfBirth, email } = existingUser;
 
             // Create token
             const token = creatToken(existingUser._id);
@@ -215,7 +215,8 @@ router.post('/login', async (req, res) => {
                 loggedInUser: {
                     firstName,
                     lastName,
-                    DateOfBirth
+                    DateOfBirth,
+                    email
                 }
             });
         } else {

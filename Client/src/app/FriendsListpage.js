@@ -94,7 +94,7 @@ const FriendsListpage = () => {
   return (
     <>
 
-      <Navbars />
+      {/* <Navbars /> */}
       <div className='container-fluid'>
         <div className='row'>
           <div className='col-lg-3 col-md-12'>

@@ -61,7 +61,8 @@ const NavbarDropdown = () => {
             })
         apicall.then((response) => {
             if (response.data.message !== 'Internal Server Error') {
-                navigate('/')
+                localStorage.removeItem('user')
+                navigate('/login')
             } else {
                 console.log(response.data.message)
             }

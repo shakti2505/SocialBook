@@ -126,7 +126,7 @@ const ProfilePage = () => {
   return (
     <>
       {/* style={{ backgroundColor: '#FFFFFF', boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }} */}
-      <Navbars />
+      {/* <Navbars /> */}
       <section className="mb-4" >
         <div className="container">
           {/* image section           */}

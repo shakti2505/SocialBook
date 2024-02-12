@@ -35,23 +35,7 @@ const HomePage = () => {
 
   const handleClose = () => setOpenSubscriptionModal(false);
   const handleShow = () => setOpenSubscriptionModal(true);
-  // const OpenPostModal = () => {
-  //   setModalShow(true)
-  // }
 
-  // const ClosePostModal = ()=>{
-  //   setModalShow(false)
-  // }
-
-  // const OpenPostAudienceModal = () => {
-  //   setPostAudienceModalShow(true)
-  //   setModalShow(false)
-  // }
-
-  // const BackToPostModal = () => {
-  //   setPostAudienceModalShow(false)
-  //   setModalShow(true)
-  // }
 
   const handlePostImagesPreview = (e) => {
     const selectedImages = Array.from(e.target.files);
@@ -117,25 +101,25 @@ const HomePage = () => {
 
   // }
 
-  const getPosts = () => {
-    axios.get(BASE_URL_API + apiVariables.getPosts.url, {
-      withCredentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Credentials': true
-      }
-    })
-      .then((response) => {
-        if (response.data.message == 'no post found!') {
-          console.log(response.data.message)
-        } else {
-          setposts(response.data.posts)
-        }
-      }).catch((err) => {
-        console.log(err)
-      })
-  }
+  // const getPosts = () => {
+  //   axios.get(BASE_URL_API + apiVariables.getPosts.url, {
+  //     withCredentials: 'include',
+  //     headers: {
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json',
+  //       'Access-Control-Allow-Credentials': true
+  //     }
+  //   })
+  //     .then((response) => {
+  //       if (response.data.message == 'no post found!') {
+  //         console.log(response.data.message)
+  //       } else {
+  //         setposts(response.data.posts)
+  //       }
+  //     }).catch((err) => {
+  //       console.log(err)
+  //     })
+  // }
 
 
   const handleSubscribe = async () => {
@@ -155,13 +139,10 @@ const HomePage = () => {
 
   ]
 
-  useEffect(() => {
-    getPosts()
-  }, [])
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className='d-flex'>
         <LeftBar UserProfilePicture={'convertedProfilePicture'} />
         <div className='col-5 offset-1' id='middleBar' style={{ overflowY: 'hidden' }}>
