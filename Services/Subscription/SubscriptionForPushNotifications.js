@@ -6,6 +6,7 @@ const router = express.Router()
 router.post('/subscribe-for-push-notification', authorization, async (req, res) => {
     try {
         const { subscription } = req.body
+        console.log(subscription)
         const UserId = req.userId;
         if (!subscription.endpoint || !subscription.keys) {
             return res.status(401).json({ messgae: 'All fields are mandatory' });

@@ -21,7 +21,6 @@ const monitorRequests = async (collection, message = "Chnage streams starts") =>
     console.log(message);
     changeStreams.on('change', async (next) => {
         const { fullDocument } = next
-        console.log(fullDocument);
         if (fullDocument) {
             const requestReceiver = await userModel.findById(fullDocument.requestReceiverID);
             const subscription = await SubscriptionModel.find({ user: fullDocument.requestReceiverID });
@@ -29,9 +28,9 @@ const monitorRequests = async (collection, message = "Chnage streams starts") =>
                 const newFriendRqstNoti = new FriendRequestNotificationsModal({
                         friendRequestID:fullDocument._id,
                         userID:fullDocument.requestReceiverID,
-                        requestSenderName:senderName,
-                        requestSenderDP:senderProfilePicture,
-                        frientRequestStatus:frientRequestStatus
+                        requestSenderName:fullDocument.senderName,
+                        requestSenderDP:fullDocument.senderProfilePicture,
+                        frientRequestStatus:fullDocument.frientRequestStatus
                 });
                 await newFriendRqstNoti.save();
             }else{

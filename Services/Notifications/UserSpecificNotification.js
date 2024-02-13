@@ -8,9 +8,7 @@ import userModel from '../../models/user.js'
 
 export const SendFriendRequestNotification = async (UserID) => {
     const Usersubscription = await SubscriptionModel.find({ user: UserID });
-    console.log('Usersubscription', Usersubscription)
     const notificaiton = await FriendRequestNotificationsModal.find({ userID: UserID });
-    console.log('notificaiton', notificaiton);
     if (!Usersubscription || !notificaiton) {
         console.log("Subscription or notification is not found! ")
     }
@@ -38,9 +36,9 @@ export const SendFriendRequestNotification = async (UserID) => {
         });
         const requestSender = await friendRequestModal.findById(notificaiton[0].friendRequestID);
         const payload = JSON.stringify({
-            title: "Friend request",
+            title: "Socialbook",
             body: {
-                Name: requestSender.senderName,
+                Name: `${requestSender.senderName} sent you a friend request`,
             },
             profilePic: requestSender.senderProfilePicture
         });
@@ -48,12 +46,11 @@ export const SendFriendRequestNotification = async (UserID) => {
         const noti = await webpush.sendNotification(
             sub,
             payload,
-            options
+            options,
         );
-        console.log('user specific noti', noti);
     } catch (error) {
         console.log('error in sending notificatioin to specific user', error)
     }
 
-}   
+}
 

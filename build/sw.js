@@ -1,4 +1,4 @@
-
+import logo from '../src/images/logo/logo.png'
 
 // this.addEventListener('push', (event)=>{
 //     const data = event.data.json(); // Parse the push notification data
@@ -18,7 +18,7 @@
 
 this.addEventListener('push', (event) => {
     const data = event.data.json(); // Parse the push notification data
-
+    console.log(data)
     // Fetch the image and convert it to a data URL
     fetch(data.profilePic)
         .then(response => response.blob())
@@ -29,8 +29,9 @@ this.addEventListener('push', (event) => {
                 event.waitUntil(
                     this.registration.showNotification(data.title, {
                         body: data.body.Name,
-                        image: imageBase64, // Use the data URL of the image
-                        vibrate: [200, 100, 200, 100, 200, 100, 200], // Vibration pattern
+                        icon:'../src/images/logo/logo.png',
+                        image: imageBase64,
+                        vibrate: [200],
                     })
                 );
             };

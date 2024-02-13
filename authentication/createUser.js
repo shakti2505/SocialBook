@@ -130,7 +130,6 @@ router.post('/createUser', async (req, res) => {
         });
         await user.save()
         const token = creatToken(user._id);
-        console.log('token', token)
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
         const response = {
             success: true,
@@ -210,9 +209,8 @@ router.post('/login', async (req, res) => {
             // Set JWT token in cookie
             res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
             if (notification.length !== 0) {
-                SendFriendRequestNotification(existingUser._id);
+               SendFriendRequestNotification(existingUser._id);
             }
-            // Send response
             return res.status(200).send({
                 success: true,
                 message: "Login successful!",

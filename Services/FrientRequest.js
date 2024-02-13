@@ -124,10 +124,7 @@ router.get('/all_users', authorization, async (req, res) => {
 //getFriend request Notification'
 router.get('/get_notification_count', authorization, async (req, res)=>{
     const UserId = req.userId
-    // const {UserId} = req.body
-    console.log(UserId)
     const noti = await FriendRequestNotificationsModal.find({userID:UserId});
-    console.log(noti)
     if(!noti){
         return res.status(401).send({message:"No logged in user found"});
     } 
