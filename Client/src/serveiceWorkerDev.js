@@ -5,7 +5,7 @@ const swDev = async () => {
     try {
         let BASE_URL = 'https://socialbook-x3jq.onrender.com'
         // let BASE_URL = 'http://localhost:3000'
-        console.log('BASE_URL_API',BASE_URL_API);
+        console.log('BASE_URL_API',BASE_URL);
         let url = `${BASE_URL}/sw.js`
         const register = await navigator.serviceWorker.register(url);
         console.log('register', register)

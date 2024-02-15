@@ -71,16 +71,20 @@ router.get('/get_received_friendRequests', authorization, async (req, res) => {
 });
 
 //action of frient request
-
 router.post('/accept_reject_friend_request', authorization, async (req, res) => {
     try {
         let status = ['pending', 'rejected', 'accepted']
         const UserId = req.userId;
-        const { frientRequestID, frientRequestStatus, friendName, FriendDp } = req.body
+        const {
+            frientRequestID,
+            frientRequestStatus,
+            requestSenderName, requestSenderDp,
+            notification_id
+        } = req.body;
         const loggedInUser = await userModel.findById(UserId);
         const pending_friend_request = await friendRequestModal.findById(frientRequestID);
         if (!pending_friend_request || !loggedInUser || !status.includes(frientRequestStatus)) {
-            res.status(404).send({ message: "Please send all fields" });
+            return res.status(404).send({ message: "Please send all fields" });
         }
         if (frientRequestStatus === 'accepted' && pending_friend_request.frientRequestStatus === 'pending') {
             // const acceptedFriendRequest = await friendRequestModal.findByIdAndUpdate(frientRequestID,
@@ -88,19 +92,20 @@ router.post('/accept_reject_friend_request', authorization, async (req, res) => 
             //adding sender in the frientlist of receiver's
             const newlyAddedFriendDoc = new UserFriendList({
                 user: pending_friend_request.requestReceiverID,
-                friendID: pending_friend_request.frientRequestsenderID,
-                friendName: friendName,
-                FriendDp: FriendDp
+                friend_ID: pending_friend_request.frientRequestsenderID,
+                friendName: requestSenderName,
+                friend_dp: requestSenderDp
             });
             const newlyAddedfriend = await newlyAddedFriendDoc.save();
             const acceptedFriendRequest = await friendRequestModal.findByIdAndRemove(frientRequestID);
-            res.status(200).send({ newlyAddedfriend, acceptedFriendRequest });
+            await FriendRequestNotificationsModal.findByIdAndRemove(notification_id);
+            return res.status(200).send({ newlyAddedfriend, acceptedFriendRequest });
         }
         else {
-            res.send({ message: "request already accepted" });
+            return res.status(422).send({ message: "request already accepted" });
         }
     } catch (error) {
-        res.status(500).send({ error });
+        return res.status(500).send("Internal server Error");
 
     }
 
@@ -122,19 +127,18 @@ router.get('/all_users', authorization, async (req, res) => {
 });
 
 //getFriend request Notification'
-router.get('/get_notification_count', authorization, async (req, res)=>{
+router.get('/get_notification_count', authorization, async (req, res) => {
     const UserId = req.userId
-    const noti = await FriendRequestNotificationsModal.find({userID:UserId});
-    if(!noti){
-        return res.status(401).send({message:"No logged in user found"});
-    } 
-    try {
-        res.status(200).send({notificationCount:noti.length});
-    } catch (error) {
-        return res.status(500).send({message:"Internal server error"})
+    const noti = await FriendRequestNotificationsModal.find({ userID: UserId });
+    if (!noti) {
+        return res.status(401).send({ message: "No logged in user found" });
     }
+    try {
+        res.status(200).send({ notificationCount: noti.length, noti });
+    } catch (error) {
+        return res.status(500).send({ message: "Internal server error" })
+    }
+});
 
-
-})
 
 export default router;

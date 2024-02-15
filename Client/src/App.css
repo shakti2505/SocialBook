@@ -12,7 +12,7 @@ body {
   /* font-family: 'Lato', sans-serif; */
   font-family: 'Montserrat', sans-serif;
   color: black;
-  /* font-size: 0.8rem; */
+  font-size: small;
 
 }
 
@@ -639,9 +639,8 @@ body {
 .chat-window {
   display: none;
   position: absolute;
-  top: 75px; /* Adjust as needed */
+  top: 75px; 
   right: 0;
-  width: 700px; /* Adjust width as needed */
   background-color: #fff;
   border: 1px solid #ccc;
   padding: 10px;
@@ -681,8 +680,24 @@ body {
 }
 
 #btnNav {
-  background-color: #f0f2f5;
+  background-color: #E4E6EB;
   border-radius: 50%;
+}
+.noti_bell::before{
+  content: attr(data-count);
+  position: absolute;
+  top: 3px;
+  right:60px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 17px;
+  height: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+line-height: 20px;
+box-shadow: 0 0 5px #000;
 }
 #searchbtn {
   border-radius: 50%;
@@ -690,3 +705,38 @@ body {
   width: 40px;
   background: #f0f2f5;
 }
+.notification-card{
+  display: block;
+  position: absolute;
+  top: 4rem;
+  right: 1rem;
+  width: 27rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  max-height: 35rem; 
+  overflow-y: auto; 
+}
+#noti-btn{
+  background: #FFFFFF;
+  border: none;
+  border-radius: 50px;
+}
+#noti-btn:active {
+  background: #EBF5FF;
+  border: none;
+  color: #0866FF;
+
+}
+#noti-btn:focus {
+  background: #EBF5FF;
+  border: none;
+  color: #0866FF;
+
+}
+#noti-btn:hover{
+  background: #F0F2F5;
+}
+
+

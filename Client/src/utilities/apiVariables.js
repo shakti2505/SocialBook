@@ -46,6 +46,8 @@ uploadDP:{
 },
 get_notification_count:{
   url:"/services/get_notification_count"
-}
+},
+action_friend_request:{
+  url:"/services/accept_reject_friend_request"}
 }
 

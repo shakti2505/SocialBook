@@ -42,12 +42,12 @@ export const SendFriendRequestNotification = async (UserID) => {
             },
             profilePic: requestSender.senderProfilePicture
         });
-        console.log('payload', payload);
         const noti = await webpush.sendNotification(
             sub,
             payload,
             options,
         );
+        console.log('noti', noti)
     } catch (error) {
         console.log('error in sending notificatioin to specific user', error)
     }

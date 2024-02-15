@@ -1,4 +1,3 @@
-import logo from '../src/images/logo/logo.png'
 
 // this.addEventListener('push', (event)=>{
 //     const data = event.data.json(); // Parse the push notification data

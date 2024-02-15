@@ -2,10 +2,17 @@ import mongoose from "mongoose";
 import userModel from "../models/user.js";
 
 const FriendList = new mongoose.Schema({
-    friendsList: {
-        type: [],
+    friend_ID: {
+        type: String,
         required: true
 
+    },
+    friendName:{
+        type:String,
+        required:true
+    },
+    friend_dp:{
+        type:String,
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
