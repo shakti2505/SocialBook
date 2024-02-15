@@ -11,6 +11,7 @@ import friendRequestModal from '../models/FrientRequest.js';
 import postModel from '../models/Post.js';
 import { SendFriendRequestNotification } from '../Services/Notifications/UserSpecificNotification.js';
 import FriendRequestNotificationsModal from '../models/Notifications/FriendRequestNotificaitons.js';
+import SubscriptionModel from '../models/SubscriptionSchema.js';
 
 const router = express.Router()
 const storage = multer.memoryStorage();
@@ -198,6 +199,7 @@ router.post('/login', async (req, res) => {
         // Compare passwords
         const passMatch = await bcrypt.compare(password, existingUser.password);
         const notification = await FriendRequestNotificationsModal.find({ userID: existingUser._id });
+        const subscription = await SubscriptionModel.find({user:existingUser._id})
 
         if (passMatch) {
             // Destructure existingUser for simplicity
@@ -208,7 +210,7 @@ router.post('/login', async (req, res) => {
 
             // Set JWT token in cookie
             res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-            if (notification.length !== 0) {
+            if (notification.length !== 0 && subscription.length!==0) {
                SendFriendRequestNotification(existingUser._id);
             }
             return res.status(200).send({
