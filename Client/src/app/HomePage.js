@@ -187,7 +187,7 @@ const HomePage = () => {
                   </div>
                 </div>
               </div> */}
-            <div className='card mt-3 w-100 shadow-sm'>
+            <div className='card mt-3 mx-5 shadow-sm'>
               <div className='card-body'>
                 <div className="d-flex">
                   <a href='/profile'>

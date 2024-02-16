@@ -54,7 +54,7 @@ router.get('/get-Post', authorization, async (req, res) => {
         const page = parseInt(req.query.page);
         const pageSize = parseInt(req.query.pageSize);
         const skip = (page - 1) * pageSize;
-        const total = await postModel.countDocuments();
+        const total = await postModel.find({ users: UserId }).countDocuments;
         const posts = await postModel.find({ users: UserId }).skip(skip).limit(pageSize);
         return res.status(200).json({
             posts,

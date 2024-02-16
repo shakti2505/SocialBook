@@ -4,6 +4,7 @@ import axios from "axios";
 import { apiVariables } from "../utilities/apiVariables.js";
 import BASE_URL_API from "../utilities/baseURL.js";
 import InfiniteScroll from 'react-infinite-scroll-component';
+import Spinner from 'react-bootstrap/Spinner';
 
 const PostModal = (props) => {
     const [posts, setposts] = useState([]);
@@ -20,7 +21,7 @@ const PostModal = (props) => {
     }
 
     const getPosts = () => {
-        const limit = 5;
+        const limit = 13;
         axios.get(BASE_URL_API + apiVariables.getPosts.url, {
             params: {
                 page: activePage,
@@ -42,16 +43,15 @@ const PostModal = (props) => {
             })
     }
 
-    // useEffect(() => {
-    //     posts.map((item) => {
-    //         setPostUrls(item.postImagesURls)
-    //     }, [posts])
-    // })
-
     useEffect(() => {
         getPosts();
     }, [])
 
+    useEffect(() => {
+        console.log('hasmore', posts.length < totalPosts)
+        console.log('post.lenght', posts.length)
+        console.log('total post', totalPosts)
+    }, [posts.length, totalPosts])
     return (
         <>
             <InfiniteScroll
@@ -59,7 +59,7 @@ const PostModal = (props) => {
                 next={getPosts}
                 hasMore={posts.length < totalPosts}
                 loader={
-                    <h4>...Loading</h4>
+                    <Spinner animation="border" variant="primary" />
                 }
                 endMessage={
                     <p className='text-center mt-1'>
@@ -72,7 +72,7 @@ const PostModal = (props) => {
                     return (
                         // <div key={Math.random() + index} className="d-flex justify-content-center mx-2 mt-2 ">
                         // <div key={Math.random() + index} className='postContainer shadow'>
-                        <div className='card mt-3 w-100 shadow-sm'>
+                        <div className='card mt-3 mx-5 shadow-sm d-flex'>
                             <div className='card-body'>
                                 <div className='d-flex'>
                                     <a href='/profile'>
@@ -84,8 +84,6 @@ const PostModal = (props) => {
                                         <p style={{ fontSize: '0.8rem' }} className='mx-2'>{ConvertDateTime(item.createdAt)}</p>
                                     </div>
                                 </div>
-                                {/* <p className='p-2'>{seeMore ? item.postCaption : `${item.postCaption.substring(0, 250)}`}
-                            </p> */}
                                 <p>{item.postCaption}</p>
                             </div>
                             <div className='d-flex justify-content-between'>
