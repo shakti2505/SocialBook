@@ -1,12 +1,12 @@
 import express from "express";
 import { authorization } from "../../middleware/AuthMiddleware.js";
 import SubscriptionModel from "../../models/SubscriptionSchema.js";
+import userModel from "../../models/user.js";
 const router = express.Router()
 
 router.post('/subscribe-for-push-notification', authorization, async (req, res) => {
     try {
         const { subscription } = req.body
-        console.log(subscription)
         const UserId = req.userId;
         if (!subscription.endpoint || !subscription.keys) {
             return res.status(401).json({ messgae: 'All fields are mandatory' });
@@ -18,6 +18,7 @@ router.post('/subscribe-for-push-notification', authorization, async (req, res) 
             user: UserId,
         });
         await newSubscription.save();
+        await userModel.updateOne({_id:UserId}, {subscription:true});
         return res.status(200).send({ messgae: "Subscribed for Push Notification", sub: newSubscription });
     } catch (error) {
         console.log(error);

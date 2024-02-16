@@ -51,12 +51,17 @@ router.post('/createPost', authorization, async (req, res) => {
 router.get('/get-Post', authorization, async (req, res) => {
     try {
         const UserId = req.userId;
-        const posts = await postModel.find({ users: UserId });
-        if (posts.length > 0) {
-            return res.status(200).json(posts);
-        } else {
-            return res.status(404).send({ message: "no post found!" });
-        }
+        const page = parseInt(req.query.page);
+        const pageSize = parseInt(req.query.pageSize);
+        const skip = (page - 1) * pageSize;
+        const total = await postModel.countDocuments();
+        const posts = await postModel.find({ users: UserId }).skip(skip).limit(pageSize);
+        return res.status(200).json({
+            posts,
+            total,
+            page,   
+            pageSize
+        });
     } catch (error) {
         return res.status(500).send({ message: "Internal Server Error", });
     }

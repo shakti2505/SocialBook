@@ -24,16 +24,16 @@ const monitorRequests = async (collection, message = "Chnage streams starts") =>
         if (fullDocument) {
             const requestReceiver = await userModel.findById(fullDocument.requestReceiverID);
             const subscription = await SubscriptionModel.find({ user: fullDocument.requestReceiverID });
-            if(next.operationType==='insert' && requestReceiver!==undefined){
+            if (next.operationType === 'insert' && requestReceiver !== undefined) {
                 const newFriendRqstNoti = new FriendRequestNotificationsModal({
-                        friendRequestID:fullDocument._id,
-                        userID:fullDocument.requestReceiverID,
-                        requestSenderName:fullDocument.senderName,
-                        requestSenderDP:fullDocument.senderProfilePicture,
-                        frientRequestStatus:fullDocument.frientRequestStatus
+                    friendRequestID: fullDocument._id,
+                    userID: fullDocument.requestReceiverID,
+                    requestSenderName: fullDocument.senderName,
+                    requestSenderDP: fullDocument.senderProfilePicture,
+                    frientRequestStatus: fullDocument.frientRequestStatus
                 });
                 await newFriendRqstNoti.save();
-            }else{
+            } else {
                 console.log('No changes found in the streams')
             }
         }

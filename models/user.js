@@ -72,6 +72,10 @@ const UserSchema = new mongoose.Schema({
     bio:{
         type:String
     },
+    subscription:{
+        type:Boolean,
+        default:false
+    },
     password: {
         type: String,
         minlength: 6,

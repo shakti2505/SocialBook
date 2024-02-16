@@ -123,10 +123,8 @@ const HomePage = () => {
 
 
   const handleSubscribe = async () => {
-    if ('serviceWorker' in navigator) {
-      const subscription=await swDev();
+    const subscription=await swDev();
       setSubscription(subscription);
-    }
   }
 
   const stories = [

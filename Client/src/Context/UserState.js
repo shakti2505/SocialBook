@@ -6,9 +6,12 @@ import BASE_URL_API from "../utilities/baseURL.js";
 import { useNavigate } from "react-router-dom"
 
 const UserState = (props) => {
+    const limit = 5;
     const [loggedInUser, setLoggedInUser] = useState({});
     const [posts, setposts] = useState([]);
     const [modalShow, setModalShow] = useState(false);
+    const [activePage, setActivePage] = useState(1);
+
 
     const OpenPostModal = () => {
       setModalShow(true)
@@ -43,13 +46,15 @@ const UserState = (props) => {
     }
 
     const getPosts = () => {
-        axios.get(BASE_URL_API + apiVariables.getPosts.url, {
+        axios.get(BASE_URL_API + apiVariables.getPosts.url,
+          
+          {
           withCredentials: 'include',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             'Access-Control-Allow-Credentials': true
-          }
+          },  
         })
           .then((response) => {
             if (response.status!==200) {
