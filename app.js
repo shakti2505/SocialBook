@@ -15,6 +15,7 @@ import SubscriptionModel from './models/SubscriptionSchema.js'
 import options from './middleware/PushNotification.js';
 import postModel from './models/Post.js';
 import SubscriptionRoute from './Services/Subscription/SubscriptionForPushNotifications.js'
+import PostCommentsRoutes from './Services/Comments/PostComments.js'
 
 const app = express();
 const PORT = process.env.PORT || 4600
@@ -86,6 +87,7 @@ app.use('/authentication', authenticationRoutes);
 app.use('/services', PostRoutes);
 app.use('/services', FriendRequestRoutes);
 app.use('/services', SubscriptionRoute);
+app.use('/services/Comments', PostCommentsRoutes);
 
 app.get('/*', function (req, res) {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));

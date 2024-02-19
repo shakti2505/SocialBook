@@ -11,9 +11,9 @@ body {
   background-color: #f8f9fa;
 }
 
-.Right-Bar {
+/* .Right-Bar {
   overflow-y: auto;
-}
+} */
 /* #left-container::-webkit-scrollbar{
 width: 0;
 } */
@@ -138,4 +138,9 @@ width: 0;
 
 .postContainer strong{
   font-size: 0.9rem;
+}
+
+.commentInput{
+  outline: none;
+
 }

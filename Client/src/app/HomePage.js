@@ -202,7 +202,7 @@ const HomePage = () => {
 
               </div>
               <hr />
-              <div className='d-flex justify-content-around py-2 px-2'>
+              <div className='d-flex justify-content-around align-items-center px-1 py-1'>
                 <button className="btn btn-light btn-md w-100 py-2 px-2 mx-2">
                   <svg xmlns="http://www.w3.org/2000/svg" height="2rem" width="2rem" viewBox="0 0 576 512"><path fill='#F02849' d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128zM559.1 99.8c10.4 5.6 16.9 16.4 16.9 28.2V384c0 11.8-6.5 22.6-16.9 28.2s-23 5-32.9-1.6l-96-64L416 337.1V320 192 174.9l14.2-9.5 96-64c9.8-6.5 22.4-7.2 32.9-1.6z" /></svg>
                   <small className="text-muted mx-2">Live Video</small></button>

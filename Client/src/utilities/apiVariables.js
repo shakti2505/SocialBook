@@ -1,53 +1,60 @@
 
 export const apiVariables = {
- signup:{
-   url: "/authentication/createUser",
- },
- signin:{
-  url:"/authentication/login"
- },
- uploadDP:{
-  url:"/authentication/upload-dp"
- },
- getLoggedInUserData:{
-  url:"/authentication/getLoggedInUserData"
- },
- logout:{
-  url:"/authentication/logout"
- },
- userProfilePicture:{
-  url:"/authentication/user_profiel_picture"
+  signup: {
+    url: "/authentication/createUser",
+  },
+  signin: {
+    url: "/authentication/login"
+  },
+  uploadDP: {
+    url: "/authentication/upload-dp"
+  },
+  getLoggedInUserData: {
+    url: "/authentication/getLoggedInUserData"
+  },
+  logout: {
+    url: "/authentication/logout"
+  },
+  userProfilePicture: {
+    url: "/authentication/user_profiel_picture"
 
- },
- createPost:{
-  url:"/services/createPost"
- },
- getPosts:{
-  url:"/services/get-Post"
- },
-//  searchPotentialConnetion:{
-//   url:"/services/search_potential_connetion"
-//  },
- searchPotentialConnetion: (username) => ({
-  url: `/services/search_potential_connetion?username=${username}`
-}),
+  },
+  createPost: {
+    url: "/services/createPost"
+  },
+  getPosts: {
+    url: "/services/get-Post"
+  },
+  //  searchPotentialConnetion:{
+  //   url:"/services/search_potential_connetion"
+  //  },
+  searchPotentialConnetion: (username) => ({
+    url: `/services/search_potential_connetion?username=${username}`
+  }),
 
-getPendingFriendRequest:{
-  url:"/services/get_received_friendRequests"
-},
-getAllUsers:{
-  url:"/services/all_users"
-},
-sendFriendRequest:{
-  url:"/services/receieve_friend_requests"
-},
-uploadDP:{
-  url:"/authentication/updateUserInfo"
-},
-get_notification_count:{
-  url:"/services/get_notification_count"
-},
-action_friend_request:{
-  url:"/services/accept_reject_friend_request"}
+  getPendingFriendRequest: {
+    url: "/services/get_received_friendRequests"
+  },
+  getAllUsers: {
+    url: "/services/all_users"
+  },
+  sendFriendRequest: {
+    url: "/services/receieve_friend_requests"
+  },
+  uploadDP: {
+    url: "/authentication/updateUserInfo"
+  },
+  get_notification_count: {
+    url: "/services/get_notification_count"
+  },
+  action_friend_request: {
+    url: "/services/accept_reject_friend_request"
+  },
+  createComments: {
+    url: "/services/Comments/create_comment"
+  }
 }
+
+
+
 
