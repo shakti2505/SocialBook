@@ -45,7 +45,7 @@ const HomePage = () => {
       {/* <Navbar /> */}
       <div className='d-flex'>
         <LeftBar />
-        <div className='col-5 offset-1' id='middleBar' style={{ overflowY: 'hidden' }}>
+        <div className='col-4' id='middleBar' style={{ overflowY: 'hidden' }}>
           {/* stories */}
           <div>
             <div className='d-flex story-container'>

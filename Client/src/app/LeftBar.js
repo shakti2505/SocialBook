@@ -16,7 +16,7 @@ const LeftBar = () => {
     // }
     return (
         <>
-            <div className='col-3 mx-1 mt-3' id='left-container'  >
+            <div className='col-4  mt-3' id='left-container'  >
                 <div>
                     <div>
                         <button className='btn btn-light w-100 d-flex justify-content-start align-items-center' onClick={()=>navitage('/profile')}>
