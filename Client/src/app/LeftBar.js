@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useNavigate } from "react-router-dom"
 import UserDataContext from '../Context/UserContext.js';
 
-const LeftBar = (props) => {
+const LeftBar = () => {
     const navitage = useNavigate()
     const {loggedInUser} = useContext(UserDataContext)
 

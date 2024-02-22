@@ -13,10 +13,13 @@ import axios from 'axios';
 import { apiVariables } from '..//..//..//utilities/apiVariables.js';
 import PostModal from "../../PostModal.js";
 import PostUplaodModal from "../PostUplaodModal.js";
+import Form from 'react-bootstrap/Form';
 
 
 const ProfilePage = () => {
   const [addBio, setAddBio] = useState(false);
+  const [activePage, setActivePage] = useState(1);
+  const [totalPosts, setTotalPost] = useState(0)
   const [bio, setBio] = useState('');
   const [key, setKey] = useState('Posts');
   const [AddprofilePictureModal, setAddprofilePictureModal] = useState(false);
@@ -25,8 +28,9 @@ const ProfilePage = () => {
   const [ShowCancleDpUplpad, setShowCancleDpUplpad] = useState(false)
   const [isloading, setisloading] = useState(false);
   const [postUrl, setPostUrl] = useState([])
-  const { posts } = useContext(UserDataContext);
+  // const { posts } = useContext(UserDataContext);
   const [postCaption, setPostCaption] = useState('')
+  const [posts, setposts] = useState([]);
 
   const { loggedInUser, OpenPostModal, ClosePostModal, modalShow } = useContext(UserDataContext)
 
@@ -55,6 +59,28 @@ const ProfilePage = () => {
     setBio(e.target.value);
   }
 
+  const getPosts = () => {
+    const limit = 13;
+    axios.get(BASE_URL_API + apiVariables.getPosts.url, {
+        params: {
+            page: activePage,
+            pageSize: limit
+        },
+        withCredentials: true
+    })
+        .then((response) => {
+            console.log(response)
+            if (response.status !== 200) {
+            } else {
+                setTotalPost(response.data.total)
+                setActivePage(activePage + 1)
+                setposts([...posts, ...response.data.posts])
+
+            }
+        }).catch((err) => {
+            console.log(err)
+        })
+}
 
   const changeProfilePicture = async () => {
     try {
@@ -122,6 +148,10 @@ const ProfilePage = () => {
       setPostUrl(item.postImagesURls);
     })
   }, [posts])
+
+  useEffect(()=>{
+    getPosts()
+  },[])
 
   return (
     <>

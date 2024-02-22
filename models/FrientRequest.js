@@ -21,7 +21,14 @@ const FrientRequests = new mongoose.Schema({
     },
     senderName:{
         type:String
+    }, 
+    receiverName:{
+        type:String
+    },
+    receiverProfilePicture:{
+        type:String
     }
+    
 },
     {
         timestamps: true

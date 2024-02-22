@@ -13,6 +13,12 @@ const PostSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: userModel,
         required: true
+    },
+    postOwner:{
+        type:String,
+    },
+    postOwnerDP:{
+        type:String
     }
 },{ timestamps: true });
 

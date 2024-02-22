@@ -67,8 +67,9 @@ const PostUplaodModal = () => {
             const response2 = await axios.post(BASE_URL_API + apiVariables.createPost.url, {
                 postimagesURLs: imageURL,
                 postcaptions: postCaption,
+                postOwner:loggedInUser.firstName + " " + loggedInUser.LastName,
+                postOwnerDP:loggedInUser.profilePic
             }, { withCredentials: "include" })
-
             if (response2.status != 201) {
                 throw new Error('Failed to fetch result data');
             }
@@ -83,9 +84,6 @@ const PostUplaodModal = () => {
         }
 
     }
-
-
-
     return (
         <>
 

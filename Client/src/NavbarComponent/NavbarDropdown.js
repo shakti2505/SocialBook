@@ -121,6 +121,8 @@ const NavbarDropdown = () => {
             frientRequestStatus: 'accepted',
             requestSenderName: requestSenderName,
             requestSenderDp: requestSenderDp,
+            requestReceiverName: loggedInUser.firstName + " " + loggedInUser.LastName,
+            requestReceivedDP:loggedInUser.profilePic
 
         }, { withCredentials: "include" });
 
@@ -130,7 +132,7 @@ const NavbarDropdown = () => {
 
         }
     }
-
+    
     //hinde noti_card if click outside the div
     // document.addEventListener('click', (e) => {
     //     const noti_card = document.getElementById('noti_card');

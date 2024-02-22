@@ -1,4 +1,4 @@
-import express, { response } from "express";
+import express from "express";
 import dotenv from 'dotenv'
 import multer from 'multer';
 import { authorization } from '../middleware/AuthMiddleware.js';
@@ -78,7 +78,7 @@ router.post('/accept_reject_friend_request', authorization, async (req, res) => 
         const {
             frientRequestID,
             frientRequestStatus,
-            requestSenderName, requestSenderDp,
+            requestSenderName, requestSenderDp, requestReceiverName, requestReceivedDP,
             notification_id
         } = req.body;
         const loggedInUser = await userModel.findById(UserId);
@@ -90,13 +90,20 @@ router.post('/accept_reject_friend_request', authorization, async (req, res) => 
             // const acceptedFriendRequest = await friendRequestModal.findByIdAndUpdate(frientRequestID,
             //     { $set: { frientRequestStatus: frientRequestStatus } });
             //adding sender in the frientlist of receiver's
-            const newlyAddedFriendDoc = new UserFriendList({
+            const newlyAddedFriendDocForReceiver = new UserFriendList({
                 user: pending_friend_request.requestReceiverID,
                 friend_ID: pending_friend_request.frientRequestsenderID,
                 friendName: requestSenderName,
                 friend_dp: requestSenderDp
-            });
-            const newlyAddedfriend = await newlyAddedFriendDoc.save();
+            }); 
+            const newlyAddedFriendDocForSender = new UserFriendList({
+                user:pending_friend_request.frientRequestsenderID,
+                friend_ID:pending_friend_request.requestReceiverID,
+                friendName:requestReceiverName,
+                friend_dp:requestReceivedDP
+            })
+            await newlyAddedFriendDocForSender.save();
+            const newlyAddedfriend = await newlyAddedFriendDocForReceiver.save();
             const acceptedFriendRequest = await friendRequestModal.findByIdAndRemove(frientRequestID);
             await FriendRequestNotificationsModal.findByIdAndRemove(notification_id);
             return res.status(200).send({ newlyAddedfriend, acceptedFriendRequest });
@@ -105,6 +112,7 @@ router.post('/accept_reject_friend_request', authorization, async (req, res) => 
             return res.status(422).send({ message: "request already accepted" });
         }
     } catch (error) {
+        console.log(error)
         return res.status(500).send("Internal server Error");
 
     }

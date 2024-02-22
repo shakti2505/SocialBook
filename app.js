@@ -22,7 +22,6 @@ const PORT = process.env.PORT || 4600
 const DATABASE_URL = process.env.DATABASE_URL;
 //database connection
 connectDB(DATABASE_URL)
-
 //middleware
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))

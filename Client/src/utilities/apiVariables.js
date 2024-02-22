@@ -52,6 +52,9 @@ export const apiVariables = {
   },
   createComments: {
     url: "/services/Comments/create_comment"
+  },
+  getPostComments:{
+    url: "/services/Comments/get_comments"
   }
 }
 
