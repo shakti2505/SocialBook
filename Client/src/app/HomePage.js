@@ -61,7 +61,7 @@ const HomePage = () => {
 
             </div> 
             {/* stories */}
-            <div className='card mt-3 mx-5 shadow-sm'>
+            <div className='card mt-2 shadow-sm'>
               <div className='card-body'>
                 <div className="d-flex">
                   <a href='/profile'>
@@ -77,13 +77,13 @@ const HomePage = () => {
               </div>
               <hr />
               <div className='d-flex justify-content-around align-items-center px-1 py-1'>
-                <button className="btn btn-light btn-md w-100 py-2 px-2 mx-2">
+                <button className="btn btn-light btn-md  py-2 px-2 mx-2 d-flex justify-content-between align-items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" height="2rem" width="2rem" viewBox="0 0 576 512"><path fill='#F02849' d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128zM559.1 99.8c10.4 5.6 16.9 16.4 16.9 28.2V384c0 11.8-6.5 22.6-16.9 28.2s-23 5-32.9-1.6l-96-64L416 337.1V320 192 174.9l14.2-9.5 96-64c9.8-6.5 22.4-7.2 32.9-1.6z" /></svg>
                   <small className="text-muted mx-2">Live Video</small></button>
-                <button onClick={OpenPostModal} type="button" className="btn btn-light btn-md w-100 py-2 px-2 mx-2">
+                <button onClick={OpenPostModal} type="button" className="btn btn-light btn-md  py-2 px-2 mx-2 d-flex justify-content-between align-items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" height="2rem" width="2rem" viewBox="0 0 576 512"><path fill="#46BD63" d="M160 32c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H160zM396 138.7l96 144c4.9 7.4 5.4 16.8 1.2 24.6S480.9 320 472 320H328 280 200c-9.2 0-17.6-5.3-21.6-13.6s-2.9-18.2 2.9-25.4l64-80c4.6-5.7 11.4-9 18.7-9s14.2 3.3 18.7 9l17.3 21.6 56-84C360.5 132 368 128 376 128s15.5 4 20 10.7zM192 128a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM48 120c0-13.3-10.7-24-24-24S0 106.7 0 120V344c0 75.1 60.9 136 136 136H456c13.3 0 24-10.7 24-24s-10.7-24-24-24H136c-48.6 0-88-39.4-88-88V120z" /></svg>
                   <small className="text-muted mx-2">Photo/Video</small></button>
-                <button type="button" className="btn btn-light btn-md w-100 py-2 px-2 mx-2">
+                <button type="button" className="btn btn-light btn-md  py-2 px-2 mx-2 d-flex justify-content-between align-items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" height="2rem" width="2rem" viewBox="0 0 512 512"><path fill="#FFD43B" d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm177.6 62.1C192.8 334.5 218.8 352 256 352s63.2-17.5 78.4-33.9c9-9.7 24.2-10.4 33.9-1.4s10.4 24.2 1.4 33.9c-22 23.8-60 49.4-113.6 49.4s-91.7-25.5-113.6-49.4c-9-9.7-8.4-24.9 1.4-33.9s24.9-8.4 33.9 1.4zM144.4 208a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm192-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" /></svg>
                   <small className="text-muted mx-2">Feeling/Activity</small></button>
               </div>

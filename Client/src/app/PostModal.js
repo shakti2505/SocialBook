@@ -117,7 +117,7 @@ const PostModal = (props) => {
           posts.map((item, index) => {
             return (
               <>
-                <div className="card mt-3 mx-5 shadow-sm d-flex" key={item._id}>
+                <div className="card mt-2 shadow-sm d-flex" key={item._id}>
                   <div className="card-body">
                     <div className="d-flex">
                       <a href="/profile">
@@ -159,8 +159,8 @@ const PostModal = (props) => {
                       })}
                   </div>
                   <hr className="m-2"></hr>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <button className="btn btn-light w-100 mx-1 d-flex align-items-center justify-content-center">
+                  <div className="d-flex align-items-center justify-content-around">
+                    <button className="btn btn-light btn-sm  mx-1 d-flex align-items-center justify-content-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"
@@ -176,7 +176,7 @@ const PostModal = (props) => {
                     </button>
                     <button
                       onClick={() => handleCommentSection(index)}
-                      className="btn btn-light w-100 mx-1 d-flex align-items-center justify-content-center"
+                      className="btn btn-light btn-sm mx-1 d-flex align-items-center justify-content-center"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +191,7 @@ const PostModal = (props) => {
                       </svg>
                       <strong className=" text-muted mx-2">Comment</strong>
                     </button>
-                    <button className="btn btn-light w-100 mx-1 d-flex align-items-center justify-content-center ">
+                    <button className="btn btn-light btn-sm  mx-1 d-flex align-items-center justify-content-center ">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"
