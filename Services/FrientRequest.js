@@ -6,9 +6,8 @@ import userModel from "../models/user.js";
 import friendRequestModal from "../models/FrientRequest.js";
 import UserFriendList from "../models/FriendList.js";
 import displayPictureModel from "../models/displayPictures.js";
-import monitorRequests from "../ChangeStreams/ChangeStreams.js";
 import FriendRequestNotificationsModal from "../models/Notifications/FriendRequestNotificaitons.js";
-
+import monitor from "../ChangeStreams/ChangeStreams.js";
 const router = express.Router()
 
 //close streams
@@ -34,7 +33,8 @@ router.post('/receieve_friend_requests', authorization, async (req, res) => {
         const requestreceiver = await userModel.findById(requestReceiverId);
         const requestAlreadyExisted = await friendRequestModal.find({ requestReceiverID: requestReceiverId, frientRequestsenderID: UserId })
         if ((requestSender && requestreceiver && friendRequestStatus) && requestAlreadyExisted.length == 0) {
-            const ChangeStreams = await monitorRequests(friendRequestModal, 'Change Stream starts for Friend Requst Modal.....')
+            //inititing Streams 
+            const ChangeStreams = await monitor.monitorRequests(friendRequestModal, 'Change Stream starts for Friend Requst Modal.....')
             const newFriendRequest = new friendRequestModal({
                 frientRequestsenderID: UserId,
                 frientRequestStatus: friendRequestStatus,
@@ -43,6 +43,7 @@ router.post('/receieve_friend_requests', authorization, async (req, res) => {
                 senderProfilePicture: userDisplayPicture
             });
             const savedNewfriendrequest = await newFriendRequest.save();
+            //closing streams 
             closeChangeStreams(ChangeStreams);
             return res.status(201).send({ message: "Friend request sent", sentrequest: savedNewfriendrequest })
         } else {
@@ -148,5 +149,21 @@ router.get('/get_notification_count', authorization, async (req, res) => {
     }
 });
 
+
+//get logged in User friends list
+router.get('/get_logged_in_user_friends', authorization, async(req, res)=>{
+    try {
+        const UserId = req.userId
+        const loggedInUser = await userModel.findById(UserId);
+        if(!loggedInUser){
+            return res.status(401).send({error:"No Logged in User found!"});
+        }
+        const friendList = await UserFriendList.find({user:loggedInUser._id});
+        return res.status(200).send({FriendList:friendList});
+
+    } catch (error) {
+        return res.status(500).send({error:"internal server Error", error});
+    }
+})
 
 export default router;

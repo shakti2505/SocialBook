@@ -69,7 +69,6 @@ const ProfilePage = () => {
         withCredentials: true
     })
         .then((response) => {
-            console.log(response)
             if (response.status !== 200) {
             } else {
                 setTotalPost(response.data.total)

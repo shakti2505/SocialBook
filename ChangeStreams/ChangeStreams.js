@@ -4,6 +4,7 @@ import userModel from "../models/user.js";
 import webpush from 'web-push'
 import options from "../middleware/PushNotification.js";
 import FriendRequestNotificationsModal from "../models/Notifications/FriendRequestNotificaitons.js";
+import PostNotificationModal from "../models/Notifications/PostNotification.js";
 
 
 // const closeChangeStreams = (timeInMS = 60000, changeStreams) => {
@@ -41,4 +42,35 @@ const monitorRequests = async (collection, message = "Chnage streams starts") =>
     return changeStreams;
 }
 
-export default monitorRequests;
+ const monitorPosts = async (collection, message="Chnage streams starts") =>{
+    try {
+        const changeStreams = collection.watch();
+        console.log(message);
+        changeStreams.on('change', async(next)=>{
+            const { fullDocument } = next;
+    
+            if(fullDocument && next.operationType==='insert'){
+                const newPostNotification = new PostNotificationModal({
+                    postId:fullDocument._id,
+                    userID:fullDocument.users,
+                    postOwnerDP:fullDocument.postOwnerDP,
+                });
+                const res = await newPostNotification.save();
+                console.log(res);
+            }
+            else{
+                console.log('No chages found in the Post Streams')
+            }
+        });
+        return changeStreams;
+
+    } catch (error) {
+            console.log('error in saving Notfication',error)
+    }
+    }
+    const monitor = {
+        monitorRequests: monitorRequests,
+        monitorPosts: monitorPosts
+    };
+
+export  default monitor;

@@ -37,7 +37,6 @@ const PostUplaodModal = () => {
         OpenPostModal();
     }
 
-
     const submitPostImages = async (e) => {
         try {
             document.getElementById('postbtn').setAttribute('disabled', 'true');
@@ -86,7 +85,6 @@ const PostUplaodModal = () => {
     }
     return (
         <>
-
             <Modal
                 size="md"
                 aria-labelledby="contained-modal-title-vcenter"

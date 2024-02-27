@@ -36,7 +36,6 @@ const UserState = (props) => {
             if(response.data.message=='unauthorized access'){
                 navigate('/login')
             }else{
-                console.log('response',response);
                 setLoggedInUser(response.data.loggedInUser);
             }
         }).catch((err)=>{
@@ -66,7 +65,7 @@ const UserState = (props) => {
           })
       }
     
-
+     
     useEffect(() => {
         getLoggedInUserData();
         getPosts();

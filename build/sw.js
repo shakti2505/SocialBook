@@ -16,8 +16,9 @@
 
 
 this.addEventListener('push', (event) => {
+    console.log('push event',event)
     const data = event.data.json(); // Parse the push notification data
-    console.log(data)
+    console.log('Notification Data coming from server:::_____-----_____----',data)
     // Fetch the image and convert it to a data URL
     fetch(data.profilePic)
         .then(response => response.blob())

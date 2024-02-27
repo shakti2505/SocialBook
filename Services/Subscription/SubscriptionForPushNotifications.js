@@ -24,6 +24,16 @@ router.post('/subscribe-for-push-notification', authorization, async (req, res) 
         console.log(error);
         return res.status(500).send({ messgae: "Internal Server Error", error });
     }
-})
+});
+
+// router.post("/mark_notification_read", authorization, (req, res)=>{
+//     try {
+//         logg
+//     } catch (error) {
+        
+//     }
+// });
+
+
 
 export default router;

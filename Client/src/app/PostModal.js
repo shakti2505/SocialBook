@@ -9,15 +9,16 @@ import EmojiPicker from "emoji-picker-react";
 import paperPlane from "../images/Icon/paper-plane.png";
 import CommentSection from "./Component/CommentSection/CommentSection.js";
 
-const PostModal = (props) => {
+const PostModal = (propFromChid) => {
   const [posts, setposts] = useState([]);
+  const [postComments, setPostCommnets] = useState([]);
+
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(
     Array(posts.length).fill(false)
   );
   const [commentSectionOpen, setcommentSectionOpen] = useState(
     Array(posts.length).fill(false)
   );
-  console.log(emojiPickerOpen);
 
   const [seeMore, setseeMore] = useState(false);
   const [activePage, setActivePage] = useState(1);
@@ -25,7 +26,10 @@ const PostModal = (props) => {
   const [comment, setComment] = useState("");
   const [OpenEmojiPicker, setOpenEmojiPicker] = useState(false);
   const { loggedInUser } = useContext(UserDataContext);
+  const [showCommnets, setShowComments] = useState(false);
   // const { posts } = useContext(UserDataContext);
+
+ 
 
   const ConvertDateTime = (DateTime) => {
     return new Date(DateTime).toLocaleString();
@@ -62,13 +66,47 @@ const PostModal = (props) => {
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response);
         if (response.status !== 200) {
         } else {
           setTotalPost(response.data.total);
           setActivePage(activePage + 1);
           setposts([...posts, ...response.data.posts]);
         }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getDays = (dateTime) => {
+    const currentDate = Date.now();
+    const dt = new Date(dateTime).getTime();
+    const millisec = dt - currentDate;
+
+    const hours = Math.abs(millisec) / (1000 * 60 * 60);
+    const minutes = Math.abs(millisec) / (1000 * 60);
+    if (hours >= 24) {
+      return `${Math.floor(hours / 24)} Days ago`; // return days
+    } else if (hours >= 1) {
+      return `${Math.floor(hours)} hours ago`; // return hours
+    } else {
+      return `${Math.floor(minutes)} minutes ago`; // return minutes
+    }
+  };
+
+  const getPostComments = (PostID) => {
+    axios
+      .get(BASE_URL_API + apiVariables.getPostComments.url, {
+        params: {
+          postID: PostID,
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        if (response.status !== 200) {
+        } else {
+          setPostCommnets(prevComment => prevComment.concat(response.data.allComments));
+        } 
       })
       .catch((err) => {
         console.log(err);
@@ -91,14 +129,21 @@ const PostModal = (props) => {
     if (apicall.status !== 201) {
       alert("Unable to comment on post");
     } else {
-      console.log("comments response::", apicall.data);
-      setComment('');
+      setComment("");
     }
   };
 
   useEffect(() => {
     getPosts();
   }, []);
+
+  // useEffect(() => {
+  //   getPostComments();
+  // }, [PostID]);
+
+  useEffect(()=>{
+    console.log(postComments)
+  },[postComments])
 
   return (
     <>
@@ -130,9 +175,7 @@ const PostModal = (props) => {
                         />
                       </a>
                       <div className="d-flex flex-column">
-                        <strong className="mx-2">
-                          {item.postOwner}
-                        </strong>
+                        <strong className="mx-2">{item.postOwner}</strong>
                         <p style={{ fontSize: "0.8rem" }} className="mx-2">
                           {ConvertDateTime(item.createdAt)}
                         </p>
@@ -207,11 +250,47 @@ const PostModal = (props) => {
                     </button>
                   </div>
                   <hr className="m-2"></hr>
-                      {/* comment section starts */}
-
-                      <CommentSection postId={item._id}/>
-
-                      {/* comment section ends */}
+                  <button className="btn btn-link" onClick={()=>getPostComments(item._id)}>View comments</button>
+                  {/* comment section starts */}
+                  <>
+                      {postComments.length !== 0 && 
+                        postComments.map((Citem) => {
+                          return (
+                            <>
+                              {Citem.postID === item._id && (
+                                <div className="d-flex align-items-center m-2">
+                                  <img
+                                    src={Citem.userDP}
+                                    width="25"
+                                    height="25"
+                                    style={{ borderRadius: "50%" }}
+                                    className="mx-2"
+                                  />
+                                  <div
+                                    className="shadow-md"
+                                    style={{
+                                      backgroundColor: "#F0F2F5",
+                                      borderRadius: "10px",
+                                    }}
+                                  >
+                                    <small className="mx-2">
+                                      {Citem.userName}
+                                    </small>
+                                    <p className="mx-2">{Citem.comment}</p>
+                                    <small
+                                      className="mx-2"
+                                      style={{ color: "#0866FF" }}
+                                    >
+                                      {getDays(Citem.createdAt)}
+                                    </small>
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })}
+                    </>
+                  {/* comment section ends */}
                   <hr className="m-2"></hr>
                   {/* comment input starts */}
                   {commentSectionOpen[index] && (
@@ -368,6 +447,7 @@ const PostModal = (props) => {
                   )}
 
                   {/* comment input  ends*/}
+
                   {emojiPickerOpen[index] && (
                     <EmojiPicker
                       onEmojiClick={(e) => concateCommentWithEmoji(e.emoji)}

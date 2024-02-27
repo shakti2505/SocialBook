@@ -25,6 +25,7 @@ const NavbarDropdown = () => {
     const [notification, setnotification] = useState([]);
     const [SerchedUsers, setSerchedUsers] = useState([])
     const [searchUser, setSearchUser] = useState('');
+    const [seeNotificationCard, setSeeNotificationCard] = useState(false)
     const [fRacceptStatus, setFracceptStatus] = useState('')
 
     const navigate = useNavigate()
@@ -57,9 +58,9 @@ const NavbarDropdown = () => {
         chatWindow.style.display = chatWindow.style.display === 'none' ? 'block' : 'none';
     }
     const handleNoti_card = () => {
-        const noti_card = document.getElementById('noti_card');
-        console.log('noticard::', noti_card)
-        noti_card.style.display = noti_card.style.display === 'none' ? 'block' : 'none';
+        // const noti_card = document.getElementById('noti_card');
+        // noti_card.style.display = noti_card.style.display === 'none' ? 'block' : 'none';
+        setSeeNotificationCard(!seeNotificationCard);
     }
 
     const getDays = (dateTime) => {
@@ -87,6 +88,7 @@ const NavbarDropdown = () => {
         apicall.then((response) => {
             if (response.data.message !== 'Internal Server Error') {
                 localStorage.removeItem('user')
+                localStorage.removeItem('subscription');
                 navigate('/login')
             } else {
                 console.log(response.data.message)
@@ -303,7 +305,7 @@ const NavbarDropdown = () => {
                     </Button>
                 </OverlayTrigger>
                 {/* Notification card starts */}
-                <div className="notification-card" id='noti_card'>
+                <div className={seeNotificationCard ? "notification-card":'d-none'} id='noti_card'>
                     <Card >
                         <div className='d-flex justify-content-between align-items-center m-3'>
                             <h4 className='fw-bold'>Notifications</h4>

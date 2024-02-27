@@ -9,10 +9,10 @@ import multer from 'multer';
 import { authorization } from '../middleware/AuthMiddleware.js';
 import friendRequestModal from '../models/FrientRequest.js';
 import postModel from '../models/Post.js';
-import { SendFriendRequestNotification } from '../Services/Notifications/UserSpecificNotification.js';
 import FriendRequestNotificationsModal from '../models/Notifications/FriendRequestNotificaitons.js';
 import SubscriptionModel from '../models/SubscriptionSchema.js';
-
+import PostNotificationModal from '../models/Notifications/PostNotification.js';
+import notificationMethod from '../Services/Notifications/UserSpecificNotification.js'
 const router = express.Router()
 const storage = multer.memoryStorage();
 const uploadDP = multer({ storage: storage, limits: { fileSize: 300 * 300 * 2 } })
@@ -183,7 +183,7 @@ router.post('/login', async (req, res) => {
 
     // Check if either email or phone `is` provided
     if (!email && !phone) {
-        return res.status(400).send({ success: false, message: "Email or phone is required" });
+        return res.status(401).send({ success: false, message: "Email or phone is required" });
     }
     try {
         let searchCriteria = {};
@@ -193,12 +193,13 @@ router.post('/login', async (req, res) => {
         const existingUser = await userModel.findOne(searchCriteria);
         // Check if user exists
         if (!existingUser) {
-            return res.status(404).send({ success: false, message: "User not found" });
+            return res.status(401).send({ error: "User not found" });
         }
 
         // Compare passwords
         const passMatch = await bcrypt.compare(password, existingUser.password);
         const notification = await FriendRequestNotificationsModal.find({ userID: existingUser._id });
+        const PostNotification  = await PostNotificationModal.find({userID:existingUser._id});
         const subscription = await SubscriptionModel.find({user:existingUser._id})
 
         if (passMatch) {
@@ -211,7 +212,10 @@ router.post('/login', async (req, res) => {
             // Set JWT token in cookie
             res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
             if (notification.length !== 0 && subscription.length!==0) {
-               SendFriendRequestNotification(existingUser._id);
+                notificationMethod.SendFriendRequestNotification (existingUser._id);
+            }
+            if (PostNotification.length !== 0 && subscription.length!==0) {
+                notificationMethod.sendPostUploadNotification(existingUser._id);
             }
             return res.status(200).send({
                 success: true,
@@ -220,15 +224,16 @@ router.post('/login', async (req, res) => {
                     firstName,
                     lastName,
                     DateOfBirth,
-                    email
+                    email,
+                    subscription:subscription.length!==0 ? true : false
                 }
             });
         } else {
-            return res.status(401).send({ success: false, message: "Unauthorized Access" });
+            return res.status(401).send({ error: "Unauthorized Access" });
         }
     } catch (error) {
         console.error("Error:", error);
-        return res.status(500).send({ success: false, message: "Internal Server Error" });
+        return res.status(500).send({ error: "Internal Server Error" });
     }
 });
 
@@ -282,9 +287,20 @@ router.get('/getLoggedInUserData', authorization, async (req, res) => {
     // const {userID} = req.body;
     const loggedInUser = await userModel.findById(userID).select('-phone -email -password');
     if (loggedInUser) {
-        res.status(200).send({ success: true, loggedInUser })
+       return res.status(200).send({ success: true, loggedInUser })
     } else {
-        res.status(401).send({ success: false, message: "Unauthroriazied access" })
+       return res.status(401).send({ success: false, message: "Unauthroriazied access" })
+    }
+});
+
+router.get('/get_specificUserData', authorization, async (req, res) => {
+    const userID = req.userId
+    const {specificUserId} = req.body;
+    const loggedInUser = await userModel.findById(specificUserId).select('-phone -email -password');
+    if (loggedInUser) {
+      return  res.status(200).send({ success: true, loggedInUser })
+    } else {
+        return res.status(401).send({ success: false, message: "Unauthroriazied access" })
     }
 });
 

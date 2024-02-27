@@ -24,10 +24,14 @@ const CommentSection = ({ postId }) => {
   const getPostComments = () => {
     axios
       .get(BASE_URL_API + apiVariables.getPostComments.url, {
-        withCredentials: true,
+        params: {
+            postID:postId
+        },
+        withCredentials: true
       })
       .then((response) => {
         if (response.status !== 200) {
+          // Handle non-200 status codes if needed
         } else {
           setPostCommnets(response.data.allComments);
         }
@@ -40,6 +44,7 @@ const CommentSection = ({ postId }) => {
   useEffect(() => {
     getPostComments();
   }, []);
+
 
   return (
     <>

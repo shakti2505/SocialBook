@@ -55,6 +55,15 @@ export const apiVariables = {
   },
   getPostComments:{
     url: "/services/Comments/get_comments"
+  },
+  getSubscription:{
+    url: "/services/Subscription/get_subscription"
+  },
+  getLoggedInUserFriends:{
+    url: "/services/get_logged_in_user_friends"
+  },
+  getUserSpecificPosts:{
+    url:'/services/get_user_specific_posts'
   }
 }
 

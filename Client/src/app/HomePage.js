@@ -13,6 +13,7 @@ import PostModal from './PostModal.js';
 import UserDataContext from '../Context/UserContext.js';
 import PostUplaodModal from './Component/PostUplaodModal.js';
 import swDev from '../serveiceWorkerDev.js';
+import Spinner from 'react-bootstrap/Spinner';
 
 
 const HomePage = () => {
@@ -21,14 +22,25 @@ const HomePage = () => {
   const [isloading, setisloading] = useState(false);
   const [subscription, setSubscription] = useState({})
   const { loggedInUser, OpenPostModal, ClosePostModal, modalShow } = useContext(UserDataContext)
+  const [userSubscription, setUserSubscription] = useState([]);
 
-
+  const loggedInUserSubsctription = localStorage.getItem('subscription')
   const handleClose = () => setOpenSubscriptionModal(false);
   
-  const handleSubscribe = async () => {
-    const subscription=await swDev();
-      setSubscription(subscription);
-  }
+
+
+  // const handleSubscribe = async () => {
+  //   setisloading(true)
+  //   const subscription=await swDev();
+  //   console.log('subscription',subscription)
+  //   if(subscription){
+  //     setisloading(false)
+  //     setSubscription(subscription);
+  //     setOpenSubscriptionModal(false)
+  //   }
+
+  // }
+
 
   const stories = [
     'https://res.cloudinary.com/dtbz1n84e/image/upload/v1706200005/Post%20Images/jky1wbxlzsunued0y9ge.jpg',
@@ -37,8 +49,13 @@ const HomePage = () => {
     'https://res.cloudinary.com/dtbz1n84e/image/upload/v1705424794/cld-sample.jpg',
     'https://res.cloudinary.com/dtbz1n84e/image/upload/v1705424786/samples/two-ladies.jpg',
     'https://res.cloudinary.com/dtbz1n84e/image/upload/v1705424786/samples/shoe.jpg',
-
   ]
+
+  // useEffect(()=>{
+  //   if(localStorage.getItem('subscription')!='false'){
+  //     handleSubscribe();
+  //   }
+  // },[])
 
   return (
     <>
@@ -58,7 +75,6 @@ const HomePage = () => {
               })
 
               }
-
             </div> 
             {/* stories */}
             <div className='card mt-2 shadow-sm'>
@@ -96,8 +112,9 @@ const HomePage = () => {
         </div>
         <RightBar />
       </div>
+     
 
-      <Modal show={openSubscriptionModal} onHide={handleClose} backdrop="static"
+      {/* <Modal show={(openSubscriptionModal && loggedInUserSubsctription) ? !openSubscriptionModal : openSubscriptionModal} onHide={handleClose} backdrop="static"
         keyboard={false}
       >
         <Modal.Header >
@@ -108,11 +125,12 @@ const HomePage = () => {
           <Button variant="secondary" onClick={handleClose}>
             close
           </Button>
-          <Button variant="primary" onClick={handleSubscribe}>
+          <Button disabled={isloading ? true :false} variant="primary" onClick={handleSubscribe}>
             Subscribe
           </Button>
         </Modal.Footer>
-      </Modal> 
+      </Modal>  */}
+
     </>
   )
 }
