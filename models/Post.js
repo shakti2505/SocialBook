@@ -19,6 +19,10 @@ const PostSchema = new mongoose.Schema({
     },
     postOwnerDP:{
         type:String
+    },
+    totalComments:{
+        type:Number,
+        default:0
     }
 },{ timestamps: true });
 

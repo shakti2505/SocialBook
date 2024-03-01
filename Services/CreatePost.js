@@ -145,4 +145,20 @@ router.get("/get_friends_Posts", authorization, async (req, res) => {
   }
 });
 
+//edit Posts
+router.put('/edit_post', authorization, (req, res)=>{
+  try {
+    const {PostID, PostCaption, postImages} = req.body;
+    if(!PostID){
+      return res.status(401).send("Post ID is required");
+    }
+    const target_post = postModel.findByIdAndUpdate(PostID, {postCaption:PostCaption, postImagesURls:postImages});
+    console.log(target_post)
+    return res.status(201).send({Message:'Post updated Successfully', target_post})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({message:'Internal Server Error'})
+  }
+})
+
 export default router;

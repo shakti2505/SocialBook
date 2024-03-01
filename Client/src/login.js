@@ -11,7 +11,8 @@ import BASE_URL_API from "./utilities/baseURL";
 import { apiVariables } from "./utilities/apiVariables";
 import { Navigate, useNavigate } from "react-router-dom";
 import swDev from "./serveiceWorkerDev.js";
-
+import bg_login from "../src/images/backGround/login-bg3.jpg";
+import logo from "./images/logo/logo.png";
 const Login = () => {
   const navitage = useNavigate();
 
@@ -96,7 +97,7 @@ const Login = () => {
       })
       .then((data) => {
         localStorage.setItem("user", data.loggedInUser.email);
-        if(data.loggedInUser.subscription!=true){
+        if (data.loggedInUser.subscription != true) {
           swDev();
         }
         navitage("/home");
@@ -111,11 +112,9 @@ const Login = () => {
     navitage("/");
   };
 
-
-
   return (
     <>
-      <Container>
+      {/* <Container>
         <Row>
           <Col sm={6}>
             <Card className="loginCard">
@@ -262,7 +261,7 @@ const Login = () => {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
 
       {/* <div className="d-flex justify-content-center align-items-center mt-5">
         <div className="">
@@ -311,6 +310,55 @@ const Login = () => {
           </div>
         </div>
       </div> */}
+
+      <div className="bg-slate-100 justify-center items-center h-full overflow-hidden">
+        <div className="flex flex-wrap justify-between items-center absolute top-0 w-100 mt-4 px-4">
+          <div className="flex justify-evenly items-center border-2 rounded-full bg-gradient-to-r from-[#21E2AD] via-[#13C7CD] to-[#05A7F1]">
+            <img src={logo} className="h-16" />
+            <p className="text-5xl  font-['Times-roman'] m-0 pr-2 text-light max-sm:text-3xl">
+              ocialbook
+            </p>
+          </div>
+          <div className="w-60 h-20 max-sm:w-60 max-sm:h-16  max-sm:mt-2 ring-2  ring-[#007DF9] rounded-full flex justify-center items-center hover:bg-green-100">
+            <button className="w-100 text-3xl">Sign up</button>
+          </div>
+        </div>
+        <div className="bg-smoke-200 flex justify-between h-screen">
+          <div className="flex flex-wrap justify-evenly items-center h-screen w-100 max-sm:mt-[10rem] max-sm:p-4">
+            <div className="flex-col justify-center items-center mb-5">
+              {/* <h1 className="text-center">Welcome to Socialbook!</h1> */}
+              <div className="flex flex-col flex-wrap justify-between items-center "></div>
+              <input
+                type="email"
+                className="w-100 bg-[#FDFFFE] outline-none	h-16 rounded-full	shadow-md text-xl px-4"
+                placeholder="Email"
+                onChange={handleLogin}
+                name="email"
+              />
+              <input
+                type="password"
+                className="w-100 bg-[#FDFFFE] outline-none	h-16 rounded-full	shadow-md text-xl px-4 mt-3"
+                placeholder="Password"
+                onChange={handleLogin}
+                name="password"
+              />
+              <a href="#" className="text-decoration-none ">
+                <p className="text-right mt-4 text-lg  text-blue-800">
+                  Forgot Password ?
+                </p>
+              </a>
+              <div onClick={LoginUser} className=" bg-[#007DF9] flex justify-center items-center w-100 h-16 shadow-md mt-3 rounded-full text-light text-2xl hover:cursor-pointer">
+                Log in
+              </div>
+            </div>
+            <img
+              className="h-[80%] object-cover"
+              src={bg_login}
+              style={{ mixBlendMode: "darken" }}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 };

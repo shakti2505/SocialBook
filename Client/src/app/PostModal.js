@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useDeferredValue, useEffect, useState } from "react";
 import UserDataContext from "../Context/UserContext.js";
 import axios from "axios";
 import { apiVariables } from "../utilities/apiVariables.js";
@@ -7,10 +7,10 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Spinner from "react-bootstrap/Spinner";
 import EmojiPicker from "emoji-picker-react";
 import paperPlane from "../images/Icon/paper-plane.png";
-import CommentSection from "./Component/CommentSection/CommentSection.js";
 
 const PostModal = (propFromChid) => {
   const [posts, setposts] = useState([]);
+  const [PostID, setPostID] = useState('');
   const [postComments, setPostCommnets] = useState([]);
 
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(
@@ -26,10 +26,7 @@ const PostModal = (propFromChid) => {
   const [comment, setComment] = useState("");
   const [OpenEmojiPicker, setOpenEmojiPicker] = useState(false);
   const { loggedInUser } = useContext(UserDataContext);
-  const [showCommnets, setShowComments] = useState(false);
   // const { posts } = useContext(UserDataContext);
-
- 
 
   const ConvertDateTime = (DateTime) => {
     return new Date(DateTime).toLocaleString();
@@ -98,15 +95,17 @@ const PostModal = (propFromChid) => {
     axios
       .get(BASE_URL_API + apiVariables.getPostComments.url, {
         params: {
-          postID: PostID,
+          postID: PostID ? PostID :'',
         },
         withCredentials: true,
       })
       .then((response) => {
         if (response.status !== 200) {
         } else {
-          setPostCommnets(prevComment => prevComment.concat(response.data.allComments));
-        } 
+          setPostCommnets((prevComment) =>
+            prevComment.concat(response.data.allComments)
+          );
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -114,7 +113,6 @@ const PostModal = (propFromChid) => {
   };
 
   const create_comment = async (postID, LoggedInUserDp, userName) => {
-    console.log(postID, LoggedInUserDp, userName);
     const apicall = await axios.post(
       BASE_URL_API + apiVariables.createComments.url,
       {
@@ -130,20 +128,15 @@ const PostModal = (propFromChid) => {
       alert("Unable to comment on post");
     } else {
       setComment("");
+      getPostComments(postID);
     }
   };
 
   useEffect(() => {
     getPosts();
+    getPostComments()
   }, []);
 
-  // useEffect(() => {
-  //   getPostComments();
-  // }, [PostID]);
-
-  useEffect(()=>{
-    console.log(postComments)
-  },[postComments])
 
   return (
     <>
@@ -250,46 +243,97 @@ const PostModal = (propFromChid) => {
                     </button>
                   </div>
                   <hr className="m-2"></hr>
-                  <button className="btn btn-link" onClick={()=>getPostComments(item._id)}>View comments</button>
+
+                  
+                
+                  {postComments.length !== 0 &&
+                      postComments.map((Citem) => {
+                        return (
+                          <>
+                            {Citem.postID === item._id && (
+                              <div className="d-flex align-items-center m-2">
+                                <img
+                                  src={Citem.userDP}
+                                  width="25"
+                                  height="25"
+                                  style={{ borderRadius: "50%" }}
+                                  className="mx-2"
+                                />
+                                <div
+                                  className="shadow-md"
+                                  style={{
+                                    backgroundColor: "#F0F2F5",
+                                    borderRadius: "10px",
+                                  }}
+                                >
+                                  <small className="mx-2">
+                                    {Citem.userName}
+                                  </small>
+                                  <p className="mx-2">{Citem.comment}</p>
+                                  <small
+                                    className="mx-2"
+                                    style={{ color: "#0866FF" }}
+                                  >
+                                    {getDays(Citem.createdAt)}
+                                  </small>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })}
+
+                  {item.totalComments !== 0 && (
+                    <button
+                      className={
+                        postComments.length !== 0
+                          ? "d-none"
+                          : "btn btn-link text-decoration-none text-muted"
+                      }
+                      onClick={() => getPostComments(item._id)}
+                    >
+                      View all {item.totalComments} comments
+                    </button>
+                  )}
                   {/* comment section starts */}
                   <>
-                      {postComments.length !== 0 && 
-                        postComments.map((Citem) => {
-                          return (
-                            <>
-                              {Citem.postID === item._id && (
-                                <div className="d-flex align-items-center m-2">
-                                  <img
-                                    src={Citem.userDP}
-                                    width="25"
-                                    height="25"
-                                    style={{ borderRadius: "50%" }}
+                    {postComments.length !== 0 &&
+                      postComments.map((Citem) => {
+                        return (
+                          <>
+                            {Citem.postID === item._id && (
+                              <div className="d-flex align-items-center m-2">
+                                <img
+                                  src={Citem.userDP}
+                                  width="25"
+                                  height="25"
+                                  style={{ borderRadius: "50%" }}
+                                  className="mx-2"
+                                />
+                                <div
+                                  className="shadow-md"
+                                  style={{
+                                    backgroundColor: "#F0F2F5",
+                                    borderRadius: "10px",
+                                  }}
+                                >
+                                  <small className="mx-2">
+                                    {Citem.userName}
+                                  </small>
+                                  <p className="mx-2">{Citem.comment}</p>
+                                  <small
                                     className="mx-2"
-                                  />
-                                  <div
-                                    className="shadow-md"
-                                    style={{
-                                      backgroundColor: "#F0F2F5",
-                                      borderRadius: "10px",
-                                    }}
+                                    style={{ color: "#0866FF" }}
                                   >
-                                    <small className="mx-2">
-                                      {Citem.userName}
-                                    </small>
-                                    <p className="mx-2">{Citem.comment}</p>
-                                    <small
-                                      className="mx-2"
-                                      style={{ color: "#0866FF" }}
-                                    >
-                                      {getDays(Citem.createdAt)}
-                                    </small>
-                                  </div>
+                                    {getDays(Citem.createdAt)}
+                                  </small>
                                 </div>
-                              )}
-                            </>
-                          );
-                        })}
-                    </>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })}
+                  </>
                   {/* comment section ends */}
                   <hr className="m-2"></hr>
                   {/* comment input starts */}

@@ -38,7 +38,6 @@ const NavbarDropdown = () => {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true
             },
-
         })
         if (apicall.status !== 200) {
             console.log('Internal Error')

@@ -19,6 +19,7 @@ router.post("/create_comment", authorization, async (req, res) => {
     if (!postID || !LoggedInUserName || !comment) {
       return res.status(401).send({ message: "All fields are required" });
     }
+    const post = await postModel.findById(postID);
 
     const newComment = new PostCommentsModal({
       postID: postID,
@@ -29,6 +30,9 @@ router.post("/create_comment", authorization, async (req, res) => {
     });
 
     const savedComment = await newComment.save();
+    const  totalComments = post.totalComments;
+    let commentsCount = totalComments + 1; 
+    await postModel.findByIdAndUpdate(postID, {totalComments:commentsCount});
     return res
       .status(201)
       .json({ message: "Commented Successfully", savedComment });
@@ -42,7 +46,7 @@ router.get("/get_comments", authorization, async (req, res) => {
   try {
     const UserId = req.userId;
     const { postID } = req.query;
-    const postCommentsID = await PostCommentsModal.find({ postID: postID });
+    const postCommentsID = await PostCommentsModal.find( postID ? { postID: postID } :{});
     return res.status(200).json({ allComments: postCommentsID });
   } catch (error) {
     console.log(error);
