@@ -1,8 +1,9 @@
 import BASE_URL_API from "./utilities/baseURL";
 import axios from 'axios';
 
-const swDev = async () => {
+const swDev = async (userEmail) => {
     try {
+        console.log(`sw runs for${userEmail}`);
         let BASE_URL = 'https://socialbook-x3jq.onrender.com'
         // let BASE_URL = 'http://localhost:3000'
         let url = `${BASE_URL}/sw.js`

@@ -1,4 +1,9 @@
-import React, { useContext, useDeferredValue, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useDeferredValue,
+  useEffect,
+  useState,
+} from "react";
 import UserDataContext from "../Context/UserContext.js";
 import axios from "axios";
 import { apiVariables } from "../utilities/apiVariables.js";
@@ -7,11 +12,15 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Spinner from "react-bootstrap/Spinner";
 import EmojiPicker from "emoji-picker-react";
 import paperPlane from "../images/Icon/paper-plane.png";
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 
-const PostModal = (propFromChid) => {
+const PostModal = () => {
   const [posts, setposts] = useState([]);
-  const [PostID, setPostID] = useState('');
+  const [PostID, setPostID] = useState("");
   const [postComments, setPostCommnets] = useState([]);
+  const [openCmtModal, setOpenCmtModal] = useState(false)
+
 
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(
     Array(posts.length).fill(false)
@@ -95,7 +104,7 @@ const PostModal = (propFromChid) => {
     axios
       .get(BASE_URL_API + apiVariables.getPostComments.url, {
         params: {
-          postID: PostID ? PostID :'',
+          postID: PostID ? PostID : "",
         },
         withCredentials: true,
       })
@@ -132,11 +141,15 @@ const PostModal = (propFromChid) => {
     }
   };
 
+  const handleCmtModal = (postid) =>{
+    setPostID(postid);
+    setOpenCmtModal(true);
+    getPostComments(postid);
+  }
+
   useEffect(() => {
     getPosts();
-    getPostComments()
   }, []);
-
 
   return (
     <>
@@ -161,11 +174,9 @@ const PostModal = (propFromChid) => {
                       <a href="/profile">
                         <img
                           src={item.postOwnerDP}
-                          width="40"
-                          height="40"
-                          style={{ borderRadius: "50%", objectFit: "cover" }}
-                          className="mt-1"
-                        />
+                        
+                          className="ml-1 rounded-full h-12 w-12 object-cover "
+                          />
                       </a>
                       <div className="d-flex flex-column">
                         <strong className="mx-2">{item.postOwner}</strong>
@@ -194,8 +205,7 @@ const PostModal = (propFromChid) => {
                         );
                       })}
                   </div>
-                  <hr className="m-2"></hr>
-                  <div className="d-flex align-items-center justify-content-around">
+                  <div className="flex justify-between items-center mt-2">
                     <button className="btn btn-light btn-sm  mx-1 d-flex align-items-center justify-content-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -244,9 +254,7 @@ const PostModal = (propFromChid) => {
                   </div>
                   <hr className="m-2"></hr>
 
-                  
-                
-                  {postComments.length !== 0 &&
+                  {/* {postComments.length !== 0 &&
                       postComments.map((Citem) => {
                         return (
                           <>
@@ -281,34 +289,21 @@ const PostModal = (propFromChid) => {
                             )}
                           </>
                         );
-                      })}
+                      })} */}
 
-                  {item.totalComments !== 0 && (
-                    <button
-                      className={
-                        postComments.length !== 0
-                          ? "d-none"
-                          : "btn btn-link text-decoration-none text-muted"
-                      }
-                      onClick={() => getPostComments(item._id)}
-                    >
-                      View all {item.totalComments} comments
-                    </button>
-                  )}
                   {/* comment section starts */}
-                  <>
                     {postComments.length !== 0 &&
                       postComments.map((Citem) => {
                         return (
                           <>
                             {Citem.postID === item._id && (
-                              <div className="d-flex align-items-center m-2">
+                              <div className="d-flex  m-2">
                                 <img
                                   src={Citem.userDP}
-                                  width="25"
-                                  height="25"
-                                  style={{ borderRadius: "50%" }}
-                                  className="mx-2"
+                                  // width="25"
+                                  // height="25"
+                                  // style={{ borderRadius: "50%" }}
+                                  className="mx-2 rounded-full h-12 w-12"
                                 />
                                 <div
                                   className="shadow-md"
@@ -333,8 +328,20 @@ const PostModal = (propFromChid) => {
                           </>
                         );
                       })}
-                  </>
                   {/* comment section ends */}
+                  <div className="flex">
+                  <button
+                    className={
+                      item.totalComments != 0
+                        ? "btn btn-link text-muted"
+                        : "btn btn-link text-decoration-none text-muted"
+                    }
+                    onClick={()=>handleCmtModal(item._id)}
+                  >
+                    View all comments
+                  </button>
+                  </div>
+                  
                   <hr className="m-2"></hr>
                   {/* comment input starts */}
                   {commentSectionOpen[index] && (
@@ -342,9 +349,8 @@ const PostModal = (propFromChid) => {
                       <a className="mx-2" href="/profile">
                         <img
                           src={loggedInUser.profilePic}
-                          width="40"
-                          height="40"
-                          style={{ borderRadius: "50%", objectFit: "cover" }}
+                          className="mx-2 rounded-full h-12 w-12 object-cover"
+
                         />
                       </a>
                       <div className="w-100 mx-2 d-flex flex-column   m-0">
@@ -352,17 +358,7 @@ const PostModal = (propFromChid) => {
                           value={comment}
                           onChange={handleCommentChange}
                           placeholder="Write a comment...."
-                          className="w-100 d-flex align-items-center"
-                          style={{
-                            outline: "none",
-                            fontSize: "15px",
-                            backgroundColor: "#F0F2F5",
-                            border: "0",
-                            borderTopLeftRadius: "17px",
-                            borderTopRightRadius: "17px",
-                            resize: "none",
-                            overflow: "hidden",
-                          }}
+                          className="w-full flex items-center outline-0	text-lg bg-[#F0F2F5] border-0 rounded-t-lg resize-none overflow-hidden px-2"
                         ></textarea>
                         <div
                           className="d-flex justify-content-between align-items-center"
@@ -504,6 +500,60 @@ const PostModal = (propFromChid) => {
             );
           })}
       </InfiniteScroll>
+
+      <Modal
+        show={openCmtModal}
+        onHide={()=>setOpenCmtModal(false)}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Commments</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {postComments.length !== 0 &&
+                      postComments.map((Citem) => {
+                        return (
+                          <>
+                            {Citem.postID === PostID && (
+                              <div className="d-flex  m-2">
+                                <img
+                                  src={Citem.userDP}
+                                  // width="25"
+                                  // height="25"
+                                  // style={{ borderRadius: "50%" }}
+                                  className="mx-2 rounded-full h-12 w-12"
+                                />
+                                <div
+                                  className="shadow-md"
+                                  style={{
+                                    backgroundColor: "#F0F2F5",
+                                    borderRadius: "10px",
+                                  }}
+                                >
+                                  <small className="mx-2">
+                                    {Citem.userName}
+                                  </small>
+                                  <p className="mx-2">{Citem.comment}</p>
+                                  <small
+                                    className="mx-2"
+                                    style={{ color: "#0866FF" }}
+                                  >
+                                    {getDays(Citem.createdAt)}
+                                  </small>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={()=>setOpenCmtModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

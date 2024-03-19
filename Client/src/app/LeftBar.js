@@ -3,6 +3,16 @@ import { useNavigate } from "react-router-dom"
 import UserDataContext from '../Context/UserContext.js';
 
 const LeftBar = () => {
+
+    const handleCollapse = () =>{
+        let target = document.getElementById('collapseExample');
+        if(target.style.visibility=='collapse' || 'hidden'){
+            target.style.visibility='visible';
+
+        }else{
+            target.style.visibility='hidden';
+        }
+    }
     const navitage = useNavigate()
     const {loggedInUser} = useContext(UserDataContext)
 
@@ -51,7 +61,6 @@ const LeftBar = () => {
                     {/* Collapse starts */}
                     <div >
                         <div className="collapse hide" id="collapseExample">
-
                             <div className='mt-2'>
                                 <button className='btn btn-light w-100 d-flex justify-content-staralign-items-centert '>
                                     <svg xmlns="http://www.w3.org/2000/svg" height="25" width="25" viewBox="0 0 448 512"><path fill="#74C0FC" d="M160 80c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V80zM0 272c0-26.5 21.5-48 48-48H80c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V272zM368 96h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H368c-26.5 0-48-21.5-48-48V144c0-26.5 21.5-48 48-48z" /></svg>
@@ -114,7 +123,7 @@ const LeftBar = () => {
                             </div>
                         </div>
                         <div className='mt-2'>
-                            <button className="btn btn-light d-flex justify-content-start align-items-center w-100" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+                            <button onClick={handleCollapse} className="btn btn-light d-flex justify-content-start align-items-center w-100" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="25" width="25" viewBox="0 0 384 512"><path fill="#B197FC" d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z" /></svg>
                                 <h6 className='mt-1 mx-3'>See more</h6>
                             </button>

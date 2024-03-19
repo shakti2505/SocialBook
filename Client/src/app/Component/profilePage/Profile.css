@@ -38,7 +38,9 @@
   text-decoration: none;
  }
 
-
+ .audio .canvas .embed .iframe .img .object .svg .video{
+  display:flex;
+ }
  
 
 

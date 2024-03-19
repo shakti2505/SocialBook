@@ -19,7 +19,6 @@ import PostNotificationModal from "../models/Notifications/PostNotification.js";
 
 const monitorRequests = async (collection, message = "Chnage streams starts") => {
     const changeStreams = collection.watch();
-    console.log(message);
     changeStreams.on('change', async (next) => {
         const { fullDocument } = next
         if (fullDocument) {
@@ -45,7 +44,6 @@ const monitorRequests = async (collection, message = "Chnage streams starts") =>
  const monitorPosts = async (collection, message="Chnage streams starts") =>{
     try {
         const changeStreams = collection.watch();
-        console.log(message);
         changeStreams.on('change', async(next)=>{
             const { fullDocument } = next;
     
@@ -56,7 +54,6 @@ const monitorRequests = async (collection, message = "Chnage streams starts") =>
                     postOwnerDP:fullDocument.postOwnerDP,
                 });
                 const res = await newPostNotification.save();
-                console.log(res);
             }
             else{
                 console.log('No chages found in the Post Streams')

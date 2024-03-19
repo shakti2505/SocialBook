@@ -5,8 +5,6 @@ import Sidebar from "./Sidebar";
 import SidebarV2 from "./SidebarV2";
 import HomePage from "./app/HomePage.js";
 import UploadDP from "./UploadDP";
-import LandingPage from "./landingPage";
-import Login from "./login";
 import { Routes, Route, useLocation } from "react-router-dom";
 import FriendsListpage from "./app/FriendsListpage.js";
 import Navbars from "./Navbar.js";
@@ -14,14 +12,19 @@ import Protected from "./app/Utils/Protected.js";
 import ProfilePage from "./app/Component/profilePage/ProfilePage.js";
 import FriendProfilepage from "./app/Component/profilePage/FriendProfilePage.js";
 import PostModalSekeloton from "./app/Component/SkeletonLoaders/PostModalSekeloton.js";
+import Login from "./app/Component/Authentication/login.js";
+import LandingPage from "./app/Component/Authentication/landingPage.js";
+import Forgotpassword from "./app/Component/Authentication/ForgotPassword.js";
+import ResetPassword from "./app/Component/Authentication/ResetPassword.js";
+
 
 const Home = React.lazy(() => import("./app/HomePage.js"));
-
+// const Forgotpassword = React.lazy(()=>import("./app/Component/Authentication/ForgotPassword.js"))
 function App() {
   const location = useLocation();
-  const showNavbars = !(
-    location.pathname === "/login" || location.pathname === "/"
-  );
+  const showNavbars = !(location.pathname === '/login' || location.pathname === '/' || location.pathname === '/forgotpassword' || location.pathname==='/resetpassword');
+
+
 
   return (
     <>
@@ -29,19 +32,17 @@ function App() {
         {showNavbars && <Navbars />}
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          {/* <Route path='/home' element={<Sidebar />} /> */}
-          {/* <Route path='/home' element={<Protected Component={HomePage} />} /> */}
           <Route
             path="/home"
             element={
-              <React.Suspense fallback={<PostModalSekeloton/>}>
+              <React.Suspense fallback={<PostModalSekeloton />}>
                 <Protected Component={Home} />
               </React.Suspense>
             }
           />
-          <Route path="/upload-DP" element={<UploadDP />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/home2" element={<SidebarV2 />} />
+          <Route path="/forgotpassword" element={<Forgotpassword />} />
+          <Route path="/resetpassword" element={<ResetPassword />} />
           <Route
             path="/friends"
             element={<Protected Component={FriendsListpage} />}

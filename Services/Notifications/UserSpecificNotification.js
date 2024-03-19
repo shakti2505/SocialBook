@@ -12,6 +12,7 @@ const SendFriendRequestNotification = async (UserID) => {
   const notificaiton = await FriendRequestNotificationsModal.find({
     userID: UserID,
   });
+  console.log('notificaiton',notificaiton[0])
   if (!Usersubscription || !notificaiton) {
     console.log("Subscription or notification is not found! ");
   }
@@ -37,9 +38,8 @@ const SendFriendRequestNotification = async (UserID) => {
         (sub.keys.p256dh = item.keys.p256dh),
         (sub.keys.auth = item.keys.auth);
     });
-    const requestSender = await friendRequestModal.findById(
-      notificaiton[0].friendRequestID
-    );
+    const requestSender = await friendRequestModal.findById(notificaiton[0].friendRequestID);
+    console.log('requestSender',requestSender)
     const payload = JSON.stringify({
       title: "Socialbook",
       body: {
@@ -48,7 +48,6 @@ const SendFriendRequestNotification = async (UserID) => {
       profilePic: requestSender.senderProfilePicture,
     });
     const noti = await webpush.sendNotification(sub, payload, options);
-    console.log("noti", noti);
   } catch (error) {
     console.log("error in sending notificatioin to specific user", error);
   }
@@ -56,9 +55,7 @@ const SendFriendRequestNotification = async (UserID) => {
 
 const sendPostUploadNotification = async (UserID) => {
   const Usersubscription = await SubscriptionModel.find({ user: UserID });
-  console.log(Usersubscription);
   const notificaiton = await PostNotificationModal.find({ userID: UserID });
-  console.log(notificaiton)
   if (!Usersubscription || !notificaiton) {
     console.log("Subscription or notification is not found! ");
   }
@@ -93,7 +90,7 @@ const sendPostUploadNotification = async (UserID) => {
         profilePic: notificaiton[0].postOwnerDP,
       });
       const noti = await webpush.sendNotification(sub, payload, options);
-      console.log("noti", noti);
+      console.log(noti)
   } catch (error) {
 
   }

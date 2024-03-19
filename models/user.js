@@ -17,18 +17,19 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
         trim: true
     },
     phone: {
         type: Number,
-        required: true,
         trim: true
     },
     gender: {
         type: String,
-        enum: ['male', 'female', 'other'],
         required: true,
+        trim: true
+    },
+    pronoun: {
+        type: String,
         trim: true
     },
     DateOfBirth: {
@@ -81,6 +82,13 @@ const UserSchema = new mongoose.Schema({
         minlength: 6,
         required: true,
     },
+    otp:{
+        type:Number,
+    },
+    isVerified:{
+        type:Boolean,
+        default:false
+    }
 },
 {
     timestamps: true

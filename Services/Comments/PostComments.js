@@ -47,6 +47,7 @@ router.get("/get_comments", authorization, async (req, res) => {
     const UserId = req.userId;
     const { postID } = req.query;
     const postCommentsID = await PostCommentsModal.find( postID ? { postID: postID } :{});
+    console.log(postCommentsID.length)
     return res.status(200).json({ allComments: postCommentsID });
   } catch (error) {
     console.log(error);

@@ -64,6 +64,15 @@ export const apiVariables = {
   },
   getUserSpecificPosts:{
     url:'/services/get_user_specific_posts'
+  },
+  sendOtp:{
+    url:"/authentication/forgotpassword"
+  },
+  verifyOtp:{
+    url:"/authentication/verifyOtp"
+  },
+  resetPassword:{
+    url:"/authentication/resetpassword"
   }
 }
 
