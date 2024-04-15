@@ -1,9 +1,4 @@
-import React, {
-  useContext,
-  useDeferredValue,
-  useEffect,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import UserDataContext from "../Context/UserContext.js";
 import axios from "axios";
 import { apiVariables } from "../utilities/apiVariables.js";
@@ -12,16 +7,14 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Spinner from "react-bootstrap/Spinner";
 import EmojiPicker from "emoji-picker-react";
 import paperPlane from "../images/Icon/paper-plane.png";
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 const PostModal = () => {
   const [posts, setposts] = useState([]);
   const [PostID, setPostID] = useState("");
   const [postComments, setPostCommnets] = useState([]);
-  const [openCmtModal, setOpenCmtModal] = useState(false)
-
-
+  const [openCmtModal, setOpenCmtModal] = useState(false);
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(
     Array(posts.length).fill(false)
   );
@@ -29,11 +22,14 @@ const PostModal = () => {
     Array(posts.length).fill(false)
   );
 
+  const [LikePost, setLikePost] = useState(Array(posts.length).fill(false));
+
   const [seeMore, setseeMore] = useState(false);
   const [activePage, setActivePage] = useState(1);
   const [totalPosts, setTotalPost] = useState(0);
   const [comment, setComment] = useState("");
   const [OpenEmojiPicker, setOpenEmojiPicker] = useState(false);
+  const [likeColor, setLikeColor] = useState("#e9eaed");
   const { loggedInUser } = useContext(UserDataContext);
   // const { posts } = useContext(UserDataContext);
 
@@ -84,6 +80,30 @@ const PostModal = () => {
       });
   };
 
+  const handleLikePost = async (postID) => {
+    const apicall = await axios.post(
+      BASE_URL_API + apiVariables.likePost.url,
+      {
+        postID: postID,
+      },
+      { withCredentials: "include" }
+    );
+    if (apicall.status !== 200) {
+      console.log("unable to like the post!");
+    } else {
+      console.log("like api response", apicall.data);
+      getPosts();
+    }
+  };
+
+  const likePost = (index, postid) => {
+    handleLikePost(postid);
+    const newLikePost = [...LikePost];
+    newLikePost[index] = !newLikePost[index];
+    setLikePost(newLikePost);
+    setLikeColor("#1049f4");
+  };
+
   const getDays = (dateTime) => {
     const currentDate = Date.now();
     const dt = new Date(dateTime).getTime();
@@ -111,6 +131,7 @@ const PostModal = () => {
       .then((response) => {
         if (response.status !== 200) {
         } else {
+          // setFirstComment(response.data.allComments[0]);
           setPostCommnets((prevComment) =>
             prevComment.concat(response.data.allComments)
           );
@@ -141,14 +162,22 @@ const PostModal = () => {
     }
   };
 
-  const handleCmtModal = (postid) =>{
+  const handleCmtModal = (postid) => {
+    setPostCommnets([]);
     setPostID(postid);
     setOpenCmtModal(true);
     getPostComments(postid);
-  }
+  };
+
+  const handleCloseCmtModal = () => {
+    setOpenCmtModal(false);
+    setPostCommnets([]);
+    getPostComments();
+  };
 
   useEffect(() => {
     getPosts();
+    getPostComments();
   }, []);
 
   return (
@@ -174,9 +203,8 @@ const PostModal = () => {
                       <a href="/profile">
                         <img
                           src={item.postOwnerDP}
-                        
                           className="ml-1 rounded-full h-12 w-12 object-cover "
-                          />
+                        />
                       </a>
                       <div className="d-flex flex-column">
                         <strong className="mx-2">{item.postOwner}</strong>
@@ -205,8 +233,45 @@ const PostModal = () => {
                         );
                       })}
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="px-1 text-muted">
+                      {/* {item.LikedBy[0]?.name} and {item.likeCount!==1 &&  `${item.likeCount-1}others`}   */}
+                      {item.likeCount === 1
+                        ? item.LikedBy[0]?.name
+                        : item.likeCount > 1
+                        ? `${item.LikedBy[0]?.name} and ${
+                            item.likeCount - 1
+                          } others`
+                        : ""}
+                    </span>
+
+                      {
+                         postComments.filter(
+                          (citem) => citem.postID === item._id
+                        ).length!==0 &&
+                        <button
+                        className={
+                          item.totalComments != 0
+                            ? "btn btn-link text-decoration-none text-muted"
+                            : "btn btn-link text-decoration-none text-muted"
+                        }
+                        onClick={() => handleCmtModal(item._id)}
+                      >
+                        {
+                          postComments.filter(
+                            (citem) => citem.postID === item._id
+                          ).length
+                        }
+                        comments
+                      </button> 
+                      
+                      }
+                  </div>
                   <div className="flex justify-between items-center mt-2">
-                    <button className="btn btn-light btn-sm  mx-1 d-flex align-items-center justify-content-center">
+                    <button
+                      onClick={() => likePost(index, item._id)}
+                      className="btn btn-light btn-sm mx-1 d-flex align-items-center justify-content-center"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"
@@ -214,8 +279,8 @@ const PostModal = () => {
                         height="25"
                       >
                         <path
-                          fill="#686E77"
-                          d="M323.8 34.8c-38.2-10.9-78.1 11.2-89 49.4l-5.7 20c-3.7 13-10.4 25-19.5 35l-51.3 56.4c-8.9 9.8-8.2 25 1.6 33.9s25 8.2 33.9-1.6l51.3-56.4c14.1-15.5 24.4-34 30.1-54.1l5.7-20c3.6-12.7 16.9-20.1 29.7-16.5s20.1 16.9 16.5 29.7l-5.7 20c-5.7 19.9-14.7 38.7-26.6 55.5c-5.2 7.3-5.8 16.9-1.7 24.9s12.3 13 21.3 13L448 224c8.8 0 16 7.2 16 16c0 6.8-4.3 12.7-10.4 15c-7.4 2.8-13 9-14.9 16.7s.1 15.8 5.3 21.7c2.5 2.8 4 6.5 4 10.6c0 7.8-5.6 14.3-13 15.7c-8.2 1.6-15.1 7.3-18 15.2s-1.6 16.7 3.6 23.3c2.1 2.7 3.4 6.1 3.4 9.9c0 6.7-4.2 12.6-10.2 14.9c-11.5 4.5-17.7 16.9-14.4 28.8c.4 1.3 .6 2.8 .6 4.3c0 8.8-7.2 16-16 16H286.5c-12.6 0-25-3.7-35.5-10.7l-61.7-41.1c-11-7.4-25.9-4.4-33.3 6.7s-4.4 25.9 6.7 33.3l61.7 41.1c18.4 12.3 40 18.8 62.1 18.8H384c34.7 0 62.9-27.6 64-62c14.6-11.7 24-29.7 24-50c0-4.5-.5-8.8-1.3-13c15.4-11.7 25.3-30.2 25.3-51c0-6.5-1-12.8-2.8-18.7C504.8 273.7 512 257.7 512 240c0-35.3-28.6-64-64-64l-92.3 0c4.7-10.4 8.7-21.2 11.8-32.2l5.7-20c10.9-38.2-11.2-78.1-49.4-89zM32 192c-17.7 0-32 14.3-32 32V448c0 17.7 14.3 32 32 32H96c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32H32z"
+                          fill={LikePost[index] && likeColor }
+                          d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2H464c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48H294.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V320 272 247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z"
                         />
                       </svg>
                       <strong className=" text-muted mx-2">Like</strong>
@@ -253,12 +318,12 @@ const PostModal = () => {
                     </button>
                   </div>
                   <hr className="m-2"></hr>
-
-                  {/* {postComments.length !== 0 &&
-                      postComments.map((Citem) => {
+                  {/* {postComments.length !== 0 && 
+                      postComments.map((Citem, 
+                        ) => {
                         return (
                           <>
-                            {Citem.postID === item._id && (
+                            {(Citem.postID === item._id) && (
                               <div className="d-flex align-items-center m-2">
                                 <img
                                   src={Citem.userDP}
@@ -290,20 +355,20 @@ const PostModal = () => {
                           </>
                         );
                       })} */}
-
-                  {/* comment section starts */}
-                    {postComments.length !== 0 &&
-                      postComments.map((Citem) => {
+                  {postComments.length !== 0 &&
+                    postComments
+                      .filter((citem) => citem.postID === item._id)
+                      .map((item, index) => {
                         return (
                           <>
-                            {Citem.postID === item._id && (
-                              <div className="d-flex  m-2">
+                            {index === 0 && (
+                              <div className="d-flex align-items-center m-2">
                                 <img
-                                  src={Citem.userDP}
+                                  src={item.userDP}
                                   // width="25"
                                   // height="25"
                                   // style={{ borderRadius: "50%" }}
-                                  className="mx-2 rounded-full h-12 w-12"
+                                  className="ml-1 rounded-full h-12 w-12 object-cover "
                                 />
                                 <div
                                   className="shadow-md"
@@ -313,14 +378,14 @@ const PostModal = () => {
                                   }}
                                 >
                                   <small className="mx-2">
-                                    {Citem.userName}
+                                    {item.userName}
                                   </small>
-                                  <p className="mx-2">{Citem.comment}</p>
+                                  <p className="mx-2">{item.comment}</p>
                                   <small
                                     className="mx-2"
                                     style={{ color: "#0866FF" }}
                                   >
-                                    {getDays(Citem.createdAt)}
+                                    {getDays(item.createdAt)}
                                   </small>
                                 </div>
                               </div>
@@ -328,20 +393,7 @@ const PostModal = () => {
                           </>
                         );
                       })}
-                  {/* comment section ends */}
-                  <div className="flex">
-                  <button
-                    className={
-                      item.totalComments != 0
-                        ? "btn btn-link text-muted"
-                        : "btn btn-link text-decoration-none text-muted"
-                    }
-                    onClick={()=>handleCmtModal(item._id)}
-                  >
-                    View all comments
-                  </button>
-                  </div>
-                  
+
                   <hr className="m-2"></hr>
                   {/* comment input starts */}
                   {commentSectionOpen[index] && (
@@ -350,7 +402,6 @@ const PostModal = () => {
                         <img
                           src={loggedInUser.profilePic}
                           className="mx-2 rounded-full h-12 w-12 object-cover"
-
                         />
                       </a>
                       <div className="w-100 mx-2 d-flex flex-column   m-0">
@@ -485,9 +536,7 @@ const PostModal = () => {
                       </div>
                     </div>
                   )}
-
                   {/* comment input  ends*/}
-
                   {emojiPickerOpen[index] && (
                     <EmojiPicker
                       onEmojiClick={(e) => concateCommentWithEmoji(e.emoji)}
@@ -503,7 +552,7 @@ const PostModal = () => {
 
       <Modal
         show={openCmtModal}
-        onHide={()=>setOpenCmtModal(false)}
+        onHide={handleCloseCmtModal}
         backdrop="static"
         keyboard={false}
       >
@@ -511,45 +560,40 @@ const PostModal = () => {
           <Modal.Title>Commments</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {postComments.length !== 0 &&
-                      postComments.map((Citem) => {
-                        return (
-                          <>
-                            {Citem.postID === PostID && (
-                              <div className="d-flex  m-2">
-                                <img
-                                  src={Citem.userDP}
-                                  // width="25"
-                                  // height="25"
-                                  // style={{ borderRadius: "50%" }}
-                                  className="mx-2 rounded-full h-12 w-12"
-                                />
-                                <div
-                                  className="shadow-md"
-                                  style={{
-                                    backgroundColor: "#F0F2F5",
-                                    borderRadius: "10px",
-                                  }}
-                                >
-                                  <small className="mx-2">
-                                    {Citem.userName}
-                                  </small>
-                                  <p className="mx-2">{Citem.comment}</p>
-                                  <small
-                                    className="mx-2"
-                                    style={{ color: "#0866FF" }}
-                                  >
-                                    {getDays(Citem.createdAt)}
-                                  </small>
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        );
-                      })}
+          {postComments.length !== 0 &&
+            postComments.map((Citem) => {
+              return (
+                <>
+                  {Citem.postID === PostID && (
+                    <div className="d-flex  m-2">
+                      <img
+                        src={Citem.userDP}
+                        // width="25"
+                        // height="25"
+                        // style={{ borderRadius: "50%" }}
+                        className="mx-2 rounded-full h-12 w-12"
+                      />
+                      <div
+                        className="shadow-md"
+                        style={{
+                          backgroundColor: "#F0F2F5",
+                          borderRadius: "10px",
+                        }}
+                      >
+                        <small className="mx-2">{Citem.userName}</small>
+                        <p className="mx-2">{Citem.comment}</p>
+                        <small className="mx-2" style={{ color: "#0866FF" }}>
+                          {getDays(Citem.createdAt)}
+                        </small>
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            })}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={()=>setOpenCmtModal(false)}>
+          <Button variant="secondary" onClick={handleCloseCmtModal}>
             Close
           </Button>
         </Modal.Footer>

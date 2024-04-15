@@ -8,11 +8,11 @@ const swDev = async (userEmail) => {
         // let BASE_URL = 'http://localhost:3000'
         let url = `${BASE_URL}/sw.js`
         const register = await navigator.serviceWorker.register(url);
-        console.log('register', register)
         const subscription = await register.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: process.env.REACT_APP_PUBLIC_VAPID_KEY,
         });
+        console.log('subscription',subscription)
         const response = await axios.post(`${BASE_URL_API}/services/subscribe-for-push-notification`, JSON.stringify({ subscription }),
             {
                 withCredentials: 'include',

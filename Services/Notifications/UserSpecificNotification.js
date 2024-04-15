@@ -27,11 +27,12 @@ const SendFriendRequestNotification = async (UserID) => {
     };
     const options = {
       vapidDetails: {
-        subject: "mailto:myemail@example.com",
+        subject: "mailto:kashyapshakti1994@gmail.com",
         publicKey: process.env.VAPID_PUBLIC_KEY,
         privateKey: process.env.PrivateKey,
       },
     };
+    console.log(options);
     Usersubscription.map((item) => {
       (sub.endpoint = item.endpoint),
         (sub.expirationTime = item.expirationTime),

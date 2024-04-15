@@ -73,7 +73,11 @@ export const apiVariables = {
   },
   resetPassword:{
     url:"/authentication/resetpassword"
+  },
+  likePost:{
+    url:"/services/like_post"
   }
+
 }
 
 

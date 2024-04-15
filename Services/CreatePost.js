@@ -94,7 +94,7 @@ router.get("/get-Post", authorization, async (req, res) => {
 
 router.get("/get_user_specific_posts", authorization, async (req, res) => {
   try {
-    const page = parseInt(req.query.page);   
+    const page = parseInt(req.query.page);
     const pageSize = parseInt(req.query.pageSize);
     const friendsID = req.query.UserId;
     const skip = (page - 1) * pageSize;
@@ -130,8 +130,6 @@ router.get("/search_potential_connetion", authorization, async (req, res) => {
   }
 });
 
-
-
 // get Post's of Friends
 router.get("/get_friends_Posts", authorization, async (req, res) => {
   try {
@@ -146,19 +144,45 @@ router.get("/get_friends_Posts", authorization, async (req, res) => {
 });
 
 //edit Posts
-router.put('/edit_post', authorization, (req, res)=>{
+router.put("/edit_post", authorization, (req, res) => {
   try {
-    const {PostID, PostCaption, postImages} = req.body;
-    if(!PostID){
+    const { PostID, PostCaption, postImages } = req.body;
+    if (!PostID) {
       return res.status(401).send("Post ID is required");
     }
-    const target_post = postModel.findByIdAndUpdate(PostID, {postCaption:PostCaption, postImagesURls:postImages});
-    console.log(target_post)
-    return res.status(201).send({Message:'Post updated Successfully', target_post})
+    const target_post = postModel.findByIdAndUpdate(PostID, {
+      postCaption: PostCaption,
+      postImagesURls: postImages,
+    });
+    return res
+      .status(201)
+      .send({ Message: "Post updated Successfully", target_post });
   } catch (error) {
-    console.log(error)
-    return res.status(500).send({message:'Internal Server Error'})
+    console.log(error);
+    return res.status(500).send({ message: "Internal Server Error" });
   }
-})
+});
+
+//Like post By ID
+router.post("/like_post", authorization, async (req, res) => {
+  try {
+    const { postID } = req.body;
+    const UserId = req.userId;
+    const loggedInUser = await userModel.findById(UserId);
+    if (!postID) {
+      return res.status(402).json({ message: "Post id is required" });
+    }
+    const currentDateAndTime  = new Date().toLocaleString();
+    const target_post = await postModel.findById(postID);
+    const post = await postModel.findByIdAndUpdate(postID, {
+      LikedBy: { name: loggedInUser.firstName + " " + loggedInUser.LastName, user_id:loggedInUser._id, likedAt:currentDateAndTime},
+      likeCount:target_post.likeCount===0 ? 1 : target_post.likeCount+1
+    }); 
+    return res.status(200).json({message:"Liked post successfully"});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message:"Internal Server error" });
+  }
+});
 
 export default router;

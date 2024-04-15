@@ -81,12 +81,13 @@ const HomePage = () => {
               <div className='card-body'>
                 <div className="d-flex">
                   <a href='/profile'>
-                    <img src={loggedInUser.profilePic} alt='img' width='40' height='40' style={{ borderRadius: "50%", objectFit: "cover" }} />
+                    <img src={loggedInUser.profilePic}
+                     className='w-14 h-14 object-cover rounded-full'/>
                   </a>
-                  <button onClick={OpenPostModal} className='searchBtn text-muted btn btn-light mx-2 w-100 d-flex justify-content-start'>
-                    {/* {
-                      postCaption.length !== 0 ? postCaption : `What's on you mind, ${loggedInUser.firstName}?`
-                    } */}
+                  <button onClick={OpenPostModal} className='searchBtn text-muted btn btn-light mx-2 w-100 d-flex justify-start items-center'>
+                    {
+                    `What's on you mind, ${loggedInUser.firstName} ?`
+                    }
                   </button>
                 </div>
 

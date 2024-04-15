@@ -79,6 +79,7 @@ const LandingPage = () => {
   ];
 
   const currentYear = new Date().getFullYear();
+  
   const startYear = 1905;
   const years = [];
 

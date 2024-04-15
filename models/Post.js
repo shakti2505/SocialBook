@@ -7,8 +7,7 @@ const PostSchema = new mongoose.Schema({
     },
     postImagesURls: {
         type: []    
-    }
-    ,
+    },
     users: {
         type: mongoose.Schema.Types.ObjectId,
         ref: userModel,
@@ -23,6 +22,13 @@ const PostSchema = new mongoose.Schema({
     totalComments:{
         type:Number,
         default:0
+    },
+    likeCount:{
+        type:Number,
+        default:0
+    },
+    LikedBy:{
+        type:Array
     }
 },{ timestamps: true });
 
