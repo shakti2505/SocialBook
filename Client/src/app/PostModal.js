@@ -175,6 +175,7 @@ const PostModal = () => {
     getPostComments();
   };
 
+
   useEffect(() => {
     getPosts();
     getPostComments();

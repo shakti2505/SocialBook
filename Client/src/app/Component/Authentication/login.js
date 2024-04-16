@@ -13,7 +13,7 @@ const Login = () => {
   const [isEmail, setIsemail] = useState(false);
   const [isloading, setisloading] = useState(false);
   const [otpError, setOtpError] = useState("");
-  const [isForgotPasword, setIsForgotPassword] = useState(false);
+  const [isForgotPasword, setIsForgotPassword] = useState(false);     
   const [passwordRecoveryEmail, setPasswordRecoveryEmail] = useState("");
   const [credentials, setCredentials] = useState({
     email: "",
@@ -96,7 +96,7 @@ const Login = () => {
           >
             <button
               className="w-100 text-3xl"
-              onClick={() => navitage("/signup")}
+              onClick={() => navitage("/")}
             >
               Signup
             </button>

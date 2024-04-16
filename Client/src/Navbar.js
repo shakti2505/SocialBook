@@ -32,13 +32,18 @@ const Navbars = () => {
       if (apicall.status !== 200) {
         console.log("Internal Error");
       } else {
-        setSerchedUsers(apicall.data);
+        setSerchedUsers(apicall.data.matchingUsers);
       }
     }
   };
 
   useEffect(() => {
-    searchPotentialConnetion(apiVariables.searchPotentialConnetion(searchUser));
+    const getdata = setTimeout(() => {
+      searchPotentialConnetion(
+        apiVariables.searchPotentialConnetion(searchUser)
+      );
+    }, 500);
+    return () => clearTimeout(getdata);
   }, [searchUser]);
 
   return (
@@ -121,12 +126,19 @@ const Navbars = () => {
                 />
               </Dropdown.Toggle>
               {SerchedUsers.length !== 0 && (
-                <Dropdown.Menu className="">
+                <Dropdown.Menu className="flex">
                   {SerchedUsers.map((item, index) => {
                     return (
                       <>
-                        <Dropdown.Item href="#/action-1">
-                          {item.firstName}
+                         <Dropdown.Item >
+                         <Link to="/profile" className="text-decoration-none d-flex flex-row justify-between">
+                            <img
+                              src={item.profilePic}
+                              className="ml-1 rounded-full h-12 w-12 object-cover "
+                            />                    
+                           <small className="ml-2"> {item.firstName} {item.LastName}</small>
+                          </Link>
+                          
                         </Dropdown.Item>
                       </>
                     );

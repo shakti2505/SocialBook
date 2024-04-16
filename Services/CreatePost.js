@@ -121,14 +121,32 @@ router.get("/search_potential_connetion", authorization, async (req, res) => {
   const loggedInUser = userModel.findById(UserId);
   if (loggedInUser) {
     const { username } = req.query;
-    const user = await userModel
-      .find({ firstName: username })
-      .select("firstName");
-    res.status(200).send(user);
+    const users = await userModel.find({});
+    const matchingUsers = users.filter(
+      (user) => user.firstName.toLowerCase() === username.toLowerCase()
+    );
+    return res.status(200).json({ matchingUsers });
   } else {
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 });
+// router.get("/search_potential_connection", authorization, async (req, res) => {
+//   try {
+//     const UserId = req.userId;
+//     const loggedInUser = await userModel.findById(UserId);
+//     if (loggedInUser) {
+//       const { username } = req.query;
+//       const users = await userModel.find({}).select("firstName");
+//       const matchingUsers = users.filter(user => user.firstName.toLowerCase() === username.toLowerCase());
+//       return res.status(200).json({matchingUsers:matchingUsers});
+//     } else {
+//       return res.status(401).send('No user found');
+//     }
+//   } catch (error) {
+//     console.error("Internal server error:", error);
+//     return res.status(500).send('internal server error');
+//   }
+// });
 
 // get Post's of Friends
 router.get("/get_friends_Posts", authorization, async (req, res) => {
@@ -172,16 +190,23 @@ router.post("/like_post", authorization, async (req, res) => {
     if (!postID) {
       return res.status(402).json({ message: "Post id is required" });
     }
-    const currentDateAndTime  = new Date().toLocaleString();
+    const currentDateAndTime = new Date().toLocaleString();
     const target_post = await postModel.findById(postID);
-    const post = await postModel.findByIdAndUpdate(postID, {
-      LikedBy: { name: loggedInUser.firstName + " " + loggedInUser.LastName, user_id:loggedInUser._id, likedAt:currentDateAndTime},
-      likeCount:target_post.likeCount===0 ? 1 : target_post.likeCount+1
-    }); 
-    return res.status(200).json({message:"Liked post successfully"});
+    target_post.LikedBy.push({
+      name: loggedInUser.firstName + " " + loggedInUser.LastName,
+      user_id: loggedInUser._id,
+      email:loggedInUser.email,
+      likedAt: currentDateAndTime,
+    });
+    target_post.save();
+    
+     await postModel.findByIdAndUpdate(postID, {
+      likeCount: target_post.likeCount === 0 ? 1 : target_post.likeCount + 1
+    });
+    return res.status(200).json({ message: "Liked post successfully" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message:"Internal Server error" });
+    res.status(500).json({ message: "Internal Server error" });
   }
 });
 

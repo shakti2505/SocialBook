@@ -244,21 +244,21 @@ const FriendsListpage = () => {
                   })}
               </div>
               <hr />
-              <div className={showFriendsList ? 'd-none' :"d-flex justify-content-start flex-wrap mx-2"}>
-                <h4 className="fw-bold mx-2">People you may know</h4>
+              <h4 className="fw-bold mx-2">People you may know</h4>
+              <div className={showFriendsList ? 'd-none' :"flex flex-wrap justify-start mx-2"}>
                 {allUsers.length !== 0 &&
                   allUsers.map((item, index) => {
                     return (
-                      <div key={index} className="mx-2 mt-2">
-                        <Card style={{ width: "16rem", height: "25rem" }}>
+                      <div 
+                        div key={index} className="mx-2 mt-2">
+                        <Card className="w-52 h-40">
+
                           {isLoading ? (
                             <Spinner animation="grow" variant="primary" />
                           ) : (
                             <Card.Img
+                            className="w-32 h-52 object-cover"
                               src={item.profilePic}
-                              width="100%"
-                              height="50%"
-                              style={{ objectFit: "cover" }}
                             />
                           )}
                           <Card.Body>
