@@ -121,7 +121,7 @@ router.get("/search_potential_connetion", authorization, async (req, res) => {
   const loggedInUser = userModel.findById(UserId);
   if (loggedInUser) {
     const { username } = req.query;
-    const users = await userModel.find({});
+    const users = await userModel.find({}).select("-password");
     const matchingUsers = users.filter(
       (user) => user.firstName.toLowerCase() === username.toLowerCase()
     );

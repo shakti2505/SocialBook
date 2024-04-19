@@ -76,7 +76,11 @@ export const apiVariables = {
   },
   likePost:{
     url:"/services/like_post"
-  }
+  },
+ 
+  getSpecifiedUser: (id) => ({
+    url: `/authentication/get_specificUserData?username=${id}`
+  }),
 
 }
 

@@ -29,6 +29,10 @@ const PostSchema = new mongoose.Schema({
     },
     LikedBy:{
         type:[]
+    },
+    public:{
+        type:Boolean,
+        default: false
     }
 },{ timestamps: true });
 

@@ -31,6 +31,7 @@ const FriendProfilepage = () => {
   const [ShowCancleDpUplpad, setShowCancleDpUplpad] = useState(false);
   const [isloading, setisloading] = useState(false);
   const [postUrl, setPostUrl] = useState([]);
+  const [specificUser, setSpecificUser] = useState([]);
   // const { posts } = useContext(UserDataContext);
   const [postCaption, setPostCaption] = useState("");
   const [posts, setposts] = useState([]);
@@ -101,6 +102,43 @@ const FriendProfilepage = () => {
       });
   };
 
+  // const getSpecifiedUser = (id) => {
+  //   console.log(id)
+  //   axios
+  //     .get(
+  //       BASE_URL_API + apiVariables.getSpecifiedUser.url
+
+  //       {
+  //         withCredentials: true,
+  //       },
+  //     )
+  //     .then((response) => {
+  //       if (response.status !== 200) {
+  //       } else {
+  //         setSpecificUser(response.data);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
+
+  const getSpecifiedUser = async (apivar) => {
+    const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
+      withCredentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Credentials": true,
+      },
+    });
+    if (apicall.status !== 200) {
+      console.log("Internal Error");
+    } else {
+      setSpecificUser(apicall.data.specificUser)
+    }
+  };
+
   const create_comment = async (postID, LoggedInUserDp, userName) => {
     console.log(postID, LoggedInUserDp, userName);
     const apicall = await axios.post(
@@ -129,7 +167,6 @@ const FriendProfilepage = () => {
 
   useEffect(() => {
     posts.map((item) => {
-        console.log(item)
       setPostUrl(item.postImagesURls);
     });
   }, [posts]);
@@ -137,6 +174,14 @@ const FriendProfilepage = () => {
   useEffect(() => {
     getUserSpecificPost();
   }, []);
+
+  useEffect(() => {
+    getSpecifiedUser(
+      apiVariables.getSpecifiedUser(id)
+    );
+  }, [id])
+
+  
 
   return (
     <>
@@ -157,11 +202,9 @@ const FriendProfilepage = () => {
                 marginRight: "10%",
               }}
             ></div>
-            <div
-              className="d-flex justify-content-evenly userProfile"
-            >
+            <div className="d-flex justify-content-evenly userProfile">
               <img
-                src={loggedInUser.profilePic}
+                src={specificUser.profilePic}
                 style={{
                   width: "10rem",
                   height: "10rem",
@@ -179,11 +222,11 @@ const FriendProfilepage = () => {
             <div className="d-flex flex-column text-center justify-content-center">
               <h2>
                 <strong>
-                  {loggedInUser.firstName} {loggedInUser.LastName}
+                  {specificUser.firstName} {specificUser.LastName}
                 </strong>
               </h2>
               <p className="text-muted">561 friends</p>
-              <p className="text-muted">{loggedInUser.bio}</p>
+              <p className="text-muted">{specificUser.bio}</p>
             </div>
           </section>
           {/* use data section */}
@@ -210,7 +253,7 @@ const FriendProfilepage = () => {
                                     <strong>Intro</strong>
                                   </h5>
                                   <ul className="list-unstyled text-muted">
-                                    <li className="mt-3">
+                                    <li className="mt-3 flex">
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 576 512"
@@ -226,12 +269,12 @@ const FriendProfilepage = () => {
                                         Lives in{" "}
                                         <strong>
                                           {" "}
-                                          {loggedInUser.livesIn},{" "}
-                                          {loggedInUser.city}
+                                          {specificUser.livesIn},{" "}
+                                          {specificUser.city}
                                         </strong>
                                       </span>
                                     </li>
-                                    <li className="mt-3">
+                                    <li className="mt-3 flex">
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 512 512"
@@ -245,7 +288,7 @@ const FriendProfilepage = () => {
                                       </svg>
                                       <span className="mx-3">Single</span>
                                     </li>
-                                    <li className="mt-3">
+                                    <li className="mt-3 flex">
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 512 512"
@@ -257,11 +300,11 @@ const FriendProfilepage = () => {
                                           d="M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
                                         />
                                       </svg>
-                                      <span className="mx-3">
+                                      <span className="mx-3 flex">
                                         Joined on <strong>December 2011</strong>
                                       </span>
                                     </li>
-                                    <li className="mt-3">
+                                    <li className="mt-3 flex">
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 640 512"
@@ -448,7 +491,6 @@ const FriendProfilepage = () => {
                               >
                                 {posts.length !== 0 &&
                                   posts.map((item, index) => {
-                                    console.log('userspecific', item)
                                     return (
                                       <>
                                         <div
@@ -460,14 +502,7 @@ const FriendProfilepage = () => {
                                               <a href="/profile">
                                                 <img
                                                   src={item.postOwnerDP}
-                                                  width="40"
-                                                  height="40"
-                                                  style={{
-                                                    borderRadius: "50%",
-                                                    objectFit: "cover",
-                                                  }}
-                                                  className="mt-1"
-                                                />
+                                                  className="ml-1 rounded-full h-12 w-12 object-cover"                                                />
                                               </a>
                                               <div className="d-flex flex-column">
                                                 <strong className="mx-2">

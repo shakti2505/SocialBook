@@ -18,6 +18,8 @@ const Navbars = () => {
   const [SerchedUsers, setSerchedUsers] = useState([]);
   const [openSearchModal, setOpenSearchModal] = useState(false);
   const [searchUser, setSearchUser] = useState("");
+  const [requestData, setRequestData] = useState({});
+  const [isfriendRequestSend, setIsfriendRequestsend] = useState(false);
 
   const searchPotentialConnetion = async (apivar) => {
     if (searchUser.length !== 0) {
@@ -37,6 +39,32 @@ const Navbars = () => {
     }
   };
 
+  const addFriend = async (requestreceiver) => {
+    const apicall = await axios.post(
+      BASE_URL_API + apiVariables.sendFriendRequest.url,
+      {
+        friendRequestStatus: "pending",
+        requestReceiverId: requestreceiver,
+        username: loggedInUser.firstName + " " + loggedInUser.LastName,
+        userDisplayPicture: loggedInUser.profilePic,
+      },
+      {
+        withCredentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+        },
+      }
+    );
+    if (apicall.status !== 201) {
+      throw new Error("Error in while Creating request");
+    } else {
+      setRequestData(apicall.data.sentrequest);
+      setIsfriendRequestsend(true);
+    }
+  };
+
   useEffect(() => {
     const getdata = setTimeout(() => {
       searchPotentialConnetion(
@@ -45,7 +73,6 @@ const Navbars = () => {
     }, 500);
     return () => clearTimeout(getdata);
   }, [searchUser]);
-
   return (
     <>
       {/* <nav className='navbar navbar-expand-lg bg-body-tertiary sticky-top' >
@@ -113,8 +140,8 @@ const Navbars = () => {
           <div className="d-flex mt-1 mx-1">
             <Dropdown role="search" id="#UserSearch">
               <Dropdown.Toggle
-                className="btn btn-light mx-2"
-                size="md"
+                className="btn btn-light mx-2 w-100"
+                size="lg"
                 id="dropdown-basic"
               >
                 <input
@@ -126,19 +153,53 @@ const Navbars = () => {
                 />
               </Dropdown.Toggle>
               {SerchedUsers.length !== 0 && (
-                <Dropdown.Menu className="flex">
+                <Dropdown.Menu className="w-100">
                   {SerchedUsers.map((item, index) => {
                     return (
                       <>
-                         <Dropdown.Item >
-                         <Link to="/profile" className="text-decoration-none d-flex flex-row justify-between">
+                        <Dropdown.Item>
+                          <div className="d-flex">
                             <img
                               src={item.profilePic}
                               className="ml-1 rounded-full h-12 w-12 object-cover "
-                            />                    
-                           <small className="ml-2"> {item.firstName} {item.LastName}</small>
-                          </Link>
-                          
+                            />
+                            <div className="d-flex flex-column ml-2">
+                              <Link to={`/profile/${item._id}`}>
+                                <strong className="mx-2">
+                                  {" "}
+                                  {item.firstName} {item.LastName}
+                                </strong>
+                              </Link>
+                              <div className="flex flex-row justify-between items-center">
+                                <Button
+                                  size="sm"
+                                  disabled={
+                                    isfriendRequestSend &&
+                                    requestData.requestReceiverID === item._id
+                                      ? true
+                                      : false
+                                  }
+                                  variant="primary"
+                                  onClick={() => addFriend(item._id)}
+                                  className="mt-1 ml-1"
+                                >
+                                  {isfriendRequestSend &&
+                                  requestData.requestReceiverID === item._id
+                                    ? "Request Sent"
+                                    : "Add friend"}
+                                </Button>
+                                {!isfriendRequestSend && (
+                                  <Button
+                                    size="sm"
+                                    variant="light"
+                                    className="ml-1 mt-1"
+                                  >
+                                    Remove
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
                         </Dropdown.Item>
                       </>
                     );

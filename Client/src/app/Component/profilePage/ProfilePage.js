@@ -13,7 +13,6 @@ import axios from "axios";
 import { apiVariables } from "..//..//..//utilities/apiVariables.js";
 import PostModal from "../../PostModal.js";
 import PostUplaodModal from "../PostUplaodModal.js";
-import Form from "react-bootstrap/Form";
 
 const ProfilePage = () => {
   const [addBio, setAddBio] = useState(false);
@@ -173,7 +172,7 @@ const ProfilePage = () => {
       {/* <Navbars /> */}
       <section className="mb-4">
         <div className="container">
-          {/* image section           */}
+          {/* image section */}
           <section className="">
             <div
               className="text-center bg-image shadow-1-strong rounded-bottom"
@@ -231,7 +230,10 @@ const ProfilePage = () => {
                   >
                     <Tab eventKey="Posts" title="Posts" id="tab">
                       <section>
-                        <div className="container ">
+                        <div
+                          className="container
+                        "
+                        >
                           <div className="row">
                             <div className="col-md-5 mb-4">
                               <div className="card">
@@ -252,7 +254,7 @@ const ProfilePage = () => {
                                         placeholder="Describle Who you are"
                                       ></textarea>
                                       <p className="text-muted float-end mt-1">
-                                        {101 - bio.length} Character remaining
+                                        {101 - bio?.length} Character remaining
                                       </p>
                                       <div className="d-flex justify-content-between mt-5">
                                         <div className="d-flex">
@@ -348,7 +350,7 @@ const ProfilePage = () => {
                                       <span className="mx-3 flex">
                                         Joined on <strong>December 2011</strong>
                                       </span>
-                                    </li> 
+                                    </li>
                                     <li className="mt-3 flex">
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -538,13 +540,12 @@ const ProfilePage = () => {
                                         src={loggedInUser.profilePic}
                                         alt="img"
                                         className=" object-cover rounded-full h-14 w-14"
-                                       
                                       />
                                     </a>
 
                                     <button
                                       onClick={OpenPostModal}
-                                      className=" text-center btn btn-light ml-2 shadow-sm w-full rounded-3xl"
+                                      className="text-center btn btn-light ml-2 shadow-md w-full rounded-full"
                                     >
                                       {postCaption.length !== 0
                                         ? postCaption
@@ -553,8 +554,8 @@ const ProfilePage = () => {
                                   </div>
                                 </div>
                                 <hr className="mx-2" />
-                                <div className="d-flex justify-content-around py-2 px-2">
-                                  <button className="btn btn-light btn-sm py-2 px-2 mx-2">
+                                <div className="d-flex justify-content-around align-items-center py-2 px-2">
+                                  <button className="btn btn-light btn-sm d-flex items-center shadow-md">
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
                                       height="2rem"
@@ -573,7 +574,7 @@ const ProfilePage = () => {
                                   <button
                                     onClick={OpenPostModal}
                                     type="button"
-                                    className="btn btn-light  btn-sm  py-2 px-2 mx-2"
+                                    className="btn btn-light  btn-sm  d-flex items-center shadow-md"
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
@@ -592,7 +593,7 @@ const ProfilePage = () => {
                                   </button>
                                   <button
                                     type="button"
-                                    className="btn btn-light  btn-sm  py-2 px-2 mx-2"
+                                    className="btn btn-light  btn-sm  d-flex items-center shadow-md"
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
@@ -718,7 +719,7 @@ const ProfilePage = () => {
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 448 512"
               className="w-full h-5 fill-current"
-            > 
+            >
               <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
             </svg>
             <span style={{ color: "#0064D1" }} className="mx-2 mt-1">

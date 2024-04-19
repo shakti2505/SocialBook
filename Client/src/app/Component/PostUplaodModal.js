@@ -5,6 +5,8 @@ import LoadingSpinner from "../LoadingSpinner.js";
 import axios from "axios";
 import BASE_URL_API from "../../utilities/baseURL";
 import { apiVariables } from "../../utilities/apiVariables.js";
+import Dropdown from "react-bootstrap/Dropdown";
+
 const PostUplaodModal = () => {
   // const [modalShow, setModalShow] = useState(false);
   const [PostAudienceModalShow, setPostAudienceModalShow] = useState(false);
@@ -63,7 +65,6 @@ const PostUplaodModal = () => {
         }
 
         const data = await response1.json();
-        console.log("", data.url);
         imageURL.push(data.url);
       });
 
@@ -127,7 +128,6 @@ const PostUplaodModal = () => {
               <strong className="mx-2">
                 {loggedInUser.firstName} {loggedInUser.LastName}
               </strong>
-
               <button
                 onClick={OpenPostAudienceModal}
                 className="btn btn-light btn-sm mx-2 d-flex align-items-center"
@@ -195,8 +195,11 @@ const PostUplaodModal = () => {
               >
                 <path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2V3zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0z" />
               </svg>
-              <p style={{ fontSize: "1rem" }} className="flex justify-center  items-center">
-                <b>Add Photos  Or drag and drop</b>
+              <p
+                style={{ fontSize: "1rem" }}
+                className="flex justify-center  items-center"
+              >
+                <b>Add Photos Or drag and drop</b>
               </p>
             </div>
             <input
@@ -216,7 +219,7 @@ const PostUplaodModal = () => {
               className={
                 imagePreviews.length > 1 ? "d-flex flex-row vh-50" : "w-100"
               }
-              style={{ 
+              style={{
                 borderRadius: "10px",
                 border: "1px solid lightgrey",
                 position: "relative",

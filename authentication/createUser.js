@@ -328,17 +328,24 @@ router.get("/getLoggedInUserData", authorization, async (req, res) => {
 });
 
 router.get("/get_specificUserData", authorization, async (req, res) => {
-  const userID = req.userId;
-  const { specificUserId } = req.body;
-  const loggedInUser = await userModel
-    .findById(specificUserId)
-    .select("-phone -email -password");
-  if (loggedInUser) {
-    return res.status(200).send({ success: true, loggedInUser });
-  } else {
-    return res
-      .status(401)
-      .send({ success: false, message: "Unauthroriazied access" });
+  try {
+    const userID = req.userId;
+    const { username } = req.query;
+    console.log(username);
+    const specificUser = await userModel
+      .findById(username)
+      .select("-password");
+    const loggedInUser = await userModel.findById(userID);
+    if (loggedInUser && specificUser) {
+      return res.status(200).json({ success: true, specificUser });
+    } else {
+      return res
+        .status(401)
+        .send({ success: false, message: "Permission denied" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal server error");
   }
 });
 
@@ -377,7 +384,7 @@ router.post("/forgotpassword", async (req, res) => {
         },
         to: email,
         subject: "OTP for to reset password",
-        text:`Hi ${existingUser[0].firstName}`,
+        text: `Hi ${existingUser[0].firstName}`,
         html: `<b> your OTP to create the new password is ${otp}. </b>`,
       };
 
@@ -386,7 +393,7 @@ router.post("/forgotpassword", async (req, res) => {
       if (sentMail.messageId !== undefined) {
         const token = creatToken(existingUser[0]._id);
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(200).json({ message: `OTP sent`, email:email });
+        res.status(200).json({ message: `OTP sent`, email: email });
       }
     }
   } catch (error) {
@@ -395,40 +402,50 @@ router.post("/forgotpassword", async (req, res) => {
   }
 });
 
-router.post('/verifyOtp',authorization, async (req, res)=>{
+router.post("/verifyOtp", authorization, async (req, res) => {
   try {
     const userID = req.userId;
-    const {otp1, otp2, otp3, otp4}  = req.body;
+    const { otp1, otp2, otp3, otp4 } = req.body;
     let OTP = otp1.concat(otp2, otp3, otp4);
     console.log(OTP);
     const requestiee = await userModel.findById(userID);
-    if(!OTP){
-      return res.status(401).json({message:"OTP is required"})
+    if (!OTP) {
+      return res.status(401).json({ message: "OTP is required" });
     }
-    if(requestiee.isVerified && requestiee.otp==OTP){
-      console.log('OTP verification successfull')
-      return res.status(200).json({message:"OTP verfication successfull"})
+    if (requestiee.isVerified && requestiee.otp == OTP) {
+      console.log("OTP verification successfull");
+      return res.status(200).json({ message: "OTP verfication successfull" });
     }
   } catch (error) {
-    return res.status(500).json({message:"Internal server error!"})
+    return res.status(500).json({ message: "Internal server error!" });
   }
 });
 
-router.post('/resetpassword', authorization, async (req, res)=>{
+router.post("/resetpassword", authorization, async (req, res) => {
   try {
-    const {password1, password2} = req.body;
+    const { password1, password2 } = req.body;
     const userID = req.userId;
-    if(!password1 ||  !password2){
-      return res.status(401).json({message:"All fields are required!"});
+    if (!password1 || !password2) {
+      return res.status(401).json({ message: "All fields are required!" });
     }
     const hashPassword = await bcrypt.hash(password1, 10);
-    await userModel.findByIdAndUpdate(userID, {password:hashPassword});
-    return res.status(200).json({message:"Password reset completed"})
-   
+    await userModel.findByIdAndUpdate(userID, { password: hashPassword });
+    return res.status(200).json({ message: "Password reset completed" });
   } catch (error) {
-    return res.status(500).json({message:"Internal server error"});
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post('/change-account-type', authorization, async (req, res)=>{
+  try {
+    const userID = req.userId;
+    const {accountType}  = req.body
+    await userModel.findByIdAndUpdate(userID,{accountType:accountType});
+    res.status(200).json({message:`account switched to ${accountType} successfully!` })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send("Internal server error")
   }
 })
-
 
 export default router;
