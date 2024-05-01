@@ -235,7 +235,7 @@ const PostModal = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="px-1 text-muted">
-                      {/* {item.LikedBy[0]?.name} and {item.likeCount!==1 &&  `${item.likeCount-1}others`}   */}
+                      {/* {item.LikedBy[0]?.name} and {item.likeCount!==1 &&  `${item.likeCount-1} others`}   */}
                       {item.likeCount === 1
                         ? item.LikedBy[0]?.name
                         : item.likeCount > 1
@@ -260,7 +260,7 @@ const PostModal = () => {
                             (citem) => citem.postID === item._id
                           ).length
                         }
-                        comments
+                          Comments
                       </button>
                     )}
                   </div>

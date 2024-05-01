@@ -8,6 +8,7 @@ import monitorRequests from "../ChangeStreams/ChangeStreams.js";
 import friendRequestModal from "../models/FrientRequest.js";
 import UserFriendList from "../models/FriendList.js";
 import monitor from "../ChangeStreams/ChangeStreams.js";
+import PostNotificationModal from "../models/Notifications/PostNotification.js";
 
 const storage = multer.memoryStorage();
 const uploadPostMedia = multer({
@@ -195,18 +196,29 @@ router.post("/like_post", authorization, async (req, res) => {
     target_post.LikedBy.push({
       name: loggedInUser.firstName + " " + loggedInUser.LastName,
       user_id: loggedInUser._id,
-      email:loggedInUser.email,
+      email: loggedInUser.email,
       likedAt: currentDateAndTime,
     });
     target_post.save();
-    
-     await postModel.findByIdAndUpdate(postID, {
-      likeCount: target_post.likeCount === 0 ? 1 : target_post.likeCount + 1
+
+    await postModel.findByIdAndUpdate(postID, {
+      likeCount: target_post.likeCount === 0 ? 1 : target_post.likeCount + 1,
     });
     return res.status(200).json({ message: "Liked post successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server error" });
+  }
+});
+
+router.get("/get-posts-notifications", async (req, res) => {
+  try {
+    // const UserId = req.userId;
+    const postNoti = await PostNotificationModal.distinct("userID")
+    console.log(postNoti);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal server error");
   }
 });
 

@@ -128,7 +128,7 @@ const Navbars = () => {
       </nav>  */}
       {/* <div className='container w-100'> */}
       <nav className="navbar navbar-expand-lg bg-body-tertiary sticky-top d-flex justify-content-between align-items-center">
-        <div className="searchLarge" id="">
+        <div className="searchLarge">
           <img
             id="logoNew"
             src={logo}

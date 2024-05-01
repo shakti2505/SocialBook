@@ -16,7 +16,7 @@ import Login from "./app/Component/Authentication/login.js";
 import LandingPage from "./app/Component/Authentication/landingPage.js";
 import Forgotpassword from "./app/Component/Authentication/ForgotPassword.js";
 import ResetPassword from "./app/Component/Authentication/ResetPassword.js";
-
+import AddStories from "./app/Component/stories/AddStories.js";
 
 const Home = React.lazy(() => import("./app/HomePage.js"));
 // const Forgotpassword = React.lazy(()=>import("./app/Component/Authentication/ForgotPassword.js"))
@@ -54,6 +54,10 @@ function App() {
           <Route
             path="/profile/:id"
             element={<Protected Component={FriendProfilepage} />}
+          />
+          <Route
+            path="/stories/create"
+            element={<Protected Component={AddStories} />}
           />
         </Routes>
       </UserState>

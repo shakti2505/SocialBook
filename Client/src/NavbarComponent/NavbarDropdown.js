@@ -5,14 +5,13 @@ import axios from "axios";
 import BASE_URL_API from "../utilities/baseURL";
 import { apiVariables } from "../utilities/apiVariables";
 import logo from "../images/logo/logo.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
 import Card from "react-bootstrap/Card";
-import ListGroup from "react-bootstrap/ListGroup";
 const renderTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
     {props}
@@ -27,6 +26,8 @@ const NavbarDropdown = () => {
   const [searchUser, setSearchUser] = useState("");
   const [seeNotificationCard, setSeeNotificationCard] = useState(false);
   const [fRacceptStatus, setFracceptStatus] = useState("");
+  const [isfriendRequestSend, setIsfriendRequestsend] = useState(false);
+  const [requestData, setRequestData] = useState({});
 
   const navigate = useNavigate();
 
@@ -110,8 +111,35 @@ const NavbarDropdown = () => {
       if (apicall.status !== 200) {
         console.log("Internal Error");
       } else {
-        setSerchedUsers(apicall.data);
+        setSerchedUsers(apicall.data.matchingUsers);
       }
+    }
+  };
+
+
+  const addFriend = async (requestreceiver) => {
+    const apicall = await axios.post(
+      BASE_URL_API + apiVariables.sendFriendRequest.url,
+      {
+        friendRequestStatus: "pending",
+        requestReceiverId: requestreceiver,
+        username: loggedInUser.firstName + " " + loggedInUser.LastName,
+        userDisplayPicture: loggedInUser.profilePic,
+      },
+      {
+        withCredentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+        },
+      }
+    );
+    if (apicall.status !== 201) {
+      throw new Error("Error in while Creating request");
+    } else {
+      setRequestData(apicall.data.sentrequest);
+      setIsfriendRequestsend(true);
     }
   };
 
@@ -150,23 +178,27 @@ const NavbarDropdown = () => {
   //     }
   // })
 
-  useEffect(() => {
-    searchPotentialConnetion(apiVariables.searchPotentialConnetion(searchUser));
-  }, [searchUser]);
+
 
   useEffect(() => {
     get_notification_count(apiVariables.get_notification_count);
   }, []);
 
+  useEffect(() => {
+    const getdata = setTimeout(() => {
+      searchPotentialConnetion(
+        apiVariables.searchPotentialConnetion(searchUser)
+      );
+    }, 500);
+    return () => clearTimeout(getdata);
+  }, [searchUser]);
+
   return (
     <>
       <div className="d-flex flex-row justify-content-around align-items-center mx-3">
-        {/* search modal */}
-        <div id="searchDiv">
+        {/* <div id="searchDiv">
           <img src={logo} width="30rem" height="30rem" alt="Social Book" />
-          {/* <Button id='searchbtn' className='mx-2' variant='outline-light' size='sm' >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1.5rem" height="1.5rem"><path fill='#65676B' d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
-                    </Button> */}
+          
           <div className="d-flex mt-1 mx-1" id="collapsibleSearch">
             <Dropdown role="search" className="w-100" id="#UserSearch">
               <Dropdown.Toggle
@@ -197,8 +229,89 @@ const NavbarDropdown = () => {
               )}
             </Dropdown>
           </div>
+        </div> */}
+          <div id="searchDiv">
+          <img
+            id="logoNew"
+            src={logo}
+            height="32px"
+            width="32px"
+            alt="Social Book"
+            onClick={() => navigate("/profile")}
+          />
+          <div className="d-flex mt-1 mx-1">
+            <Dropdown role="search" id="#UserSearch">
+              <Dropdown.Toggle
+                className="btn btn-light mx-2 w-100"
+                size="lg"
+                id="dropdown-basic"
+              >
+                <input
+                  onChange={(e) => setSearchUser(e.target.value)}
+                  type="text"
+                  id="searchInput"
+                  placeholder="Search Socialbook"
+                  className="w-100"
+                />
+              </Dropdown.Toggle>
+              {SerchedUsers.length !== 0 && (
+                <Dropdown.Menu className="w-100">
+                  {SerchedUsers.map((item, index) => {
+                    return (
+                      <>
+                        <Dropdown.Item>
+                          <div className="d-flex">
+                            <img
+                              src={item.profilePic}
+                              className="ml-1 rounded-full h-12 w-12 object-cover "
+                            />
+                            <div className="d-flex flex-column ml-2">
+                              <Link to={`/profile/${item._id}`}>
+                                <strong className="mx-2">
+                                  {" "}
+                                  {item.firstName} {item.LastName}
+                                </strong>
+                              </Link>
+                              <div className="flex flex-row justify-between items-center">
+                                <Button
+                                  size="sm"
+                                  disabled={
+                                    isfriendRequestSend &&
+                                    requestData.requestReceiverID === item._id
+                                      ? true
+                                      : false
+                                  }
+                                  variant="primary"
+                                  onClick={() => addFriend(item._id)}
+                                  className="mt-1 ml-1"
+                                >
+                                  {isfriendRequestSend &&
+                                  requestData.requestReceiverID === item._id
+                                    ? "Request Sent"
+                                    : "Add friend"}
+                                </Button>
+                                {!isfriendRequestSend && (
+                                  <Button
+                                    size="sm"
+                                    variant="light"
+                                    className="ml-1 mt-1"
+                                  >
+                                    Remove
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </Dropdown.Item>
+                      </>
+                    );
+                  })}
+                </Dropdown.Menu>
+              )}
+            </Dropdown>
+          </div>
         </div>
-        {/* search modal */}
+      
         <OverlayTrigger
           placement="bottom"
           delay={{ show: 100, hide: 100 }}

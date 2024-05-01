@@ -53,11 +53,8 @@ width: 0;
   border-radius: 5px;
 }
 .story-container{
-  overflow-x: auto;
+  /* overflow-x: auto; */
   margin-top: 1rem;
-  border-radius: 10px;
-  justify-content: space-between;
-  display: flex; 
   gap: 0.4rem;
 }
 

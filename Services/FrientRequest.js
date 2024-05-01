@@ -8,6 +8,7 @@ import UserFriendList from "../models/FriendList.js";
 import displayPictureModel from "../models/displayPictures.js";
 import FriendRequestNotificationsModal from "../models/Notifications/FriendRequestNotificaitons.js";
 import monitor from "../ChangeStreams/ChangeStreams.js";
+import PostNotificationModal from "../models/Notifications/PostNotification.js";
 const router = express.Router()
 
 //close streams
@@ -143,7 +144,7 @@ router.get('/get_notification_count', authorization, async (req, res) => {
         return res.status(401).send({ message: "No logged in user found" });
     }
     try {
-        res.status(200).send({ notificationCount: noti.length, noti });
+        res.status(200).json({ notificationCount: noti.length, noti });
     } catch (error) {
         return res.status(500).send({ message: "Internal server error" })
     }
