@@ -5,12 +5,20 @@ import Form from "react-bootstrap/Form";
 
 const AddStories = () => {
   const { loggedInUser } = useContext(UserDataContext);
+  const [istextStory, setIstextStory] = useState(false);
+  const [storytext, setstoryText] = useState("");
+  const [storyBgColor, setStoryBgColor] = useState("bg-blue-700");
+  const [storyFont, setStroyFont] = useState("");
   const navigate = useNavigate();
+
+  const handleFontChange = (e) => {
+    setStroyFont(e.target.value);
+  };
 
   return (
     <>
       <div className="row ">
-        <div className="col-3 max-sm:hidden">
+        <div className="col-3  max-sm:hidden ">
           <div className="flex justify-between items-center mt-2 ml-2">
             {/* <div>
               <button
@@ -49,19 +57,100 @@ const AddStories = () => {
               {loggedInUser.firstName + " " + loggedInUser.LastName}{" "}
             </p>
           </div>
-          <div className="mt-4">
-            <Form.Control as="textarea" placeholder="Start typing here..." className=" ring-1" />
-            <Form.Select aria-label="Default select example" className="mt-1 ring-1">
-              <option>Open this select menu</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+          <div className={istextStory ? "mt-4 ml-2" : "hidden"}>
+            <Form.Control
+              as="textarea"
+              placeholder="Start typing here..."
+              className={`ring-1 ${storyFont}`}
+              onChange={(e) => setstoryText(e.target.value)}
+            />
+            <Form.Select
+              aria-label="Default select example"
+              className="mt-3 ring-1"
+              onChange={handleFontChange} // Call handleFontChange when the select value changes
+              value={storyFont} // Optional: If you want to set a default selected value based on storyFont state
+            >
+              <option disabled>Select font</option>
+              <option value="">
+                <b>Aa</b> Simple
+              </option>
+              <option value="font-serif">
+                <b>Aa</b> Casual
+              </option>
+              <option value="font-mono">
+                <b>Aa</b> Fancy
+              </option>
+              <option value="font-bold">
+                <b>Aa</b> Headline
+              </option>
             </Form.Select>
+          </div>
+          <div className="ring-2 ml-2 mt-3 rounded-sm flex flex-col justify-center">
+            <b className="ml-6 mt-2">Backgrounds</b>
+            <div className="flex items-center justify-around p-2">
+              <button
+                onClick={() => setStoryBgColor("bg-blue-700")}
+                className="rounded-full bg-blue-700 h-8 w-8 shadow-md  focus:ring"
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-orange-700")}
+                className="rounded-full bg-orange-700 h-8 w-8 shadow-md  focus:ring "
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-green-700")}
+                className="rounded-full bg-green-700 h-8 w-8 shadow-md  focus:ring"
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-cyan-700")}
+                className="rounded-full bg-cyan-700 h-8 w-8 shadow-md  focus:ring"
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-pink-700")}
+                className="rounded-full bg-pink-700 h-8 w-8 shadow-md   focus:ring "
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-yellow-700")}
+                className="rounded-full bg-yellow-700 h-8 w-8 shadow-md  focus:ring"
+              ></button>
+            </div>
+            <div className="flex items-center justify-around p-2">
+              <button
+                onClick={() => setStoryBgColor("bg-amber-500")}
+                className="rounded-full bg-amber-500 h-8 w-8 shadow-md  focus:ring"
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-rose-500	")}
+                className="rounded-full bg-rose-500	 h-8 w-8 shadow-md  focus:ring "
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-lime-500")}
+                className="rounded-full bg-lime-500	 h-8 w-8 shadow-md  focus:ring"
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-violet-800")}
+                className="rounded-full bg-violet-800	 h-8 w-8 shadow-md  focus:ring"
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-sky-900")}
+                className="rounded-full bg-sky-900	 h-8 w-8 shadow-md   focus:ring "
+              ></button>
+              <button
+                onClick={() => setStoryBgColor("bg-teal-400")}
+                className="rounded-full bg-teal-400	 h-8 w-8 shadow-md  focus:ring"
+              ></button>
+            </div>
+            <div></div>
           </div>
         </div>
         <div className="col-9 flex justify-center items-center">
-          <div className=" flex flex-wrap w-full justify-evenly mt-24 justify">
-            <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-[25rem] w-[20rem] rounded-xl flex flex-col justify-center items-center">
+          <div
+            className={
+              istextStory
+                ? "hidden"
+                : "flex flex-wrap w-full justify-evenly mt-24 justify"
+            }
+          >
+            <button className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-[25rem] w-[20rem] rounded-xl flex flex-col justify-center items-center shadow-2xl active:ring-4 hover:ring-2">
               <div className="rounded-full h-32 w-32 bg-white flex justify-center items-center ring-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -73,13 +162,15 @@ const AddStories = () => {
                   <path d="M448 80c8.8 0 16 7.2 16 16V415.8l-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3V96c0-8.8 7.2-16 16-16H448zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z" />
                 </svg>
               </div>
-
               <h3 className="text-white mt-4 text-center">
                 Create a photo story
               </h3>
-            </div>
+            </button>
 
-            <div className="max-sm:hidden  bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% h-[25rem] w-[20rem] rounded-xl flex flex-col justify-center items-center">
+            <button
+              className="max-sm:hidden bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% h-[25rem] w-[20rem] rounded-xl flex flex-col justify-center items-center shadow-2xl active:ring-4 hover:ring-2"
+              onClick={() => setIstextStory(!istextStory)}
+            >
               <div className="rounded-full h-32 w-32 bg-white flex justify-center items-center ring-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -94,6 +185,24 @@ const AddStories = () => {
               <h3 className="text-white mt-4 text-center">
                 Create a text story
               </h3>
+            </button>
+          </div>
+          <div
+            className={
+              istextStory
+                ? "shadow-xl rounded-md ring-slate-300 mt-4 "
+                : "hidden"
+            }
+          >
+            <h5 className="p-2">Preview</h5>
+            <div
+              className={`h-[45rem] w-96 ${storyBgColor} m-2 rounded-md overflow-auto`}
+            >
+              <p
+                className={`text-gray-300 break-words whitespace-pre-wrap p-4 text-center ${storyFont}`}
+              >
+                {storytext.length !== 0 ? storytext : "Start typing..."}
+              </p>
             </div>
           </div>
         </div>
