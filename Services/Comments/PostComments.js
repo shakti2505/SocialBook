@@ -55,9 +55,7 @@ router.get("/get_comments", authorization, async (req, res) => {
 });
 
 router.get('/getCommentById', authorization, (req, res)=>{
-  const {postID} = req.query;
-  
-   
+  const {postID} = req.query;   
 });
 
 export default router;

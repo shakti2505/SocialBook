@@ -14,9 +14,10 @@ import webpush from 'web-push'
 import SubscriptionModel from './models/SubscriptionSchema.js'
 import options from './middleware/PushNotification.js';
 import postModel from './models/Post.js';
-import SubscriptionRoute from './Services/Subscription/SubscriptionForPushNotifications.js'
-import PostCommentsRoutes from './Services/Comments/PostComments.js'
-import subscriptionRoute from './Services/Subscription/SubscriptionForPushNotifications.js'
+import SubscriptionRoute from './Services/Subscription/SubscriptionForPushNotifications.js';
+import PostCommentsRoutes from './Services/Comments/PostComments.js';
+import subscriptionRoute from './Services/Subscription/SubscriptionForPushNotifications.js';
+import textStoryRoute from './Services/Story/Stories.js';
 const app = express();
 const PORT = process.env.PORT || 4600
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -88,7 +89,7 @@ app.use('/services', FriendRequestRoutes);
 app.use('/services', SubscriptionRoute);
 app.use('/services/Comments', PostCommentsRoutes);
 app.use('/services/Subscription', subscriptionRoute);
-
+app.use('/services/Story', textStoryRoute);
 app.get('/*', function (req, res) {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });

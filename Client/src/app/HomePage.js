@@ -15,19 +15,27 @@ import PostUplaodModal from "./Component/PostUplaodModal.js";
 import swDev from "../serveiceWorkerDev.js";
 import Spinner from "react-bootstrap/Spinner";
 import { useNavigate } from "react-router-dom";
-
+import Card from 'react-bootstrap/Card';
 
 const HomePage = () => {
   // const [modalShow, setModalShow] = useState(false);
   const [openSubscriptionModal, setOpenSubscriptionModal] = useState(true);
   const [isloading, setisloading] = useState(false);
   const [subscription, setSubscription] = useState({});
+  const [textStory, settextStory] = useState([]);
+  const defaultTextStory = {
+    bgColor: "bg-white",
+    storyFont: "sans-sarif",
+    content: "",
+  };
   const { loggedInUser, OpenPostModal, ClosePostModal, modalShow } =
     useContext(UserDataContext);
   const [userSubscription, setUserSubscription] = useState([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const loggedInUserSubsctription = localStorage.getItem("subscription");
   const handleClose = () => setOpenSubscriptionModal(false);
+  const [smShow, setSmShow] = useState(false);
+  const [story, setStory] = useState({})
 
   // const handleSubscribe = async () => {
   //   setisloading(true)
@@ -38,23 +46,40 @@ const HomePage = () => {
   //     setSubscription(subscription);
   //     setOpenSubscriptionModal(false)
   //   }
+  //
 
-  // }
+  const getTextStories = async () => {
+    let apicall = await axios.get(
+      BASE_URL_API + apiVariables.get_text_stories.url,
+      { withCredentials: true }
+    );
 
-  const stories = [
-    "https://res.cloudinary.com/dtbz1n84e/image/upload/v1706200005/Post%20Images/jky1wbxlzsunued0y9ge.jpg",
-    "https://res.cloudinary.com/dtbz1n84e/image/upload/v1706199308/Post%20Images/amvgldvyzttz5yvgxdr2.jpg",
-    "https://res.cloudinary.com/dtbz1n84e/image/upload/v1705778184/Post%20Images/yltknsshlfz1glfn6eq3.jpg",
-    "https://res.cloudinary.com/dtbz1n84e/image/upload/v1705424794/cld-sample.jpg",
-    "https://res.cloudinary.com/dtbz1n84e/image/upload/v1705424786/samples/two-ladies.jpg",
-   
-  ];
+    if (apicall.status !== 200) {
+      console.log("NO text stories found");
+    } else {
+      settextStory(apicall.data.textStories);
+    }
+  };
+
+ const showStory = (id) =>{
+  setSmShow(true);
+  const result = textStory.filter((item) => item._id===id);
+  setStory(result);
+ }
 
   // useEffect(()=>{
   //   if(localStorage.getItem('subscription')!='false'){
   //     handleSubscribe();
   //   }
   // },[])
+
+  useEffect(() => {
+    getTextStories();
+  }, []);
+
+  useEffect(()=>{
+console.log(story, 'story')
+  },[story])
 
   return (
     <>
@@ -64,27 +89,87 @@ const HomePage = () => {
         <div className="col-4" id="middleBar" style={{ overflowY: "hidden" }}>
           {/* stories */}
           <div>
-            <div className="w-full overflow-x-scroll mt-2"> 
+            <div className="w-full overflow-x-scroll mt-2">
               <div className="d-flex gap-3 w-max">
-              <div className="relative bg-[#FFFFFF] h-[17rem] rounded-md">
-              <img src={loggedInUser.profilePic} alt="images" className=" object-cover w-40 rounded-t-lg h-[13rem]"/>
-                <button onClick={()=> navigate('/stories/create')}  className="rounded-full ring-offset-2 ring w-8 h-8 absolute left-16 bottom-12 bg-[#1049F4] flex items-center  justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="13" width="13"><path fill="#FFFFFF" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
-                </button>
-                <p className=" absolute bottom-0 left-7 ">Create stroy</p>
-              </div>
-              {stories.map((item, index) => {
-                  return (
-                    <div key={index} className="relative w-40">
-                      <img className="rounded-full absolute top-2 bg-slate-950  w-12 h-12 left-2 shadow-2xl ring ring-blue-500" src={loggedInUser.profilePic}/>
-                      <img
-                        src={item}
-                        alt="images"
-                        className=" object-cover w-40 rounded-md h-[17rem]"
+                <div
+                  className={`relative ${
+                    textStory.length !== 0 && textStory[0].bgColor
+                  } h-[17rem] rounded-md`}
+                >
+                  {textStory.length == 0 && (
+                    <img
+                      src={loggedInUser.profilePic}
+                      alt="images"
+                      className=" object-cover w-40 rounded-t-lg h-[13rem]"
+                    />
+                  )}
+                  <div className={`w-40 h-12 m-2 rounded-md`}>
+                    <p
+                      className={`text-gray-300 break-words whitespace-pre-wrap p-4 text-center ${
+                        textStory.length !== 0 && textStory[0].storyFont
+                      }`}
+                    >
+                      {/* {storytext.length !== 0 ? storytext : "Start typing..."} */}
+                      {textStory.length !== 0 && textStory[0].content}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => navigate("/stories/create")}
+                    className="rounded-full ring-offset-2 ring w-8 h-8 absolute left-16 bottom-12 bg-[#1049F4] flex items-center  justify-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 448 512"
+                      height="13"
+                      width="13"
+                    >
+                      <path
+                        fill="#FFFFFF"
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
                       />
-                    </div>
-                  );
-                })}
+                    </svg>
+                  </button>
+                  <p className=" absolute bottom-0 left-7 ">Create stroy</p>
+                </div>
+                {textStory.length !== 0 &&
+                  textStory.map((item, index) => {
+                    return (
+                      <>
+                        <div onClick={()=>showStory(item._id)} key={index} className="relative w-40">
+                          <img
+                            className="rounded-full absolute top-2 bg-slate-950  w-8 h-8 left-2 shadow-2xl ring ring-blue-500"
+                            src={item.storyOwnerdp}
+                          />
+                          <img
+                            src={item.storyOwnerdp}
+                            alt="images"
+                            className=" object-cover w-40 rounded-md h-[17rem]"
+                          />
+                        </div>
+                        <div
+                          className={`relative ${
+                            textStory.length !== 0 && item.bgColor
+                          } h-[17rem] rounded-md`}
+                          onClick={()=>showStory(item._id)}
+                        >
+                          <img
+                            className="rounded-full absolute top-2 bg-slate-950  w-8 h-8 left-2 shadow-2xl ring ring-blue-500"
+                            src={item.storyOwnerdp}
+                          />
+                          <div className={`w-40 h-12 m-2 rounded-md`}>
+                            <p
+                              className={`text-gray-300 break-words whitespace-pre-wrap p-4 text-center ${
+                                textStory.length !== 0 && item.storyFont
+                              }`}
+                            >
+                              {/* {storytext.length !== 0 ? storytext : "Start typing..."} */}
+                              {textStory.length !== 0 && item.content}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })}
               </div>
             </div>
             {/* stories */}
@@ -165,7 +250,20 @@ const HomePage = () => {
           </div>
         </div>
         <RightBar />
+
       </div>
+      <Modal
+        size="sm"
+        show={smShow}
+        onHide={() => setSmShow(false)}
+        aria-labelledby="example-modal-sizes-title-sm"
+        centered
+      >
+        <Card style={{ width: '18rem' }}>
+      <Card.Img variant="top" src="holder.js/100px180" />
+    </Card>
+      
+      </Modal>
 
       {/* <Modal show={(openSubscriptionModal && loggedInUserSubsctription) ? !openSubscriptionModal : openSubscriptionModal} onHide={handleClose} backdrop="static"
         keyboard={false}

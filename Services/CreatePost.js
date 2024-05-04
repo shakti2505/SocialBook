@@ -1,5 +1,4 @@
 import express from "express";
-import dotenv from "dotenv";
 import multer from "multer";
 import { authorization } from "../middleware/AuthMiddleware.js";
 import postModel from "../models/Post.js";

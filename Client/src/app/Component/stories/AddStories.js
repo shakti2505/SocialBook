@@ -2,6 +2,11 @@ import React, { useContext, useState, useEffect } from "react";
 import UserDataContext from "../../../Context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
+import axios from "axios";
+import BASE_URL_API from "../../../utilities/baseURL";
+import { apiVariables } from "../../../utilities/apiVariables";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 const AddStories = () => {
   const { loggedInUser } = useContext(UserDataContext);
@@ -9,32 +14,46 @@ const AddStories = () => {
   const [storytext, setstoryText] = useState("");
   const [storyBgColor, setStoryBgColor] = useState("bg-blue-700");
   const [storyFont, setStroyFont] = useState("");
+  const [textStory, setTextStory] = useState([]);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const navigate = useNavigate();
 
   const handleFontChange = (e) => {
     setStroyFont(e.target.value);
   };
 
+  const create_text_stories = async () => {
+    let apicall = await axios.post(
+      BASE_URL_API + apiVariables.create_text_story.url,
+      {
+        storyContent: storytext,
+        storybg: storyBgColor,
+        storyFont: storyFont,
+        storyOwnerName: loggedInUser.firstName + " " + loggedInUser.LastName,
+        storyOwnerdp:loggedInUser.profilePic
+      },
+
+      { withCredentials: "include" }
+    );
+
+    if ( apicall.status !== 201) {
+      alert("Unable to comment on post");
+    } else {
+      setTextStory(apicall.data);
+      setStoryBgColor('')
+      setstoryText('')
+      setStroyFont('')
+      navigate('/home');
+    }
+  };
   return (
     <>
       <div className="row ">
-        <div className="col-3  max-sm:hidden ">
-          <div className="flex justify-between items-center mt-2 ml-2">
-            {/* <div>
-              <button
-                onClick={() => navigate("/home")}
-                className="rounded-full  bg-gray-200 hover:bg-gray-300 items-center flex justify-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 448 512"
-                  width="25"
-                  height="25"
-                >
-                  <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-                </svg>
-              </button>
-            </div> */}
+        <div className="col-3 max-sm:hidden shadow h-screen ">
+        <div className="flex justify-between items-center mt-2 ml-2 relative">
             <h5> Your story</h5>
             <button className="rounded-full  bg-gray-200 hover:bg-gray-300 items-center flex justify-center">
               <svg
@@ -57,24 +76,25 @@ const AddStories = () => {
               {loggedInUser.firstName + " " + loggedInUser.LastName}{" "}
             </p>
           </div>
+          <hr />
           <div className={istextStory ? "mt-4 ml-2" : "hidden"}>
             <Form.Control
               as="textarea"
               placeholder="Start typing here..."
-              className={`ring-1 ${storyFont}`}
+              className={` ${storyFont} outline-none`}
               onChange={(e) => setstoryText(e.target.value)}
             />
             <Form.Select
               aria-label="Default select example"
-              className="mt-3 ring-1"
-              onChange={handleFontChange} // Call handleFontChange when the select value changes
-              value={storyFont} // Optional: If you want to set a default selected value based on storyFont state
+              className="mt-3 outline-none"
+              onChange={handleFontChange} 
+              value={storyFont} 
             >
               <option disabled>Select font</option>
               <option value="">
                 <b>Aa</b> Simple
               </option>
-              <option value="font-serif">
+              <option value="font-serif"> 
                 <b>Aa</b> Casual
               </option>
               <option value="font-mono">
@@ -85,7 +105,7 @@ const AddStories = () => {
               </option>
             </Form.Select>
           </div>
-          <div className="ring-2 ml-2 mt-3 rounded-sm flex flex-col justify-center">
+          <div className={istextStory ? '  border ml-2 mt-3 rounded-md flex flex-col justify-center':"hidden"}>
             <b className="ml-6 mt-2">Backgrounds</b>
             <div className="flex items-center justify-around p-2">
               <button
@@ -139,7 +159,10 @@ const AddStories = () => {
                 className="rounded-full bg-teal-400	 h-8 w-8 shadow-md  focus:ring"
               ></button>
             </div>
-            <div></div>
+          </div>
+          <div className={istextStory ? 'flex justify-start items-center  p-2 mt-2':"hidden"}>
+            <button className="btn btn-secondary absolute bottom-0" onClick={handleShow}>Discard</button>
+            <button className="btn btn-primary absolute bottom-0 left-72" onClick={create_text_stories}>Share to story</button>
           </div>
         </div>
         <div className="col-9 flex justify-center items-center">
@@ -182,7 +205,7 @@ const AddStories = () => {
                 </svg>
               </div>
 
-              <h3 className="text-white mt-4 text-center">
+              <h3 className="text-white text-center">
                 Create a text story
               </h3>
             </button>
@@ -190,7 +213,7 @@ const AddStories = () => {
           <div
             className={
               istextStory
-                ? "shadow-xl rounded-md ring-slate-300 mt-4 "
+                ? "shadow-xl rounded-md ring-slate-300  "
                 : "hidden"
             }
           >
@@ -207,6 +230,22 @@ const AddStories = () => {
           </div>
         </div>
       </div>
+
+      <Modal show={show} onHide={handleClose} animation={false}  aria-labelledby="contained-modal-title-vcenter"
+      centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Discard story ?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure that you want to discard this story? Your story won't be saved.</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Continue editing 
+          </Button>
+          <Button variant="primary" onClick={()=>navigate('/home')}>
+            Discard
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
