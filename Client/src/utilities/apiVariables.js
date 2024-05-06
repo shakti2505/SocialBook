@@ -81,7 +81,7 @@ export const apiVariables = {
     url: `/authentication/get_specificUserData?username=${id}`
   }),
   create_text_story:{
-    url:"/services/Story/create_text_story"
+    url:"/services/Story/create_text_storyv2"
   },
   get_text_stories:{
     url:"/services/Story/get_text_stories"

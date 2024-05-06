@@ -5,13 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app"
+    "dev": "nodemon app",
+    "draw": "node draw.js"
   },
   "author": "Shakti Kashyap",
   "license": "ISC",
   "type": "module",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "canvas": "^2.11.2",
+    "cloudinary": "^2.2.0",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.1.0",
     "cors": "^2.8.5",

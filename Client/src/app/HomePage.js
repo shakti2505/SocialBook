@@ -15,7 +15,7 @@ import PostUplaodModal from "./Component/PostUplaodModal.js";
 import swDev from "../serveiceWorkerDev.js";
 import Spinner from "react-bootstrap/Spinner";
 import { useNavigate } from "react-router-dom";
-import Card from 'react-bootstrap/Card';
+import Card from "react-bootstrap/Card";
 
 const HomePage = () => {
   // const [modalShow, setModalShow] = useState(false);
@@ -35,7 +35,7 @@ const HomePage = () => {
   const loggedInUserSubsctription = localStorage.getItem("subscription");
   const handleClose = () => setOpenSubscriptionModal(false);
   const [smShow, setSmShow] = useState(false);
-  const [story, setStory] = useState({})
+  const [story, setStory] = useState({});
 
   // const handleSubscribe = async () => {
   //   setisloading(true)
@@ -61,11 +61,13 @@ const HomePage = () => {
     }
   };
 
- const showStory = (id) =>{
-  setSmShow(true);
-  const result = textStory.filter((item) => item._id===id);
-  setStory(result);
- }
+  const showStory = (id) => {
+    setSmShow(true);
+    const result = textStory.filter((item) => item._id === id);
+    setStory(result);
+  };
+
+  const userStory = textStory.find((item) => item.user === loggedInUser._id);
 
   // useEffect(()=>{
   //   if(localStorage.getItem('subscription')!='false'){
@@ -77,9 +79,9 @@ const HomePage = () => {
     getTextStories();
   }, []);
 
-  useEffect(()=>{
-console.log(story, 'story')
-  },[story])
+  useEffect(() => {
+    console.log(story, "story");
+  }, [story]);
 
   return (
     <>
@@ -104,14 +106,13 @@ console.log(story, 'story')
                     />
                   )}
                   <div className={`w-40 h-12 m-2 rounded-md`}>
-                    <p
-                      className={`text-gray-300 break-words whitespace-pre-wrap p-4 text-center ${
-                        textStory.length !== 0 && textStory[0].storyFont
-                      }`}
-                    >
-                      {/* {storytext.length !== 0 ? storytext : "Start typing..."} */}
-                      {textStory.length !== 0 && textStory[0].content}
-                    </p>
+                    {userStory && ( // Check if userStory is defined (i.e., found a matching story)
+                      <img
+                        src={userStory.storyURL} // Use the storyURL from the found userStory
+                        alt="Story Image"
+                        className="object-cover w-40 rounded-t-lg h-52" // Adjusted className
+                      />
+                    )}
                   </div>
                   <button
                     onClick={() => navigate("/stories/create")}
@@ -135,37 +136,20 @@ console.log(story, 'story')
                   textStory.map((item, index) => {
                     return (
                       <>
-                        <div onClick={()=>showStory(item._id)} key={index} className="relative w-40">
-                          <img
-                            className="rounded-full absolute top-2 bg-slate-950  w-8 h-8 left-2 shadow-2xl ring ring-blue-500"
-                            src={item.storyOwnerdp}
-                          />
-                          <img
-                            src={item.storyOwnerdp}
-                            alt="images"
-                            className=" object-cover w-40 rounded-md h-[17rem]"
-                          />
-                        </div>
                         <div
-                          className={`relative ${
-                            textStory.length !== 0 && item.bgColor
-                          } h-[17rem] rounded-md`}
-                          onClick={()=>showStory(item._id)}
+                          onClick={() => showStory(item._id)}
+                          key={index}
+                          className="relative w-40"
                         >
                           <img
                             className="rounded-full absolute top-2 bg-slate-950  w-8 h-8 left-2 shadow-2xl ring ring-blue-500"
                             src={item.storyOwnerdp}
                           />
-                          <div className={`w-40 h-12 m-2 rounded-md`}>
-                            <p
-                              className={`text-gray-300 break-words whitespace-pre-wrap p-4 text-center ${
-                                textStory.length !== 0 && item.storyFont
-                              }`}
-                            >
-                              {/* {storytext.length !== 0 ? storytext : "Start typing..."} */}
-                              {textStory.length !== 0 && item.content}
-                            </p>
-                          </div>
+                          <img
+                            src={item.storyURL}
+                            alt="images"
+                            className=" object-cover w-40 rounded-md h-[17rem]"
+                          />
                         </div>
                       </>
                     );
@@ -243,14 +227,12 @@ console.log(story, 'story')
                 </button>
               </div>
             </div>
-
             {/* </div> */}
             <PostUplaodModal />
             <PostModal />
           </div>
         </div>
         <RightBar />
-
       </div>
       <Modal
         size="sm"
@@ -259,10 +241,9 @@ console.log(story, 'story')
         aria-labelledby="example-modal-sizes-title-sm"
         centered
       >
-        <Card style={{ width: '18rem' }}>
-      <Card.Img variant="top" src="holder.js/100px180" />
-    </Card>
-      
+        <Card style={{ width: "18rem" }}>
+          <Card.Img variant="top" src="holder.js/100px180" />
+        </Card>
       </Modal>
 
       {/* <Modal show={(openSubscriptionModal && loggedInUserSubsctription) ? !openSubscriptionModal : openSubscriptionModal} onHide={handleClose} backdrop="static"

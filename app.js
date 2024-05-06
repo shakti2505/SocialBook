@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import cors from 'cors'
+import cloudinary from './cloudinary/cloudinary.js'
 import cookieParser from 'cookie-parser'
 import express from 'express';
 import connectDB from './DB/ConnectDB.js';
