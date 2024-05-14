@@ -19,6 +19,8 @@ import SubscriptionRoute from './Services/Subscription/SubscriptionForPushNotifi
 import PostCommentsRoutes from './Services/Comments/PostComments.js';
 import subscriptionRoute from './Services/Subscription/SubscriptionForPushNotifications.js';
 import textStoryRoute from './Services/Story/Stories.js';
+import chatRoute from './Services/chat/chat.js'
+import messageRoute from './Services/chat/message.js'
 const app = express();
 const PORT = process.env.PORT || 4600
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -91,6 +93,9 @@ app.use('/services', SubscriptionRoute);
 app.use('/services/Comments', PostCommentsRoutes);
 app.use('/services/Subscription', subscriptionRoute);
 app.use('/services/Story', textStoryRoute);
+app.use('/services/Story', textStoryRoute);
+app.use('/services/chat', chatRoute);
+app.use('/services/message', messageRoute);
 app.get('/*', function (req, res) {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });

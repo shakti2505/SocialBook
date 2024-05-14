@@ -24,7 +24,7 @@ const LeftBar = () => {
   // }
   return (
     <>
-      <div className="col-4  mt-3" id="left-container">
+      <div className="col-4 mt-3" id="left-container">
         <div>
           <div>
             <button

@@ -85,6 +85,9 @@ export const apiVariables = {
   },
   get_text_stories:{
     url:"/services/Story/get_text_stories"
+  },
+  view_marked_text_stories:{
+    url:"/services/Story/mark_story_viewed"
   }
 
 

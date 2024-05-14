@@ -93,6 +93,7 @@ const PostUplaodModal = () => {
       console.log("error", error.message);
     }
   };
+
   return (
     <>
       <Modal

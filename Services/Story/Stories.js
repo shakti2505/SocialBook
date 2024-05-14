@@ -19,13 +19,13 @@ router.post("/create_text_story", authorization, async (req, res) => {
     if (!storyContent) {
       return res.status(400).json({ message: "Please provide story content!" });
     }
-    const newtextStory = new Textstory({
+    const newtextStory = new TextstoryModal({
       user: UserId,
       content: storyContent,
       bgColor: storybg,
       storyFont: storyFont,
       storyOwnerdp: storyOwnerdp,
-      storyOwnerName: storyOwnerName,
+      storyOwnerName: storyOwnerName, 
     });
     const saveTextStory = await newtextStory.save();
     return res
@@ -69,7 +69,7 @@ router.post("/create_text_storyv2", authorization, async (req, res) => {
       return res.status(400).json({ message: "Please provide story content!" });
     }
     createTextStory(storyContent, storybg, storyFont);
-    const Textstory = fs.readFileSync("./image.png");
+    const Textstory = fs.readFileSync("./image.jpeg");
     const base64Data = Buffer.from(Textstory).toString("base64");
     const uploadStory = await cloudinary.uploader.upload(
       `data:image/png;base64,${base64Data}`,
@@ -80,7 +80,7 @@ router.post("/create_text_storyv2", authorization, async (req, res) => {
     );
 
     if (uploadStory.url) {
-      const newtextStory = new TextstoryModal ({
+      const newtextStory = new TextstoryModal({
         user: UserId,
         storyOwnerdp: storyOwnerdp,
         storyOwnerName: storyOwnerName,
@@ -94,6 +94,53 @@ router.post("/create_text_storyv2", authorization, async (req, res) => {
     console.log(error);
     return res.status(500).send("internal server error");
   }
-}); 
+});
+
+//create photo story
+
+router.post("/create_photo_story", authorization, async (req, res) => {
+  const UserId = req.userId;
+  const { storyOwner, StoryOwnerDP, storyImageURLs } = req.body;
+  try {
+    if (storyImageURLs.length == 0) {
+     return res.status(404).json({ message: "No Image found" });
+    }  
+    const newstory = new TextstoryModal({
+      storyOwnerName: storyOwner,
+      storyOwnerdp:StoryOwnerDP,
+      storyURL:storyImageURLs
+    });
+    const savedStory = await newstory.save();
+
+    //closing streams
+   return res.status(201).json({ message: "Post added successfully!", savedStory });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// mark story view
+router.post("/mark_story_viewed", authorization, async (req, res) => {
+  try {
+    const UserId = req.userId;
+    const { storyId } = req.body;
+    const story = await TextstoryModal.findById(storyId);
+    if (story.views.includes(UserId)) {
+      return res
+        .status(200)
+        .json({ message: `story already viewed by user ${UserId}` });
+    } else {
+      story.views.push(UserId);
+      story.save();
+      return res
+        .status(201)
+        .json({ message: `story viewd Successfully by ${UserId}` });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("internal server error");
+  }
+});
 
 export default router;

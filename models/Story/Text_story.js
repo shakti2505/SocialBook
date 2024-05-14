@@ -18,6 +18,11 @@ const TextStory = new mongoose.Schema({
     ref: userModel,
     required: true,
   },
+  frientRequestStatus: {
+    type: String,
+    enum: ['public', 'friends', 'custom'],
+    default:'friends'
+},
   createdAt: {
     type: Date,
     expires: 86400,

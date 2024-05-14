@@ -58,7 +58,7 @@ const PostModal = () => {
   };
 
   const getPosts = () => {
-    const limit = 13;
+    const limit = 5;
     axios
       .get(BASE_URL_API + apiVariables.getPosts.url, {
         params: {

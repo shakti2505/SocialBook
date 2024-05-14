@@ -16,6 +16,7 @@ import swDev from "../serveiceWorkerDev.js";
 import Spinner from "react-bootstrap/Spinner";
 import { useNavigate } from "react-router-dom";
 import Card from "react-bootstrap/Card";
+import { getDays } from "../utilities/utilities.js";
 
 const HomePage = () => {
   // const [modalShow, setModalShow] = useState(false);
@@ -23,6 +24,8 @@ const HomePage = () => {
   const [isloading, setisloading] = useState(false);
   const [subscription, setSubscription] = useState({});
   const [textStory, settextStory] = useState([]);
+  const [storyView, setStoryView] = useState(false);
+  const [viewerLength, setViewerLength] = useState("");
   const defaultTextStory = {
     bgColor: "bg-white",
     storyFont: "sans-sarif",
@@ -48,6 +51,10 @@ const HomePage = () => {
   //   }
   //
 
+  const ConvertDateTime = (DateTime) => {
+    return new Date(DateTime).toLocaleString();
+  };
+
   const getTextStories = async () => {
     let apicall = await axios.get(
       BASE_URL_API + apiVariables.get_text_stories.url,
@@ -62,13 +69,31 @@ const HomePage = () => {
   };
 
   const showStory = (id) => {
+    setViewerLength();
     setSmShow(true);
     const result = textStory.filter((item) => item._id === id);
-    setStory(result);
+    setStory(result[0]);
+    setViewerLength(result[0].views.length);
+    markStoryView(id);
   };
 
   const userStory = textStory.find((item) => item.user === loggedInUser._id);
 
+  const markStoryView = async (storyID) => {
+    let apicall = await axios.post(
+      BASE_URL_API + apiVariables.view_marked_text_stories.url,
+      {
+        storyId: storyID,
+      },
+      { withCredentials: true }
+    );
+
+    if (apicall.status !== 201) {
+      setStoryView(false);
+    } else {
+      setStoryView(true);
+    }
+  };
   // useEffect(()=>{
   //   if(localStorage.getItem('subscription')!='false'){
   //     handleSubscribe();
@@ -79,16 +104,16 @@ const HomePage = () => {
     getTextStories();
   }, []);
 
-  useEffect(() => {
-    console.log(story, "story");
-  }, [story]);
+  useEffect(()=>{
+    console.log(story)
+  },[story])
 
   return (
     <>
       {/* <Navbar /> */}
       <div className="d-flex">
-        <LeftBar />
-        <div className="col-4" id="middleBar" style={{ overflowY: "hidden" }}>
+        {/* <LeftBar /> */}
+        <div className="col-8 p-4" id="middleBar" style={{ overflowY: "hidden" }}>
           {/* stories */}
           <div>
             <div className="w-full overflow-x-scroll mt-2">
@@ -240,10 +265,45 @@ const HomePage = () => {
         onHide={() => setSmShow(false)}
         aria-labelledby="example-modal-sizes-title-sm"
         centered
+        className="relative"
       >
-        <Card style={{ width: "18rem" }}>
-          <Card.Img variant="top" src="holder.js/100px180" />
-        </Card>
+        {loggedInUser._id === story.user && (
+          <div className="flex justify-start items-center">
+            <svg
+              className="ml-2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 576 512"
+              width="25"
+              height="25"
+            >
+              <path
+                fill="#36454F"
+                d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"
+              />
+            </svg>
+
+            <small className="text-3xl text-slate-500 ml-2">
+              {viewerLength && viewerLength}
+            </small>
+          </div>
+        )}
+        <div className=" absolute mt-2 ml-2">
+          <div className="d-flex">
+            <a href="/profile">
+              <img
+                src={story.storyOwnerdp}
+                className="ml-1 rounded-full h-12 w-12 object-cover "
+              />
+            </a>
+            <div className="d-flex flex-column">
+              <strong className="mx-2 text-white">{story.storyOwnerName}</strong>
+              <p style={{ fontSize: "0.8rem" }} className="mx-2 text-white">
+                {getDays(story.createdAt)}
+              </p>
+            </div>
+          </div>
+        </div>
+        <Card.Img variant="top" src={story.storyURL} />
       </Modal>
 
       {/* <Modal show={(openSubscriptionModal && loggedInUserSubsctription) ? !openSubscriptionModal : openSubscriptionModal} onHide={handleClose} backdrop="static"
