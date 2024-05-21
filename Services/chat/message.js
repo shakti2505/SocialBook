@@ -7,10 +7,14 @@ const router = express.Router();
 // create message
 
 router.post("/createmessages", authorization, async (req, res) => {
-  const { chatId, senderId, text } = req.body;
+  const { chatId, senderId, text, senderDp } = req.body;
+  if (!chatId || !senderId || !text) {
+    return res.status(400).json("all fields are required ");
+  }
   const message = new messageModal({
     chatId,
     senderId,
+    senderDp,
     text,
   });
   try {
@@ -26,7 +30,7 @@ router.post("/createmessages", authorization, async (req, res) => {
 router.get("/getmessage/:chatid", authorization, async (req, res) => {
   const { chatid } = req.params;
   try {
-    const messages = await messageModal.find({ chatid });
+    const messages = await messageModal.find({ chatId: chatid });
     return res.status(200).json(messages);
   } catch (error) {
     console.log(error);

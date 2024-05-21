@@ -88,9 +88,19 @@ export const apiVariables = {
   },
   view_marked_text_stories:{
     url:"/services/Story/mark_story_viewed"
-  }
-
-
+  },
+  createChat:{
+    url:"/services/chat/createchat"
+  },
+  sendMessages:{
+    url:"/services/message/createmessages"
+  },
+  getChat: (firstId, secondId) => ({
+    url: `/services/chat/findchat/${firstId}/${secondId}`
+  }),
+  getMessages: (chatId) => ({
+    url: `/services/message/getmessage/${chatId}`
+  }),
 }
 
 

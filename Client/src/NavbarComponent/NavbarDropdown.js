@@ -12,6 +12,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
 import Card from "react-bootstrap/Card";
+import { AuthContext } from "../Context/AuthContext";
 const renderTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
     {props}
@@ -20,6 +21,8 @@ const renderTooltip = (props) => (
 
 const NavbarDropdown = () => {
   const { loggedInUser } = useContext(UserDataContext);
+  // const { user } = useContext(AuthContext);
+  const { logoutUser} = useContext(AuthContext);
   const [notificationCount, setnotificationCount] = useState();
   const [notification, setnotification] = useState([]);
   const [SerchedUsers, setSerchedUsers] = useState([]);
@@ -30,6 +33,8 @@ const NavbarDropdown = () => {
   const [requestData, setRequestData] = useState({});
 
   const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem('User'));     
 
   const get_notification_count = async (apivar) => {
     const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
@@ -90,6 +95,7 @@ const NavbarDropdown = () => {
           localStorage.removeItem("user");
           localStorage.removeItem("subscription");
           navigate("/login");
+          localStorage.removeItem('User');
         } else {
           console.log(response.data.message);
         }
@@ -123,8 +129,8 @@ const NavbarDropdown = () => {
       {
         friendRequestStatus: "pending",
         requestReceiverId: requestreceiver,
-        username: loggedInUser.firstName + " " + loggedInUser.LastName,
-        userDisplayPicture: loggedInUser.profilePic,
+        username: user.firstName + " " + user.LastName,
+        userDisplayPicture: user.profilePic,
       },
       {
         withCredentials: "include",
@@ -158,8 +164,8 @@ const NavbarDropdown = () => {
         requestSenderName: requestSenderName,
         requestSenderDp: requestSenderDp,
         requestReceiverName:
-          loggedInUser.firstName + " " + loggedInUser.LastName,
-        requestReceivedDP: loggedInUser.profilePic,
+          user.firstName + " " + user.LastName,
+        requestReceivedDP: user.profilePic,
       },
       { withCredentials: "include" }
     );
@@ -733,7 +739,7 @@ const NavbarDropdown = () => {
               <img
                 className="profilePic"
                 alt=""
-                src={loggedInUser.profilePic}
+                src={user.profilePic}
               />
             </Dropdown.Toggle>
             <Dropdown.Menu className="shadow-lg">
@@ -747,12 +753,12 @@ const NavbarDropdown = () => {
                 >
                   <img
                     className="ml-1 rounded-full h-12 w-12 object-cover "
-                    src={loggedInUser.profilePic}
+                    src={user.profilePic}
                   />
                   {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="1.5rem" height="1.5rem"><path d="M320 32c0-9.9-4.5-19.2-12.3-25.2S289.8-1.4 280.2 1l-179.9 45C79 51.3 64 70.5 64 92.5V448H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H96 288h32V480 32zM256 256c0 17.7-10.7 32-24 32s-24-14.3-24-32s10.7-32 24-32s24 14.3 24 32zm96-128h96V480c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H512V128c0-35.3-28.7-64-64-64H352v64z"/></svg> */}
                   <h6 className="mt-3 mx-1">
                     <strong>
-                      {loggedInUser.firstName} {loggedInUser.LastName}
+                      {user.firstName} {user.LastName}
                     </strong>
                   </h6>
                 </div>

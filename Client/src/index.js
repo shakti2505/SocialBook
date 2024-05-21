@@ -6,14 +6,14 @@ import { ToastContainer } from "react-toastify";
 import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import swDev from "./serveiceWorkerDev.js";
-import { Provider } from "react-redux";
-import { store } from "./app/Store.js";
+import { AuthContextProvider } from "./Context/AuthContext.js";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
-    <Provider store={store}>
+    <AuthContextProvider>
       <App />
-    </Provider>
+    </AuthContextProvider>
   </BrowserRouter>
 );
 

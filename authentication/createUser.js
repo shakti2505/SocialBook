@@ -141,7 +141,7 @@ router.post("/createUser", async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
 
     if (existingUser == null) {
-      const user = new userModel({
+      const newUser = new userModel({
         firstName: fname,
         LastName: Surname,
         email: email ? email : "",
@@ -150,20 +150,23 @@ router.post("/createUser", async (req, res) => {
         DateOfBirth: `${days}/${months}/${years}`,
         password: hashPassword,
       });
-      await user.save();
+      const savedUser = await newUser.save();
+      let user = {
+        name: savedUser.firstName + " " + savedUser.LastName,
+        email: savedUser.email,
+        _Id: savedUser._id,
+      };
       const token = creatToken(user._id);
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-      const response = {
-        success: true,
-        message: "account creation successfull",
-        user,
-      };
-      res.status(201).json({ response });
+
+      return res
+        .status(201)
+        .json({ success: true, message: "account creation successfull", user });
     } else {
-      res.status(200).json({ message: "Email already exist!" });
+      return res.status(200).json({ message: "Email already exist!" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ errorMsg: "Internal server error" });
   }
 });
 
@@ -208,7 +211,7 @@ router.post("/login", async (req, res) => {
   if (!email && !phone) {
     return res
       .status(401)
-      .send({ success: false, message: "Email or phone is required" });
+      .json({ success: false, message: "Email or phone is required" });
   }
   try {
     let searchCriteria = {};
@@ -218,7 +221,7 @@ router.post("/login", async (req, res) => {
     const existingUser = await userModel.findOne(searchCriteria);
     // Check if user exists
     if (!existingUser) {
-      return res.status(401).send({ error: "User not found" });
+      return res.status(401).json({ message: "User not found" });
     }
 
     // Compare passwords
@@ -235,11 +238,10 @@ router.post("/login", async (req, res) => {
 
     if (passMatch) {
       // Destructure existingUser for simplicity
-      const { firstName, lastName, DateOfBirth, email } = existingUser;
-
+      const { firstName, LastName, DateOfBirth, email, _id, profilePic } =
+        existingUser;
       // Create token
       const token = creatToken(existingUser._id);
-
       // Set JWT token in cookie
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
       if (notification.length !== 0 && subscription.length !== 0) {
@@ -248,23 +250,25 @@ router.post("/login", async (req, res) => {
       if (PostNotification.length !== 0 && subscription.length !== 0) {
         notificationMethod.sendPostUploadNotification(existingUser._id);
       }
-      return res.status(200).send({
+      return res.status(200).json({
         success: true,
         message: "Login successful!",
         loggedInUser: {
           firstName,
-          lastName,
+          LastName,
           DateOfBirth,
           email,
+          _id,
+          profilePic,
           subscription: subscription.length !== 0 ? true : false,
         },
       });
     } else {
-      return res.status(401).send({ error: "Unauthorized Access" });
+      return res.status(401).json({ message: "Unauthorized Access" });
     }
   } catch (error) {
     console.error("Error:", error);
-    return res.status(500).send({ error: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -332,9 +336,7 @@ router.get("/get_specificUserData", authorization, async (req, res) => {
     const userID = req.userId;
     const { username } = req.query;
     console.log(username);
-    const specificUser = await userModel
-      .findById(username)
-      .select("-password");
+    const specificUser = await userModel.findById(username).select("-password");
     const loggedInUser = await userModel.findById(userID);
     if (loggedInUser && specificUser) {
       return res.status(200).json({ success: true, specificUser });
@@ -436,16 +438,18 @@ router.post("/resetpassword", authorization, async (req, res) => {
   }
 });
 
-router.post('/change-account-type', authorization, async (req, res)=>{
+router.post("/change-account-type", authorization, async (req, res) => {
   try {
     const userID = req.userId;
-    const {accountType}  = req.body
-    await userModel.findByIdAndUpdate(userID,{accountType:accountType});
-    res.status(200).json({message:`account switched to ${accountType} successfully!` })
+    const { accountType } = req.body;
+    await userModel.findByIdAndUpdate(userID, { accountType: accountType });
+    res
+      .status(200)
+      .json({ message: `account switched to ${accountType} successfully!` });
   } catch (error) {
-    console.log(error)
-    return res.status(500).send("Internal server error")
+    console.log(error);
+    return res.status(500).send("Internal server error");
   }
-})
+});
 
 export default router;

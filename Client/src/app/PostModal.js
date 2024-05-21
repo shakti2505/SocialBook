@@ -30,7 +30,9 @@ const PostModal = () => {
   const [comment, setComment] = useState("");
   const [OpenEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [likeColor, setLikeColor] = useState("#e9eaed");
-  const { loggedInUser } = useContext(UserDataContext);
+  // const { user } = useContext(AuthContext);
+  const user = JSON.parse(localStorage.getItem('User'));
+  
   // const { posts } = useContext(UserDataContext);
 
   const ConvertDateTime = (DateTime) => {
@@ -65,7 +67,7 @@ const PostModal = () => {
           page: activePage,
           pageSize: limit,
         },
-        withCredentials: true,
+        withCredentials:"include"
       })
       .then((response) => {
         if (response.status !== 200) {
@@ -270,7 +272,7 @@ const PostModal = () => {
                       className="btn btn-light btn-sm mx-1 d-flex align-items-center justify-content-center"
                     >
                       {item.LikedBy.filter(
-                        (i) => i.user_id === loggedInUser._id
+                        (i) => i.user_id === user._id
                       ).length !== 0 ? (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -414,7 +416,7 @@ const PostModal = () => {
                     <div className="d-flex flex-row mb-2">
                       <a className="mx-2" href="/profile">
                         <img
-                          src={loggedInUser.profilePic}
+                          src={user.profilePic}
                           className="mx-2 rounded-full h-12 w-12 object-cover"
                         />
                       </a>
@@ -528,10 +530,10 @@ const PostModal = () => {
                             onClick={() =>
                               create_comment(
                                 item._id,
-                                loggedInUser.profilePic,
-                                loggedInUser.firstName +
+                                user.profilePic,
+                                user.firstName +
                                   " " +
-                                  loggedInUser.LastName
+                                  user.LastName
                               )
                             }
                             disabled={comment.length !== 0 ? false : true}

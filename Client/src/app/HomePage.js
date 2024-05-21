@@ -14,7 +14,7 @@ import UserDataContext from "../Context/UserContext.js";
 import PostUplaodModal from "./Component/PostUplaodModal.js";
 import swDev from "../serveiceWorkerDev.js";
 import Spinner from "react-bootstrap/Spinner";
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import { getDays } from "../utilities/utilities.js";
 
@@ -33,6 +33,7 @@ const HomePage = () => {
   };
   const { loggedInUser, OpenPostModal, ClosePostModal, modalShow } =
     useContext(UserDataContext);
+    const user = JSON.parse(localStorage.getItem('User'));
   const [userSubscription, setUserSubscription] = useState([]);
   const navigate = useNavigate();
   const loggedInUserSubsctription = localStorage.getItem("subscription");
@@ -77,7 +78,7 @@ const HomePage = () => {
     markStoryView(id);
   };
 
-  const userStory = textStory.find((item) => item.user === loggedInUser._id);
+  const userStory = textStory.find((item) => item.user === user._id);
 
   const markStoryView = async (storyID) => {
     let apicall = await axios.post(
@@ -104,9 +105,7 @@ const HomePage = () => {
     getTextStories();
   }, []);
 
-  useEffect(()=>{
-    console.log(story)
-  },[story])
+ 
 
   return (
     <>
@@ -125,7 +124,7 @@ const HomePage = () => {
                 >
                   {textStory.length == 0 && (
                     <img
-                      src={loggedInUser.profilePic}
+                      src={user.profilePic}
                       alt="images"
                       className=" object-cover w-40 rounded-t-lg h-[13rem]"
                     />
@@ -187,7 +186,7 @@ const HomePage = () => {
                 <div className="d-flex">
                   <a href="/profile">
                     <img
-                      src={loggedInUser.profilePic}
+                      src={user.profilePic}
                       className="w-14 h-14 object-cover rounded-full"
                     />
                   </a>
@@ -195,7 +194,7 @@ const HomePage = () => {
                     onClick={OpenPostModal}
                     className="searchBtn text-muted btn btn-light mx-2 w-100 d-flex justify-start items-center shadow-md"
                   >
-                    {`What's on you mind, ${loggedInUser.firstName} ?`}
+                    {`What's on you mind, ${user.firstName} ?`}
                   </button>
                 </div>
               </div>
@@ -267,7 +266,7 @@ const HomePage = () => {
         centered
         className="relative"
       >
-        {loggedInUser._id === story.user && (
+        {user._id === story.user && (
           <div className="flex justify-start items-center">
             <svg
               className="ml-2"

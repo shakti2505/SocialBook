@@ -1,5 +1,6 @@
 import express from "express";
 import { authorization } from "../../middleware/AuthMiddleware.js";
+import FriendList from "../../models/FriendList.js";
 import chatModal from "../../models/chat/chatModal.js";
 const router = express.Router();
 
@@ -7,24 +8,34 @@ const router = express.Router();
 router.post("/createchat", authorization, async (req, res) => {
   const { firstId, secondId } = req.body;
   try {
-    const chat = await chatModal.findOne({
+    //checking if chat is existed
+    const existingChat = await chatModal.findOne({
       members: { $all: [firstId, secondId] },
     });
-    if (chat) return res.status(200).json(chat);
-    const newChat = new chatModal({
-      members: [firstId, secondId],
+    if (existingChat) return res.status(200).json(existingChat);
+    //cheking if both members are friends
+    const areFriends = await FriendList.find({
+      friend_ID: secondId,
+      user: firstId,
     });
-    const response = await newChat.save();
-    return res.status(201).json(response);
+
+    if (areFriends.length !== 0) {
+      const newChat = new chatModal({
+        members: [firstId, secondId],
+      });
+      const response = await newChat.save();
+      return res.status(201).json(response);
+    }
   } catch (error) {
-    console.log(error);
+    console.log(error); 
+    
     return res.status(500).json(error);
   }
 });
 
 // find user chats
 router.get("/finduserchat/:userId", authorization, async (req, res) => {
-  const userId = req.params.userID;
+  const userId = req.params.userId;
 
   try {
     const chats = await chatModal.find({
@@ -35,7 +46,7 @@ router.get("/finduserchat/:userId", authorization, async (req, res) => {
     console.log(error);
     return res.status(500).json(error);
   }
-});
+});  
 
 router.get("/findchat/:firstId/:secondId", authorization, async (req, res) => {
   const { firstId, secondId } = req.params;

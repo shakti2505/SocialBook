@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import "./App.css";
 import UserState from "./Context/UserState";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, json } from "react-router-dom";
 import FriendsListpage from "./app/FriendsListpage.js";
 import Navbars from "./Navbar.js";
 import Protected from "./app/Utils/Protected.js";
@@ -14,14 +14,15 @@ import Forgotpassword from "./app/Component/Authentication/ForgotPassword.js";
 import ResetPassword from "./app/Component/Authentication/ResetPassword.js";
 import AddStories from "./app/Component/stories/AddStories.js";
 import { ChatContextProvider } from "./Context/ChatContext.js";
-import UserDataContext from "./Context/UserContext.js";
+import { AuthContext } from "./Context/AuthContext.js";
 
 const Home = React.lazy(() => import("./app/HomePage.js"));
 // const Forgotpassword = React.lazy(()=>import("./app/Component/Authentication/ForgotPassword.js"))
 function App() {
+
+// const {user} =  useContext(AuthContext);
+const user = JSON.parse(localStorage.getItem('User'));
   const location = useLocation();
-  
-const loggedInUser = useContext(UserDataContext);
   const showNavbars = !(
     location.pathname === "/login" ||
     location.pathname === "/" ||
@@ -31,8 +32,8 @@ const loggedInUser = useContext(UserDataContext);
 
   return (
     <>
-      <ChatContextProvider user={loggedInUser ? loggedInUser : {}}>
         <UserState>
+        <ChatContextProvider user = {user}>
           {showNavbars && <Navbars />}
           <Routes>
             <Route path="/" element={<LandingPage />} />
@@ -64,8 +65,8 @@ const loggedInUser = useContext(UserDataContext);
               element={<Protected Component={AddStories} />}
             />
           </Routes>
+          </ChatContextProvider>
         </UserState>
-      </ChatContextProvider>
     </>
   );
 }

@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import React, { useState, useContext } from "react";
+import {Alert} from 'react-bootstrap';
 import axios from "axios";
-
 import { useNavigate } from "react-router-dom";
 import bg_login from "../../../images/backGround/login-bg3.jpg";
 import logo from "../../../images/logo/logo.png";
-import Alert from "react-bootstrap/Alert";
 import BASE_URL_API from "../../../utilities/baseURL.js";
 import { apiVariables } from "../../../utilities/apiVariables.js";
+import { AuthContext } from "../../../Context/AuthContext.js";
 
 const LandingPage = () => {
   const navitage = useNavigate();
-
   const [iScustomGender, setIsCustomerGender] = useState(false);
   const [inputData, setinputData] = useState({});
   const [emailExist, setemailExists] = useState(false);
   const [error, seterror] = useState("");
+  const { registerInfo, updateRegisterinfo, registerUser, registerError, isRegisterLoading } =
+    useContext(AuthContext);
 
-  const handleChange = (e) => {
-    setinputData({ ...inputData, [e.target.name]: e.target.value });
-  };
+  // const (e)=> updateRegisterinfo({...registerInfo , name:e.target.value}) = (e) => {
+  //   setinputData({ ...inputData, [e.target.name]: e.target.value });
+  // };
 
   const handleSubmit = (e) => {
     if (
@@ -79,7 +78,7 @@ const LandingPage = () => {
   ];
 
   const currentYear = new Date().getFullYear();
-  
+
   const startYear = 1905;
   const years = [];
 
@@ -136,14 +135,24 @@ const LandingPage = () => {
                   type="text"
                   className="w-100 bg-[#FDFFFE] outline-none max-sm:placeholder-black	h-14 rounded-xl	shadow-md text-xl px-4 max-sm:bg-transparent max-sm:ring-1"
                   placeholder="First Name"
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    updateRegisterinfo({
+                      ...registerInfo,
+                      fname: e.target.value,
+                    })
+                  }
                   name="fname"
                 />
                 <input
                   type="text"
                   className="w-100 bg-[#FDFFFE] max-sm:placeholder-black outline-none	h-14 rounded-xl	shadow-md text-xl px-4 max-sm:bg-[#FDFFFE] max-sm:ring-1 ml-3"
                   placeholder="Surname"
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    updateRegisterinfo({
+                      ...registerInfo,
+                      Surname: e.target.value,
+                    })
+                  }
                   name="Surname"
                 />
               </div>
@@ -151,16 +160,29 @@ const LandingPage = () => {
                 type="text"
                 className="w-100 bg-[#FDFFFE] max-sm:placeholder-black outline-none	h-14 rounded-xl	shadow-md text-xl px-4 max-sm:bg-[#FDFFFE] max-sm:ring-1 mt-2"
                 placeholder="Mobile number or email address"
-                onChange={handleChange}
+                onChange={(e) =>
+                  updateRegisterinfo({
+                    ...registerInfo,
+                    MobileOrEmail: e.target.value,
+                  })
+                }
                 name="MobileOrEmail"
               />
-              {emailExist && <Alert variant="danger"  onClose={() => setemailExists(false)}>{error}</Alert>}
+              {emailExist && (
+                <Alert variant="danger" onClose={() => setemailExists(false)}>
+                  {registerError}
+                </Alert>
+              )}
               <input
                 type="password"
                 className="w-100 bg-[#FDFFFE] max-sm:placeholder-black outline-none	h-14 rounded-xl	shadow-md text-xl px-4 max-sm:bg-[#FDFFFE] max-sm:ring-1 mt-2"
                 placeholder="New password"
-                onChange={handleChange}
-                
+                onChange={(e) =>
+                  updateRegisterinfo({
+                    ...registerInfo,
+                    password: e.target.value,
+                  })
+                }
                 name="password"
               />
 
@@ -169,7 +191,12 @@ const LandingPage = () => {
               </label>
               <div className="flex justify-between items-center mt-2">
                 <select
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    updateRegisterinfo({
+                      ...registerInfo,
+                      days: e.target.value,
+                    })
+                  }
                   name="days"
                   className="w-100 bg-[#FDFFFE] outline-none max-sm:placeholder-black h-14 rounded-xl shadow-md text-xl px-4 max-sm:bg-transparent max-sm:ring-1"
                 >
@@ -182,7 +209,12 @@ const LandingPage = () => {
                   )}
                 </select>
                 <select
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    updateRegisterinfo({
+                      ...registerInfo,
+                      months: e.target.value,
+                    })
+                  }
                   name="months"
                   id="months"
                   className="w-100 bg-[#FDFFFE] outline-none max-sm:placeholder-black h-14 rounded-xl shadow-md text-xl px-4 max-sm:bg-transparent max-sm:ring-1 mx-2"
@@ -194,7 +226,12 @@ const LandingPage = () => {
                   ))}
                 </select>
                 <select
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    updateRegisterinfo({
+                      ...registerInfo,
+                      years: e.target.value,
+                    })
+                  }
                   name="years"
                   id="years"
                   className="w-100 bg-[#FDFFFE] outline-none max-sm:placeholder-black h-14 rounded-xl shadow-md text-xl px-4 max-sm:bg-transparent max-sm:ring-1"
@@ -217,7 +254,12 @@ const LandingPage = () => {
                     id="html"
                     name="gender"
                     value="Female"
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      updateRegisterinfo({
+                        ...registerInfo,
+                        gender: e.target.value,
+                      })
+                    }
                     onClick={() => setIsCustomerGender(false)}
                   />
                 </div>
@@ -228,7 +270,12 @@ const LandingPage = () => {
                     id="html"
                     name="gender"
                     value="Male"
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      updateRegisterinfo({
+                        ...registerInfo,
+                        gender: e.target.value,
+                      })
+                    }
                     onClick={() => setIsCustomerGender(false)}
                   />
                 </div>
@@ -244,7 +291,12 @@ const LandingPage = () => {
               </div>
               <div className={iScustomGender ? "mt-2" : "d-none"}>
                 <select
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    updateRegisterinfo({
+                      ...registerInfo,
+                      pronouns: e.target.value,
+                    })
+                  }
                   name="pronouns"
                   className="flex justify-around items-center w-100  bg-[#FDFFFE] max-sm:placeholder-black outline-none px-4	h-14 rounded-xl	shadow-md text-xl max-sm:bg-transparent max-sm:ring-1"
                 >
@@ -263,19 +315,25 @@ const LandingPage = () => {
                   type="text"
                   className="w-100 bg-[#FDFFFE] max-sm:placeholder-black outline-none	h-14 rounded-xl	shadow-md text-xl px-4 max-sm:bg-[#FDFFFE] max-sm:ring-1"
                   placeholder="Gender (optional)"
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    updateRegisterinfo({
+                      ...registerInfo,
+                      gender: e.target.value,
+                    })
+                  }
                   name="gender"
                 />
               </div>
 
-              <div
-                onClick={handleSubmit}
+              <button
+                onClick={registerUser}
                 className=" bg-[#007DF9] flex justify-center items-center w-100 h-16 shadow-md mt-3 rounded-full text-light text-2xl hover:cursor-pointer max-sm:bg-transparent max-sm:ring-1 hover:bg-blue-800 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-900"
               >
                 <p className=" max-sm:text-black- lg:text-white text-2xl mt-3">
-                  Sign Up
+                  {isRegisterLoading ? "Creating Your account" : ' Sign Up'}
+                 
                 </p>
-              </div>
+              </button>
 
               <div className="flex justify-between items-center lg:justify-end">
                 <a href="#" className="text-decoration-none">
