@@ -33,7 +33,7 @@ const ChatContextProvider = ({ children, user }) => {
 
   // initial socket
   useEffect(() => {
-    const newSocket = io("http://localhost:4500");
+    const newSocket = io();
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
