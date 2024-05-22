@@ -101,7 +101,7 @@ app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
-const io = new Server({ cors: "http://locahost:3000" });
+const io = new Server({ cors: allowedOrigins });
 
 let OnlineUser = [];
 
