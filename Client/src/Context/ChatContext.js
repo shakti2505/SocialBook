@@ -65,7 +65,7 @@ const ChatContextProvider = ({ children, user }) => {
     if (socket === null) return;
     socket.on('getMessage', res=>{  
       console.log(userChats, 'userchats');
-      console.log(res, 'res')
+      console.log(res, 'res');
       if(userChats.some((item)=>item._id==res.chatId)) {
         setExistingMessages((prev)=> [...prev, res]) ;
       }
