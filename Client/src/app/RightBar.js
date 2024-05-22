@@ -362,9 +362,10 @@ const RightBar = () => {
               <textarea
                 id="messageField"
                 rows="1"
+                value={message}
                 onChange={handleMessage}
                 type="text"
-                placeholder="I am developing the feature!"
+                placeholder="Aa!"
                 className={`outline-none h-full rounded-xl px-3 bg-gray-200 ml-2 mr-2  ${
                   message.length === 0 ? "w-2/3" : "w-full"
                 } transition-width duration-300`}

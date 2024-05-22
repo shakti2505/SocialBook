@@ -121,7 +121,6 @@ io.on("connection", (socket) => {
   // add message
   socket.on('sendMessage',  (message)=>{
     const user = OnlineUser.find(user=>user.userId === message.recipientID);
-    console.log(user, 'user')
     if(user){
       io.to(user.socketId).emit("getMessage", message)
     }
@@ -135,7 +134,9 @@ io.on("connection", (socket) => {
 
 });
 
-io.listen(4500);
+io.listen(4500, ()=>{
+  console.log(`socket is running at 4500`);
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

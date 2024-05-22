@@ -64,10 +64,11 @@ const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     if (socket === null) return;
     socket.on('getMessage', res=>{  
-      console.log(res, 'with message socket event ');
-      console.log(userChats, 'user chats from receive message')
-      if(userChats.some((item)=>item._id !==res.chatId)) return;
-      setExistingMessages((prev)=> [...prev, res]) ;
+      console.log(userChats, 'userchats');
+      console.log(res, 'res')
+      if(userChats.some((item)=>item._id==res.chatId)) {
+        setExistingMessages((prev)=> [...prev, res]) ;
+      }
     })
     return () => {
       socket.off("getMessage");
@@ -98,8 +99,7 @@ const ChatContextProvider = ({ children, user }) => {
     if (apicall.status !== 200) {
       console.log("Internal sever error");
     } else {
-      setExistingMessages(apicall.data);
-      
+      setExistingMessages(apicall.data); 
     }
   });
 
