@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
+import http from "http";
 import { Server } from "socket.io";
 import cloudinary from "./cloudinary/cloudinary.js";
 import cookieParser from "cookie-parser";
@@ -23,6 +24,7 @@ import textStoryRoute from "./Services/Story/Stories.js";
 import chatRoute from "./Services/chat/chat.js";
 import messageRoute from "./Services/chat/message.js";
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 4600;
 const DATABASE_URL = process.env.DATABASE_URL;
 //database connection
@@ -101,7 +103,8 @@ app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
-const io = new Server({ cors: allowedOrigins });
+const io = new Server(server
+  , { cors: allowedOrigins });
 
 let OnlineUser = [];
 
@@ -110,32 +113,31 @@ io.on("connection", (socket) => {
 
   // listen to a connection
   socket.on("addNewUser", (userId) => {
-    !OnlineUser.some(user => user.userId===userId) &&
-    OnlineUser.push({
-      userId,
-      socketId: socket.id,
-    });
-    io.emit('getOnlineUser', OnlineUser);
+    !OnlineUser.some((user) => user.userId === userId) &&
+      OnlineUser.push({
+        userId,
+        socketId: socket.id,
+      });
+    io.emit("getOnlineUser", OnlineUser);
   });
 
   // add message
-  socket.on('sendMessage',  (message)=>{
-    const user = OnlineUser.find(user=>user.userId === message.recipientID);
-    if(user){
-      io.to(user.socketId).emit("getMessage", message)
+  socket.on("sendMessage", (message) => {
+    const user = OnlineUser.find((user) => user.userId === message.recipientID);
+    if (user) {
+      io.to(user.socketId).emit("getMessage", message);
     }
   });
 
   //disconnecting the user when logout
-  socket.on('disconnect', ()=>{
-    OnlineUser = OnlineUser.filter(user => user.socketId !== socket.id); 
-    io.emit('getOnlineUser', OnlineUser);
-  })
-
+  socket.on("disconnect", () => {
+    OnlineUser = OnlineUser.filter((user) => user.socketId !== socket.id);
+    io.emit("getOnlineUser", OnlineUser);
+  });
 });
 
-io.listen(4500);
+// io.listen(4500);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
