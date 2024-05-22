@@ -33,7 +33,7 @@ const ChatContextProvider = ({ children, user }) => {
 
   // initial socket
   useEffect(() => {
-    const newSocket = io();
+    const newSocket = io('https://socialbook-x3jq.onrender.com');
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
@@ -41,7 +41,6 @@ const ChatContextProvider = ({ children, user }) => {
   }, [user]);
 
   //add online users
-
   useEffect(() => {
     if (socket == null || user==null) return;
     socket.emit("addNewUser", user?._id);
