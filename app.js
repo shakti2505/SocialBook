@@ -134,9 +134,7 @@ io.on("connection", (socket) => {
 
 });
 
-io.listen(4500, ()=>{
-  console.log(`socket is running at 4500`);
-});
+io.listen(4500);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
