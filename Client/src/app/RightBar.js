@@ -1,17 +1,14 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
-import UserDataContext from "../Context/UserContext";
-import axios from "axios";
-import BASE_URL_API from "../utilities/baseURL";
-import { apiVariables } from "../utilities/apiVariables";
-import { get_request } from "../utilities/utilities";
-import { AuthContext } from "../Context/AuthContext";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { ChatContext } from "../Context/ChatContext";
-import { io } from "socket.io-client";
-
+import { unreadnotificationFucn } from "../utilities/UnReadNotification";
+import { apiVariables } from "../utilities/apiVariables";
+import Button from "react-bootstrap/esm/Button";
+import { Link } from "react-router-dom";
 
 const RightBar = () => {
   const user = JSON.parse(localStorage.getItem("User"));
-  const { loggedInUserfriend } = useContext(ChatContext);
+  const { loggedInUserfriend, notificaiton, userChats } =
+    useContext(ChatContext);
   const {
     onlineUsers,
     updateMessage,
@@ -21,12 +18,36 @@ const RightBar = () => {
     existingMessages,
     chatWindowData,
     setChatWindowData,
-    getMessages
+    getMessages,
+    lastMessages,
+    searchPotentialConnetion,
+    SerchedUsers,
+    updateSearchUser,
+    searchUser,
+    updateSearchedUser,
+    updateLoggedInUserFriend,
+    updateSearchUserforPotentialChats,
+    potentialChat,
+    updatePotentialChats,
+    searchUserforPotentialChats
   } = useContext(ChatContext);
+  const scroll = useRef();
 
-
+  const unreadnotifications = unreadnotificationFucn(notificaiton);
+  const modifiedNotification = notificaiton?.map((n) => {
+    const sender = loggedInUserfriend.find(
+      (user) => user.friend_ID === n.senderId
+    );
+    return {
+      ...n,
+      sendername: sender?.friendName,
+    };
+  });
   const [openChatwindow, setOpenChatwindow] = useState(false);
+  const [miniMizedChatWindow, setMiniMizedChatWindow] = useState(false);
   const [minimizeChats, setMinimizeChats] = useState([]);
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const [searhBarWidth, setSearchBarWidth] = useState("w-0");
 
   const handleChatwindow = (data) => {
     getMessages(data.friend_ID);
@@ -43,6 +64,7 @@ const RightBar = () => {
     setOpenChatwindow(false);
     const index = minimizeChats.indexOf(chatWindowData);
     minimizeChats.splice(index, 1);
+    setChatWindowData([]);
   };
 
   const handleMinimizeChatWindow = (user) => {
@@ -56,6 +78,7 @@ const RightBar = () => {
 
   const maximizeChatWindow = (user) => {
     setOpenChatwindow(true);
+    setMiniMizedChatWindow(false);
     const index = minimizeChats.indexOf(user);
     minimizeChats.splice(index, 1);
 
@@ -74,23 +97,80 @@ const RightBar = () => {
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
 
+  // const allSortedMessage = allMessages.sort(
+  //   (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+  // );
+  const lastMessage = sortedMessages[sortedMessages.length - 1];
+
   const inputElement = document.getElementById("messageField");
   if (inputElement) inputElement.focus();
 
+  //for the autoscroll when receive a new message
+  useEffect(() => {
+    scroll.current?.scrollIntoView({ behavior: "smooth" });
+  }, [existingMessages]);
+
+  useEffect(() => {
+    const getdata = setTimeout(() => {
+      searchPotentialConnetion(
+        apiVariables.searchPotentialConnetion(searchUser)
+      );
+    }, 500);
+    return () => clearTimeout(getdata);
+  }, [searchUser]);
+
   return (
     <>
-      <div className="col-4 sticky h-[100vh]  p-4 top-0 max-sm:hidden">
+      <div className="col-4 sticky h-[100vh] p-4 top-0 hidden sm:hidden md:hidden lg:block xl:block  2xl:block">
         <div className="flex justify-between items-center">
-          <div>
-            <h4>Contacts</h4>
-          </div>
+          <h5 className="xs:hidden max-lg:hidden ">Contacts</h5>
           <div className="flex justify-between items-center">
+            <button
+              onClick={() => {
+                setShowSearchBar(false);
+                updateSearchUserforPotentialChats("");
+                updatePotentialChats([]);
+              }}
+              className={
+                showSearchBar
+                  ? "bg-[#E2E8F0] outline-none rounded-tl-lg p-[0.290rem]"
+                  : "hidden"
+              }
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                width="25"
+                height="25"
+              >
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+              </svg>
+            </button>
+            <input
+              onChange={(e) =>
+                updateSearchUserforPotentialChats(e.target.value)
+              }
+              type="text"
+              value={searchUserforPotentialChats}
+              placeholder="Search friends here"
+              className={
+                showSearchBar
+                  ? `mr-10 rounded-tr-lg ${searhBarWidth} transition-width duration-500 ease-in-out bg-slate-200 p-2 outline-none`
+                  : "w-0"
+              }
+            />
             <svg
+              onClick={() => {
+                setShowSearchBar(!showSearchBar);
+                setSearchBarWidth("w-full");
+              }}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
               width="20"
               height="20"
-              className="mr-10"
+              className={
+                showSearchBar ? "hidden" : "mr-10 hover:cursor-pointer"
+              }
             >
               <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
             </svg>
@@ -110,21 +190,55 @@ const RightBar = () => {
                   <img
                     key={i + 5}
                     src={item.friend_dp}
-                    className="object-cover w-12 h-12 rounded-full shadow-2xl m-2 hover:cursor-pointer"
+                    className="object-cover w-16 h-16 rounded-full shadow-2xl m-2 hover:cursor-pointer"
                     onClick={() => maximizeChatWindow(item)}
                   />
                 );
               })}
           </div>
         </div>
+
+        <div className="flex items-center justify-end">
+          <div className=" flex-col lg:w-[13.9rem] xl:w-[16.1rem] flex items-center justify-center bg-[#E2E8F0] xl:mr-[3.6rem] md:mr-[3.6rem] sm:mr-[3.6rem]">
+            {potentialChat.map((item, index) => {
+              return (
+                <>
+                  <d iv className="flex items-start p-2" id={index + 1}>
+                    <img
+                      src={item.friend_dp}
+                      className="rounded-full h-10 w-10 object-cover "
+                    />
+                    <div className="d-flex flex-column ml-2 items-start">
+                      <Link to={`/profile/${item._id}`}>
+                        <strong className=" text-sm ml-1">
+                          {item.friendName}
+                        </strong>
+                      </Link>
+                      <div className="flex flex-row">
+                        <Button
+                          size="sm"
+                          variant="primary"
+                          onClick={() => handleChatwindow(item)}
+                          className="mt-1 ml-1"
+                        >
+                          Send Message
+                        </Button>
+                      </div>
+                    </div>
+                  </d>
+                </>
+              );
+            })}
+          </div>
+        </div>
         {loggedInUserfriend.length !== 0 &&
           loggedInUserfriend.map((item, index) => {
             return (
-              <>  
+              <>
                 <button
                   onClick={() => handleChatwindow(item)}
                   key={index + 5}
-                  className="flex items-center relative mt-2  active:bg-gray-300 px-2 py-2 rounded-xl w-full"
+                  className="flex items-center justify-start relative mt-4  active:bg-gray-300 px-2 py-2 rounded-xl w-full"
                 >
                   <img
                     src={item.friend_dp}
@@ -139,7 +253,12 @@ const RightBar = () => {
                         : ""
                     }
                   ></span>
-                  <p className="ml-2">{item.friendName}</p>
+                  <div className="flex flex-col justify-start items-center">
+                    <strong className="ml-2">{item.friendName}</strong>
+                    <small className="text-left ml-2 text-muted">
+                      {item.text}
+                    </small>
+                  </div>
                 </button>
               </>
             );
@@ -282,6 +401,7 @@ const RightBar = () => {
                   <div
                     key={index}
                     className={`flex items-center ${alignClass} mt-2 mx-2`}
+                    ref={scroll}
                   >
                     {!isCurrentUser && (
                       <img
@@ -383,7 +503,7 @@ const RightBar = () => {
                 />
               </svg>
               <svg
-                onClick={() => sendMessage(user._id)}
+                onClick={() => sendMessage(user._id, chatWindowData.friend_ID)}
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 width="25"

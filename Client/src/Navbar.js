@@ -12,8 +12,9 @@ import UserDataContext from "./Context/UserContext.js";
 import { useNavigate } from "react-router-dom";
 const Navbars = () => {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("User"));
 
-  const { loggedInUser } = useContext(UserDataContext);
+  // const { loggedInUser } = useContext(UserDataContext);
   const [show, setShow] = useState(false);
   const [SerchedUsers, setSerchedUsers] = useState([]);
   const [openSearchModal, setOpenSearchModal] = useState(false);
@@ -45,8 +46,8 @@ const Navbars = () => {
       {
         friendRequestStatus: "pending",
         requestReceiverId: requestreceiver,
-        username: loggedInUser.firstName + " " + loggedInUser.LastName,
-        userDisplayPicture: loggedInUser.profilePic,
+        username: user.firstName + " " + user.LastName,
+        userDisplayPicture: user.profilePic,
       },
       {
         withCredentials: "include",
@@ -135,7 +136,7 @@ const Navbars = () => {
             height="32px"
             width="32px"
             alt="Social Book"
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate("/home")}
           />
           <div className="d-flex mt-1 mx-1">
             <Dropdown role="search" id="#UserSearch">
@@ -210,7 +211,7 @@ const Navbars = () => {
           </div>
         </div>
         <div className="d-flex">
-          <ul className="tabs nav w-100 justify-content-center">
+          <ul className="tabs nav w-full justify-content-center">
             <li className="nav-item">
               <Link to="/home" className="nav-link active">
                 <svg

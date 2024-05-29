@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import UserDataContext from "../../../Context/UserContext";
-import { useAsyncError, useNavigate } from "react-router-dom";
+import { json, useAsyncError, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import BASE_URL_API from "../../../utilities/baseURL";
@@ -10,6 +10,7 @@ import Modal from "react-bootstrap/Modal";
 
 const AddStories = () => {
   const { loggedInUser } = useContext(UserDataContext);
+  const user = JSON.parse(localStorage.getItem('User'));
   const [istextStory, setIstextStory] = useState(false);
   const [storytext, setstoryText] = useState("");
   const [storyBgColor, setStoryBgColor] = useState("#1D4ED8");
@@ -35,8 +36,8 @@ const AddStories = () => {
         storyContent: storytext,
         storybg: storyBgColor,
         storyFont: storyFont,
-        storyOwnerName: loggedInUser.firstName + " " + loggedInUser.LastName,
-        storyOwnerdp: loggedInUser.profilePic,
+        storyOwnerName: user.firstName + " " + user.LastName,
+        storyOwnerdp: user.profilePic,
       },
 
       { withCredentials: "include" }
@@ -96,8 +97,8 @@ const AddStories = () => {
         BASE_URL_API + apiVariables.createPost.url,
         {
           storyImageURLs: imageURL,
-          storyOwner: loggedInUser.firstName + " " + loggedInUser.LastName,
-          StoryOwnerDP: loggedInUser.profilePic,
+          storyOwner: user.firstName + " " + user.LastName,
+          StoryOwnerDP: user.profilePic,
         },
         { withCredentials: "include" }
       );
@@ -165,12 +166,12 @@ const AddStories = () => {
             </div>
             <div className="flex justify-start items-center ml-2 mt-4">
               <img
-                src={loggedInUser.profilePic}
+                src={user.profilePic}
                 alt="images"
                 className=" object-cover rounded-full h-12 w-12"
               />
               <p className="text-xl ml-2">
-                {loggedInUser.firstName + " " + loggedInUser.LastName}{" "}
+                {user.firstName + " " + user.LastName}{" "}
               </p>
             </div>
             {imagePreviews.length !== 0 && (

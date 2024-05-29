@@ -5,7 +5,11 @@ const messageSchema = new mongoose.Schema(
     chatId: String,
     senderId: String,
     senderDp:String,
+    receiverId:String,
     text: String,
+    receiverDp:String,
+    senderName:String,
+    receiverName:String
   },
   {
     timestamps: true,

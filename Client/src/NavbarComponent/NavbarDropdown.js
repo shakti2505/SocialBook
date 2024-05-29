@@ -13,6 +13,9 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
 import Card from "react-bootstrap/Card";
 import { AuthContext } from "../Context/AuthContext";
+import { postRequest } from "../utilities/utilities";
+import { ChatContext } from "../Context/ChatContext";
+
 const renderTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
     {props}
@@ -20,22 +23,25 @@ const renderTooltip = (props) => (
 );
 
 const NavbarDropdown = () => {
-  const { loggedInUser } = useContext(UserDataContext);
+  // const { loggedInUser } = useContext(UserDataContext);
   // const { user } = useContext(AuthContext);
-  const { logoutUser} = useContext(AuthContext);
+  const user = JSON.parse(localStorage.getItem("User"));
+  const { logoutUser } = useContext(AuthContext);
+  const {
+    searchPotentialConnetion,
+    SerchedUsers,
+    updateSearchUser,
+    searchUser,
+  } = useContext(ChatContext);
   const [notificationCount, setnotificationCount] = useState();
   const [notification, setnotification] = useState([]);
-  const [SerchedUsers, setSerchedUsers] = useState([]);
-  const [searchUser, setSearchUser] = useState("");
   const [seeNotificationCard, setSeeNotificationCard] = useState(false);
   const [fRacceptStatus, setFracceptStatus] = useState("");
   const [isfriendRequestSend, setIsfriendRequestsend] = useState(false);
   const [requestData, setRequestData] = useState({});
 
+  // console.log('mn', modifiedNotification);
   const navigate = useNavigate();
-
-  const user = JSON.parse(localStorage.getItem('User'));     
-
   const get_notification_count = async (apivar) => {
     const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
       withCredentials: "include",
@@ -92,10 +98,9 @@ const NavbarDropdown = () => {
     apicall
       .then((response) => {
         if (response.data.message !== "Internal Server Error") {
-          localStorage.removeItem("user");
           localStorage.removeItem("subscription");
           navigate("/login");
-          localStorage.removeItem('User');
+          localStorage.removeItem("User");
         } else {
           console.log(response.data.message);
         }
@@ -104,50 +109,52 @@ const NavbarDropdown = () => {
         console.log(err);
       });
   };
-  const searchPotentialConnetion = async (apivar) => {
-    if (searchUser.length !== 0) {
-      const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
-        withCredentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
-      });
-      if (apicall.status !== 200) {
-        console.log("Internal Error");
-      } else {
-        setSerchedUsers(apicall.data.matchingUsers);
-      }
-    }
-  };
-
 
   const addFriend = async (requestreceiver) => {
-    const apicall = await axios.post(
-      BASE_URL_API + apiVariables.sendFriendRequest.url,
-      {
-        friendRequestStatus: "pending",
-        requestReceiverId: requestreceiver,
-        username: user.firstName + " " + user.LastName,
-        userDisplayPicture: user.profilePic,
-      },
-      {
-        withCredentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
+    setIsfriendRequestsend(false);
+    try {
+      const response = await postRequest(
+        `${BASE_URL_API}${apiVariables.sendFriendRequest.url}`,
+        {
+          friendRequestStatus: "pending",
+          requestReceiverId: requestreceiver,
+          username: user.firstName + " " + user.LastName,
+          userDisplayPicture: user.profilePic,
+        }
+      );
+      if (response.status == 401 || 500) {
+        console.log("internal error or fields are not provided");
+      } else if (response.status === 201) {
+        setRequestData(response.data.sentrequest);
+        setIsfriendRequestsend(true);
       }
-    );
-    if (apicall.status !== 201) {
-      throw new Error("Error in while Creating request");
-    } else {
-      setRequestData(apicall.data.sentrequest);
-      setIsfriendRequestsend(true);
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  // const addFriend = async (requestreceiver) => {
+  //   // console.log(requestreceiver, 'requestreceiver')
+  //   setIsfriendRequestsend(false);
+  //   const apicall = await axios.post(
+  //     BASE_URL_API + apiVariables.sendFriendRequest.url,
+  //     {
+  //       friendRequestStatus: "pending",
+  //       requestReceiverId: requestreceiver,
+  //       username: user?.firstName + " " + user?.LastName,
+  //       userDisplayPicture: user.profilePic,
+  //     },
+  //     {
+  //       withCredentials: "include",
+  //     }
+  //   );
+  //   if (apicall.status !== 201) {
+  //     throw new Error("Error in while Creating request");
+  //   } else {
+  //     setRequestData(apicall.data.sentrequest);
+  //     setIsfriendRequestsend(true);
+  //   }
+  // };
 
   const action_friend_request = async (
     frientRequestID,
@@ -163,8 +170,7 @@ const NavbarDropdown = () => {
         frientRequestStatus: "accepted",
         requestSenderName: requestSenderName,
         requestSenderDp: requestSenderDp,
-        requestReceiverName:
-          user.firstName + " " + user.LastName,
+        requestReceiverName: user.firstName + " " + user.LastName,
         requestReceivedDP: user.profilePic,
       },
       { withCredentials: "include" }
@@ -183,8 +189,6 @@ const NavbarDropdown = () => {
   //         noti_card.style.display='none';
   //     }
   // })
-
-
 
   useEffect(() => {
     get_notification_count(apiVariables.get_notification_count);
@@ -236,7 +240,7 @@ const NavbarDropdown = () => {
             </Dropdown>
           </div>
         </div> */}
-          <div id="searchDiv">
+        <div id="searchDiv">
           <img
             id="logoNew"
             src={logo}
@@ -251,9 +255,9 @@ const NavbarDropdown = () => {
                 className="btn btn-light mx-2 w-100"
                 size="lg"
                 id="dropdown-basic"
-              >
+              > 
                 <input
-                  onChange={(e) => setSearchUser(e.target.value)}
+                  onChange={(e) => updateSearchUser(e.target.value)}
                   type="text"
                   id="searchInput"
                   placeholder="Search Socialbook"
@@ -317,7 +321,7 @@ const NavbarDropdown = () => {
             </Dropdown>
           </div>
         </div>
-      
+
         <OverlayTrigger
           placement="bottom"
           delay={{ show: 100, hide: 100 }}
@@ -582,11 +586,14 @@ const NavbarDropdown = () => {
         >
           <Button
             onClick={handleNoti_card}
-            id="btnNav"
             data-count={notificationCount !== 0 ? notificationCount : ""}
             variant="outline-light"
             size="sm"
-            className={notificationCount !== 0 ? "d-flex mx-1 noti_bell" : ""}
+            className={
+              notificationCount !== 0
+                ? "d-flex mx-1 noti_bell  bg-slate-300"
+                : ""
+            }
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -621,12 +628,7 @@ const NavbarDropdown = () => {
               </button>
             </div>
             <div className="d-flex justify-content-start align-items-center">
-              <Button
-                id="noti-btn"
-                className="mx-2"
-                size="md"
-                variant="outline"
-              >
+              <Button className="mx-2" size="md" variant="outline">
                 All
               </Button>
               <Button
@@ -655,9 +657,7 @@ const NavbarDropdown = () => {
                       <div className="position-relative">
                         <img
                           style={{ borderRadius: "50%", top: "0" }}
-                          height="60px"
-                          width="60px"
-                          className="mx-2 mt-2"
+                          className="mx-2 mt-2 w-12 h-12 rounded-full"
                           alt=""
                           src={item.requestSenderDP}
                         />
@@ -737,7 +737,8 @@ const NavbarDropdown = () => {
               id="dropdown-basic"
             >
               <img
-                className="profilePic"
+                className="w-8 h-8  max-sm:w-56 max-sm:h-10
+               object-cover rounded-full"
                 alt=""
                 src={user.profilePic}
               />
@@ -752,7 +753,7 @@ const NavbarDropdown = () => {
                   style={{ cursor: "pointer" }}
                 >
                   <img
-                    className="ml-1 rounded-full h-12 w-12 object-cover "
+                    className="ml-1 rounded-full h-12 w-12 object-cover"
                     src={user.profilePic}
                   />
                   {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="1.5rem" height="1.5rem"><path d="M320 32c0-9.9-4.5-19.2-12.3-25.2S289.8-1.4 280.2 1l-179.9 45C79 51.3 64 70.5 64 92.5V448H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H96 288h32V480 32zM256 256c0 17.7-10.7 32-24 32s-24-14.3-24-32s10.7-32 24-32s24 14.3 24 32zm96-128h96V480c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H512V128c0-35.3-28.7-64-64-64H352v64z"/></svg> */}

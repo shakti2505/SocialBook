@@ -33,6 +33,8 @@ const ProfilePage = () => {
   const { loggedInUser, OpenPostModal, ClosePostModal, modalShow } =
     useContext(UserDataContext);
 
+  const user = JSON.parse(localStorage.getItem('User'));
+
   const handleCloseDpDiscard = () => {
     setProfilePicturePreview([]);
     setShowCancleDpUplpad(false);

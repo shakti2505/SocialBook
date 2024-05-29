@@ -31,7 +31,10 @@ export const apiVariables = {
   searchPotentialConnetion: (username) => ({
     url: `/services/search_potential_connetion?username=${username}`
   }),
-
+  searchPotentialChats: (username) => ({
+    url: `/services/chat/search_potential_chats?username=${username}`
+  }),
+  
   getPendingFriendRequest: {
     url: "/services/get_received_friendRequests"
   },
@@ -101,6 +104,14 @@ export const apiVariables = {
   getMessages: (chatId) => ({
     url: `/services/message/getmessage/${chatId}`
   }),
+  getAllMessages:{
+    url:"/services/message/getallmessages"
+
+  },
+  getLastMessages:{
+    url:"/services/message/getlastmessage"
+
+  }
 }
 
 

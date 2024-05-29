@@ -119,7 +119,7 @@ const Forgotpassword = () => {
           >
             <button
               className="w-100 text-3xl"
-              onClick={() => navitage("/signup")}
+              onClick={() => navitage("/")}
             >
               Signup
             </button>

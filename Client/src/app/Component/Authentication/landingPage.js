@@ -341,10 +341,15 @@ const LandingPage = () => {
                     Forgot Password ?
                   </p>
                 </a>
-                <a href="#" className="text-decoration-none lg:hidden">
+                {/* <a href="#" className="text-decoration-none lg:hidden">
                   <p className="text-right mt-4 text-lg  text-blue-500  shadow-2xl">
-                    Aready have an account ?
+                    Already have an account?
                   </p>
+                </a> */}
+                 <a href="#" className="text-decoration-none lg:hidden">
+                  <button onClick={() => navitage("/login")} className="text-right mt-4 text-lg  text-blue-500  shadow-2xl">
+                    Already have an account?
+                  </button>
                 </a>
               </div>
             </div>

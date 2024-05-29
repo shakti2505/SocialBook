@@ -40,5 +40,6 @@ this.addEventListener('push', (event) => {
         .catch(error => {
             console.error('Error fetching image:', error);
             // Handle errors
+
         });
 });

@@ -51,7 +51,6 @@ const get_request = async (url) => {
 
 const postRequest = async (url, body) => {
   try {
-    console.log(body, "body");
     const response = await axios.post(url, body, {
       withCredentials: "include",
     });
@@ -61,5 +60,7 @@ const postRequest = async (url, body) => {
     throw error;
   }
 };
+
+
 
 export { getDays, get_request, postRequest };

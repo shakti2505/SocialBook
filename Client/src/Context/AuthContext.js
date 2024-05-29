@@ -1,15 +1,9 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { postRequest } from "../utilities/utilities";
 import BASE_URL_API from "../utilities/baseURL";
 import { apiVariables } from "../utilities/apiVariables";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
+import { ChatContext } from "./ChatContext";
 
 export const AuthContext = createContext();
 export const AuthContextProvider = ({ children, user }) => {
@@ -57,10 +51,13 @@ export const AuthContextProvider = ({ children, user }) => {
 
         if (response.status === 201) {
           // User registered successfully
-          console.log(response.data, "response data");
           localStorage.setItem("User", JSON.stringify(response.data.user));
           setRegisterInfo(null);
-            setUser(response.data.user);
+          setUser(response.data.user);
+          setTimeout(() => {
+            setIsRegisterLoading(true);
+            navigate('/login')
+          }, 2000);
         } else if (response.status === 500) {
           // Server error
           setRegisterError("Server error. Please try again later.");
@@ -80,7 +77,6 @@ export const AuthContextProvider = ({ children, user }) => {
         );
       }
 
-      setIsRegisterLoading(false);
     },
     [registerInfo]
   );
@@ -121,7 +117,7 @@ export const AuthContextProvider = ({ children, user }) => {
         // Catch any network errors
         setLoginError("Network error. Please check your internet connection.");
       }
-    },  
+    },
     [loginInfo]
   );
 

@@ -3,9 +3,14 @@ import { useNavigate } from "react-router-dom";
 import bg_login from "../../../images/backGround/login-bg3.jpg";
 import logo from "../../../images/logo/logo.png";
 import { AuthContext } from "../../../Context/AuthContext.js";
+import { ChatContext } from "../../../Context/ChatContext.js";
+import { apiVariables } from "../../../utilities/apiVariables.js";
+
 const Login = () => {
   const navitage = useNavigate();
-  const { updateLogininfo, loginError, loginUser, isLoginLoading, loginInfo } = useContext(AuthContext);
+  const { updateLogininfo, loginError, loginUser, isLoginLoading, loginInfo } =
+    useContext(AuthContext);
+  const { get_logged_in_user_friends } = useContext(ChatContext);
 
   // const [isError, setIserror] = useState(false);
   // const [error, setError] = useState("");
@@ -100,23 +105,32 @@ const Login = () => {
                 type="email"
                 className="w-100 bg-[#FDFFFE] outline-none max-sm:placeholder-black	h-16 rounded-full	shadow-md text-xl px-4 max-sm:bg-transparent max-sm:ring-1"
                 placeholder="Email"
-                onChange={(e)=>updateLogininfo({...loginInfo, email:e.target.value})}
+                onChange={(e) =>
+                  updateLogininfo({ ...loginInfo, email: e.target.value })
+                }
                 name="email"
               />
               <input
                 type="password"
                 className="w-100 bg-[#FDFFFE] max-sm:placeholder-black outline-none	h-16 rounded-full	shadow-md text-xl px-4 mt-3 max-sm:bg-transparent max-sm:ring-1"
                 placeholder="Password"
-                onChange={(e)=>updateLogininfo({...loginInfo, password:e.target.value})}
+                onChange={(e) =>
+                  updateLogininfo({ ...loginInfo, password: e.target.value })
+                }
                 name="password"
               />
 
               <button
-                onClick={loginUser}
+                onClick={(e) => {
+                  loginUser(e);
+                  get_logged_in_user_friends(
+                    apiVariables.getLoggedInUserFriends.url
+                  );
+                }}
                 className=" bg-[#007DF9] flex justify-center items-center w-100 h-16 shadow-md mt-3 rounded-full text-light text-2xl hover:cursor-pointer max-sm:bg-transparent max-sm:ring-1 hover:bg-blue-800 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-900"
               >
                 <p className=" max-sm:text-black- lg:text-white text-2xl mt-3">
-                  {isLoginLoading ? "Please wait..." : 'Login'}
+                  {isLoginLoading ? "Please wait..." : "Login"}
                 </p>
               </button>
 
@@ -130,8 +144,11 @@ const Login = () => {
                   </button>
                 </a>
                 <a href="#" className="text-decoration-none lg:hidden">
-                  <button className="text-right mt-4 text-lg  text-blue-500  shadow-2xl">
-                    Aready have an account ?
+                  <button
+                    onClick={() => navitage("/")}
+                    className="text-right mt-4 text-lg  text-blue-500  shadow-2xl"
+                  >
+                    Create new account
                   </button>
                 </a>
               </div>

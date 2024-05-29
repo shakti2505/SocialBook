@@ -126,6 +126,11 @@ io.on("connection", (socket) => {
     const user = OnlineUser.find((user) => user.userId === message.recipientID);
     if (user) {
       io.to(user.socketId).emit("getMessage", message);
+      io.to(user.socketId).emit("getNotification", {
+        senderId:message.senderId,
+        isRead:false,
+        date:new Date()
+      });
     }
   });
 

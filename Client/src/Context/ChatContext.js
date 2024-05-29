@@ -27,13 +27,43 @@ const ChatContextProvider = ({ children, user }) => {
   const [chatWindowData, setChatWindowData] = useState([]);
   const [loggedInUserfriend, setLoggedInUserfriends] = useState([]);
   const [isLoading, setisLoading] = useState(false);
+  const [notificaiton, setNotification] = useState([]);
+  const [allMessages, setallMessages] = useState([]);
+  const [lastMessages, setLastMessges] = useState([]);
+  const [SerchedUsers, setSerchedUsers] = useState([]);
+  const [searchUser, setSearchUser] = useState("");
+  const [searchUserforPotentialChats, setSearchUserforPotentialChats] =
+    useState("");
+  const [potentialChat, setPotentialChat] = useState([]);
+
+  const updateSearchUser = useCallback((info) => {
+    setSearchUser(info);
+  }, []);
+
+  const updateSearchUserforPotentialChats = useCallback((info) => {
+    setSearchUserforPotentialChats(info);
+  }, []);
+  const updatePotentialChats = useCallback((info) => {
+    setPotentialChat(info);
+  }, []);
+
+  const updateLoggedInUserFriend = useCallback((info) => {
+    setLoggedInUserfriends(info);
+  }, []);
+
   const updateMessage = useCallback((info) => {
     setmessage(info);
   }, []);
 
+  const updateSearchedUser = useCallback((info) => {
+    setSerchedUsers(info);
+  }, []);
+
+  //
+
   // initial socket
   useEffect(() => {
-    const newSocket = io("https://socialbook-x3jq.onrender.com");
+    const newSocket = io(" https://socialbook-x3jq.onrender.com");
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
@@ -43,7 +73,7 @@ const ChatContextProvider = ({ children, user }) => {
   //add online users
 
   useEffect(() => {
-    if (socket == null || user==null) return;
+    if (socket == null || user == null) return;
     socket.emit("addNewUser", user?._id);
     socket.on("getOnlineUser", (response) => {
       setOnlineUser(response);
@@ -56,21 +86,37 @@ const ChatContextProvider = ({ children, user }) => {
   //  sendMessage
   useEffect(() => {
     if (socket === null) return;
-    const recipientID = userChats &&  userChats[0].members.filter((item) => item !== user._id)[0];
-    socket.emit("sendMessage", { ...newMessage, recipientID});
+    const recipientID =
+      userChats && userChats[0].members.filter((item) => item !== user._id)[0];
+    socket.emit("sendMessage", { ...newMessage, recipientID });
   }, [newMessage]);
 
-  //receive message
+  //receive message and notification
   useEffect(() => {
     if (socket === null) return;
-    socket.on('getMessage', res=>{  
-      if(userChats.some((item)=>item._id==res.chatId)) {
-        setExistingMessages((prev)=> [...prev, res]) ;
+    socket.on("getMessage", (res) => {
+      // console.log(res, "of get message event from server");
+      // console.log(userChats, "userchats");
+      if (userChats.some((item) => item._id == res.chatId)) {
+        setExistingMessages((prev) => [...prev, res]);
       }
-    })
+    });
+
+    socket.on("getNotification", (res) => {
+      console.log(chatWindowData, "chat window data");
+      const isChatOpen =
+        res.senderId === chatWindowData.friend_ID ? true : false;
+      if (isChatOpen) {
+        setNotification((prev) => [{ ...res, isRead: true }, ...prev]);
+      } else {
+        setNotification((prev) => [res, ...prev]);
+      }
+    });
     return () => {
       socket.off("getMessage");
-    };  }, [socket, userChats]);
+      socket.off("getNotification");
+    };
+  }, [socket, userChats]);
 
   const CreateNewChat = useCallback(async (firstId, secondId) => {
     const apicall = await axios.post(
@@ -97,16 +143,47 @@ const ChatContextProvider = ({ children, user }) => {
     if (apicall.status !== 200) {
       console.log("Internal sever error");
     } else {
-      setExistingMessages(apicall.data); 
+      setExistingMessages(apicall.data);
     }
   });
 
-  const sendMessage = useCallback(async (senderid) => {
+  const getAllMessages = useCallback(async () => {
+    const apicall = await axios.get(
+      BASE_URL_API + apiVariables.getAllMessages.url,
+      { withCredentials: true }
+    );
+    if (apicall.status !== 200) {
+      console.log("Internal sever error");
+    } else {
+      setallMessages(apicall.data);
+    }
+  });
+
+  const getLastMessages = useCallback(async () => {
+    const apicall = await axios.get(
+      BASE_URL_API + apiVariables.getLastMessages.url,
+      { withCredentials: true }
+    );
+    if (apicall.status !== 200) {
+      console.log("Internal sever error");
+    } else {
+      setLastMessges(apicall.data);
+    }
+  });
+
+  const sendMessage = useCallback(async (senderid, receiverId) => {
+    console.log(userChats, 'userchas')
+    console.log(senderid, receiverId)
+    const existingChat = userChats.find(chat => {
+      return chat.members[0] === receiverId || senderid && chat.members[1] === senderid || receiverId;
+    });
+    console.log(existingChat, 'existingChat')
     const apicall = await axios.post(
       BASE_URL_API + apiVariables.sendMessages.url,
       {
-        chatId: userChats[0]?._id,
+        chatId: existingChat._id,
         senderId: senderid,
+        receiverId: receiverId,
         senderDp: user.profilePic,
         text: message,
       },
@@ -114,14 +191,50 @@ const ChatContextProvider = ({ children, user }) => {
     );
     if (apicall.status !== 201 || 500) {
       setNewMessage(apicall.data);
-      setmessage('')
-      setExistingMessages((prev)=> [...prev, apicall.data]) ;
+      setmessage("");
+      setExistingMessages((prev) => [...prev, apicall.data]);
     } else {
       setNewMessage(apicall.data);
     }
   });
 
-  const get_logged_in_user_friends = async (apivar) => {
+  const searchPotentialConnetion = useCallback(async (apivar) => {
+    if (searchUser.length !== 0) {
+      const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
+        withCredentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+        },
+      });
+      if (apicall.status !== 200) {
+        console.log("Internal Error");
+      } else {
+        setSerchedUsers(apicall.data.matchingUsers);
+      }
+    }
+  });
+
+  const searchPotentialChats = useCallback(async (apivar) => {
+    if (searchUserforPotentialChats.length !== 0) {
+      const apicall = await axios.get(`${BASE_URL_API}${apivar.url}`, {
+        withCredentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+        },
+      });
+      if (apicall.status !== 200) {
+        console.log("Internal Error");
+      } else {
+        setPotentialChat(apicall.data);
+      }
+    }
+  });
+
+  const get_logged_in_user_friends = useCallback(async (apivar) => {
     setisLoading(true);
     const apicall = await axios.get(`${BASE_URL_API}${apivar}`, {
       withCredentials: "include",
@@ -137,7 +250,7 @@ const ChatContextProvider = ({ children, user }) => {
       setLoggedInUserfriends(apicall.data.FriendList);
       setisLoading(false);
     }
-  };
+  });
 
   useEffect(() => {
     const getUserChats = async () => {
@@ -167,6 +280,15 @@ const ChatContextProvider = ({ children, user }) => {
     get_logged_in_user_friends(apiVariables.getLoggedInUserFriends.url);
   }, []);
 
+  useEffect(() => {
+    const getdata = setTimeout(() => {
+      searchPotentialChats(
+        apiVariables.searchPotentialChats(searchUserforPotentialChats)
+      );
+    }, 500);
+    return () => clearTimeout(getdata);
+  }, [searchUserforPotentialChats]);
+
   return (
     <ChatContext.Provider
       value={{
@@ -183,6 +305,23 @@ const ChatContextProvider = ({ children, user }) => {
         setChatWindowData,
         loggedInUserfriend,
         getMessages,
+        notificaiton,
+        loggedInUserfriend,
+        getAllMessages,
+        allMessages,
+        lastMessages,
+        getLastMessages,
+        searchPotentialConnetion,
+        SerchedUsers,
+        updateSearchUser,
+        searchUser,
+        updateSearchedUser,
+        get_logged_in_user_friends,
+        updateLoggedInUserFriend,
+        updateSearchUserforPotentialChats,
+        searchUserforPotentialChats,
+        potentialChat,
+        updatePotentialChats,
       }}
     >
       {children}
