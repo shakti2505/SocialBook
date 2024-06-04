@@ -48,8 +48,8 @@ this.addEventListener("message", async (event) => {
     // Fetch the image and convert it to a data URL
     const response = await fetch(data);
     console.log(response);
-    self.registration.showNotification("Post upload", {
-      body: data.postOwner,
+    self.registration.showNotification("Notification form socialbook", {
+      body: `${data.postOwner} added a new post`,
       icon: "../src/images/logo/logo.png",
       image: data.postOwnerDP,
       vibrate: [200],

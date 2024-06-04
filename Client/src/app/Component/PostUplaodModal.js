@@ -21,8 +21,7 @@ const PostUplaodModal = () => {
   const { loggedInUser, OpenPostModal, ClosePostModal, modalShow } =
     useContext(UserDataContext);
 
-  const { socket, updateSocket } = useContext(ChatContext);
-
+  const { socket, updateSocket, loggedInUserfriend } = useContext(ChatContext);
   const OpenPostAudienceModal = () => {
     setPostAudienceModalShow(true);
     ClosePostModal();
@@ -103,12 +102,12 @@ const PostUplaodModal = () => {
     socket.emit("getPostUplaodNotification", uploadedPost);
 
     socket.on("getPostNotification", (res) => {
-      console.log(res, "post notification");
-      if (navigator.serviceWorker.controller) {
-        console.log("service worker registered");
+      const isFriend = loggedInUserfriend?.some(
+        (item) => item.friend_ID === res.users
+      );
+      console.log(isFriend, "isFriend");
+      if (navigator.serviceWorker.controller && isFriend) {
         navigator.serviceWorker.controller.postMessage(res);
-      } else {
-        console.error('No active service worker found to send the message to.');
       }
     });
     return () => {
