@@ -105,6 +105,7 @@ const PostUplaodModal = () => {
     socket.on("getPostNotification", (res) => {
       console.log(res, "post notification");
       if (navigator.serviceWorker.controller) {
+        console.log("service worker registered");
         navigator.serviceWorker.controller.postMessage(res);
       } else {
         console.error('No active service worker found to send the message to.');
