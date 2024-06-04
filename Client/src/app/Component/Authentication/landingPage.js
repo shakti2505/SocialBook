@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {Alert} from 'react-bootstrap';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import logo from "../../../images/logo/logo.png";
 import BASE_URL_API from "../../../utilities/baseURL.js";
 import { apiVariables } from "../../../utilities/apiVariables.js";
 import { AuthContext } from "../../../Context/AuthContext.js";
+import swDev from "../../../serveiceWorkerDev.js";
 
 const LandingPage = () => {
   const navitage = useNavigate();
@@ -85,6 +86,11 @@ const LandingPage = () => {
   for (let year = startYear; year <= currentYear; year++) {
     years.push(year);
   }
+
+  useEffect(()=>{
+    console.log('regesting service worker')
+    swDev();
+  },[])
 
   return (
     <>
