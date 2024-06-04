@@ -49,9 +49,9 @@ this.addEventListener("message", async (event) => {
     const response = await fetch(data);
     console.log(response);
     self.registration.showNotification("Post upload", {
-      body: response.postOwner,
+      body: data.postOwner,
       icon: "../src/images/logo/logo.png",
-      image: response.postOwnerDP,
+      image: data.postOwnerDP,
       vibrate: [200],
     });
   } catch (error) {

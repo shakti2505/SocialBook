@@ -98,6 +98,7 @@ const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     if (socket === null) return;
     socket.on("getMessage", (res) => {
+
       if (userChats.some((item) => item._id == res.chatId)) {
         setExistingMessages((prev) => [...prev, res]);
       }
@@ -172,12 +173,8 @@ const ChatContextProvider = ({ children, user }) => {
   });
 
   const sendMessage = useCallback(async (senderid, receiverId) => {
-    const existingChat = userChats.find((chat) => {
-      return (
-        chat.members[0] === receiverId ||
-        (senderid && chat.members[1] === senderid) ||
-        receiverId
-      );
+    const existingChat = userChats.find(chat => {
+      return chat.members[0] === receiverId || senderid && chat.members[1] === senderid || receiverId;
     });
     const apicall = await axios.post(
       BASE_URL_API + apiVariables.sendMessages.url,
@@ -324,7 +321,7 @@ const ChatContextProvider = ({ children, user }) => {
         potentialChat,
         updatePotentialChats,
         socket,
-        updateSocket,
+        updateSocket
       }}
     >
       {children}
