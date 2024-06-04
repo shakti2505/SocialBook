@@ -57,10 +57,5 @@ this.addEventListener("message", async (event) => {
   } catch (error) {
     console.error("Error fetching image:", error);
     // Show notification without image if fetching fails
-    self.registration.showNotification(data.postOwner, {
-      body: data.body.Name,
-      icon: "../src/images/logo/logo.png",
-      vibrate: [200],
-    });
   }
 });
