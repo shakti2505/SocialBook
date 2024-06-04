@@ -103,8 +103,7 @@ app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
-const io = new Server(server
-  , { cors: allowedOrigins });
+const io = new Server(server, { cors: allowedOrigins });
 
 let OnlineUser = [];
 
@@ -127,11 +126,35 @@ io.on("connection", (socket) => {
     if (user) {
       io.to(user.socketId).emit("getMessage", message);
       io.to(user.socketId).emit("getNotification", {
-        senderId:message.senderId,
-        isRead:false,
-        date:new Date()
+        senderId: message.senderId,
+        isRead: false,
+        date: new Date(),
       });
     }
+  });
+
+  // postCaption: 'Test socket.io 3',
+  // postImagesURls: [],
+  // users: '65bb88178b5fd24e0e5c8b10',
+  // postOwner: 'shivani tiwari',
+  // postOwnerDP: 'http://res.cloudinary.com/dtbz1n84e/image/upload/v1707383907/Profile%20Picture/myp2xdgohz6is54gphyr.jpg',
+  // totalComments: 0,
+  // likeCount: 0,
+  // LikedBy: [],
+  // public: false,
+  // _id: '665e9d99d7119896489ba369',
+  // createdAt: '2024-06-04T04:52:41.711Z',
+  // updatedAt: '2024-06-04T04:52:41.711Z',
+
+  // get post notification
+  socket.on("getPostUplaodNotification", (postNotification) => {
+    console.log(postNotification, "getPostUplaodNotification");
+    socket.broadcast.emit("getPostNotification", {
+      postOwner: postNotification.postOwner,
+      postOwnerDP: postNotification.postOwnerDP,
+      _id: postNotification._id,
+      users: postNotification.users,
+    });
   });
 
   //disconnecting the user when logout
@@ -141,8 +164,8 @@ io.on("connection", (socket) => {
   });
 });
 
-// io.listen(4500);
-
 server.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
+
+export { OnlineUser, io };

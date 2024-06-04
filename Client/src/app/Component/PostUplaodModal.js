@@ -5,7 +5,7 @@ import LoadingSpinner from "../LoadingSpinner.js";
 import axios from "axios";
 import BASE_URL_API from "../../utilities/baseURL";
 import { apiVariables } from "../../utilities/apiVariables.js";
-import Dropdown from "react-bootstrap/Dropdown";
+import { ChatContext } from "../../Context/ChatContext.js";
 
 const PostUplaodModal = () => {
   // const [modalShow, setModalShow] = useState(false);
@@ -17,8 +17,11 @@ const PostUplaodModal = () => {
   const [isloading, setisloading] = useState(false);
   const [uploadedPost, setUploadedPost] = useState({});
 
+  const user = JSON.parse(localStorage.getItem("User"));
   const { loggedInUser, OpenPostModal, ClosePostModal, modalShow } =
     useContext(UserDataContext);
+
+  const { socket, updateSocket } = useContext(ChatContext);
 
   const OpenPostAudienceModal = () => {
     setPostAudienceModalShow(true);
@@ -75,8 +78,8 @@ const PostUplaodModal = () => {
         {
           postimagesURLs: imageURL,
           postcaptions: postCaption,
-          postOwner: loggedInUser.firstName + " " + loggedInUser.LastName,
-          postOwnerDP: loggedInUser.profilePic,
+          postOwner: user.firstName + " " + user.LastName,
+          postOwnerDP: user.profilePic,
         },
         { withCredentials: "include" }
       );
@@ -93,6 +96,25 @@ const PostUplaodModal = () => {
       console.log("error", error.message);
     }
   };
+
+  //send Post upload notification
+  useEffect(() => {
+    if (socket == null || user == null) return;
+    socket.emit("getPostUplaodNotification", uploadedPost);
+
+    socket.on("getPostNotification", (res) => {
+      console.log(res, "post notification");
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage(res);
+      } else {
+        console.error('No active service worker found to send the message to.');
+      }
+    });
+    return () => {
+      socket.off("getPostUplaodNotification");
+      socket.off("getPostNotification");
+    };
+  }, [socket, uploadedPost]);
 
   return (
     <>
@@ -121,13 +143,13 @@ const PostUplaodModal = () => {
         >
           <div className="d-flex">
             <img
-              src={loggedInUser.profilePic}
+              src={user.profilePic}
               alt="img"
               className="w-14 h-14 object-cover rounded-full"
             />
             <div className="d-flex flex-column">
               <strong className="mx-2">
-                {loggedInUser.firstName} {loggedInUser.LastName}
+                {user.firstName} {user.LastName}
               </strong>
               <button
                 onClick={OpenPostAudienceModal}
@@ -156,7 +178,7 @@ const PostUplaodModal = () => {
           </div>
           <textarea
             onChange={(e) => setPostCaption(e.target.value)}
-            placeholder={`What's on your Mind, ${loggedInUser.firstName}?`}
+            placeholder={`What's on your Mind, ${user.firstName}?`}
             className="w-100 mt-3"
             style={{ border: "0", outline: "none", fontSize: "25px" }}
             value={postCaption && postCaption}

@@ -15,6 +15,7 @@ import Card from "react-bootstrap/Card";
 import { AuthContext } from "../Context/AuthContext";
 import { postRequest } from "../utilities/utilities";
 import { ChatContext } from "../Context/ChatContext";
+import { unreadnotificationFucn } from "../utilities/UnReadNotification";
 
 const renderTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
@@ -32,7 +33,10 @@ const NavbarDropdown = () => {
     SerchedUsers,
     updateSearchUser,
     searchUser,
+    notificaiton,
   } = useContext(ChatContext);
+  const unreadnotifications = unreadnotificationFucn(notificaiton);
+
   const [notificationCount, setnotificationCount] = useState();
   const [notification, setnotification] = useState([]);
   const [seeNotificationCard, setSeeNotificationCard] = useState(false);
@@ -255,7 +259,7 @@ const NavbarDropdown = () => {
                 className="btn btn-light mx-2 w-100"
                 size="lg"
                 id="dropdown-basic"
-              > 
+              >
                 <input
                   onChange={(e) => updateSearchUser(e.target.value)}
                   type="text"
@@ -565,7 +569,7 @@ const NavbarDropdown = () => {
         >
           <Button
             id="btnNav"
-            className="mx-1"
+            className="mx-1 relative"
             variant="outline-light"
             size="sm"
           >
@@ -577,6 +581,11 @@ const NavbarDropdown = () => {
             >
               <path d="M256.6 8C116.5 8 8 110.3 8 248.6c0 72.3 29.7 134.8 78.1 177.9 8.4 7.5 6.6 11.9 8.1 58.2A19.9 19.9 0 0 0 122 502.3c52.9-23.3 53.6-25.1 62.6-22.7C337.9 521.8 504 423.7 504 248.6 504 110.3 396.6 8 256.6 8zm149.2 185.1l-73 115.6a37.4 37.4 0 0 1 -53.9 9.9l-58.1-43.5a15 15 0 0 0 -18 0l-78.4 59.4c-10.5 7.9-24.2-4.6-17.1-15.7l73-115.6a37.4 37.4 0 0 1 53.9-9.9l58.1 43.5a15 15 0 0 0 18 0l78.4-59.4c10.4-8 24.1 4.5 17.1 15.6z" />
             </svg>
+            {unreadnotifications.length!==0 && (
+              <p className="absolute top-0 bottom-5 left-8 text-md rounded-full w-6 h-6 bg-[#DA1D27] text-white shadow-2xl">
+                {unreadnotifications.length !== 0 && unreadnotifications.length}
+              </p>
+            )}
           </Button>
         </OverlayTrigger>
         <OverlayTrigger

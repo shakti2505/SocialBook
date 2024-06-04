@@ -1,4 +1,10 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { postRequest } from "../utilities/utilities";
 import BASE_URL_API from "../utilities/baseURL";
 import { apiVariables } from "../utilities/apiVariables";
@@ -56,7 +62,7 @@ export const AuthContextProvider = ({ children, user }) => {
           setUser(response.data.user);
           setTimeout(() => {
             setIsRegisterLoading(true);
-            navigate('/login')
+            navigate("/login");
           }, 2000);
         } else if (response.status === 500) {
           // Server error
@@ -76,7 +82,6 @@ export const AuthContextProvider = ({ children, user }) => {
           "Network error. Please check your internet connection."
         );
       }
-
     },
     [registerInfo]
   );
@@ -106,16 +111,15 @@ export const AuthContextProvider = ({ children, user }) => {
           setUser(response.data.loggedInUser);
           setIsLoginLoading(false);
           navigate("/home");
-        } else if (response.status === 401 || response.status === 500) {
-          // Unauthorized or server error
-          setLoginError(response.data.message);
         } else {
-          // Unexpected status code
-          setLoginError("Unexpected error occurred. Please try again later.");
+          setLoginError(response.data.message);
         }
       } catch (error) {
-        // Catch any network errors
-        setLoginError("Network error. Please check your internet connection.");
+        // console.log(error.response.data.message, "login error message");
+        setLoginError(error.response.data.message  );
+        setIsLoginLoading(false);
+        setLoginInfo({})
+
       }
     },
     [loginInfo]

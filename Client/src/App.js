@@ -15,6 +15,7 @@ import ResetPassword from "./app/Component/Authentication/ResetPassword.js";
 import AddStories from "./app/Component/stories/AddStories.js";
 import { ChatContextProvider } from "./Context/ChatContext.js";
 import { AuthContext } from "./Context/AuthContext.js";
+import ChatPage from "./app/Component/chats/ChatPage.js";
 
 const Home = React.lazy(() => import("./app/HomePage.js"));
 // const Forgotpassword = React.lazy(()=>import("./app/Component/Authentication/ForgotPassword.js"))
@@ -63,6 +64,10 @@ const user = JSON.parse(localStorage.getItem('User'));
             <Route
               path="/stories/create"
               element={<Protected Component={AddStories} />}
+            />
+            <Route
+              path="/chats"
+              element={<Protected Component={ChatPage} />}
             />
           </Routes>
           </ChatContextProvider>

@@ -221,7 +221,7 @@ router.post("/login", async (req, res) => {
     const existingUser = await userModel.findOne(searchCriteria);
     // Check if user exists
     if (!existingUser) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({ message: "Email not found!" });
     }
 
     // Compare passwords
@@ -264,7 +264,7 @@ router.post("/login", async (req, res) => {
         },
       });
     } else {
-      return res.status(401).json({ message: "Unauthorized Access" });
+      return res.status(401).json({ message: "Invalid Credentials" });
     }
   } catch (error) {
     console.error("Error:", error);

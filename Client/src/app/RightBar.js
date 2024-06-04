@@ -4,13 +4,15 @@ import { unreadnotificationFucn } from "../utilities/UnReadNotification";
 import { apiVariables } from "../utilities/apiVariables";
 import Button from "react-bootstrap/esm/Button";
 import { Link } from "react-router-dom";
+import { getDays } from "../utilities/utilities";
 
 const RightBar = () => {
   const user = JSON.parse(localStorage.getItem("User"));
-  const { loggedInUserfriend, notificaiton, userChats } =
-    useContext(ChatContext);
+
   const {
     onlineUsers,
+    loggedInUserfriend,
+    notificaiton,
     updateMessage,
     message,
     CreateNewChat,
@@ -18,6 +20,7 @@ const RightBar = () => {
     existingMessages,
     chatWindowData,
     setChatWindowData,
+    updateChatWindowData,
     getMessages,
     lastMessages,
     searchPotentialConnetion,
@@ -29,11 +32,12 @@ const RightBar = () => {
     updateSearchUserforPotentialChats,
     potentialChat,
     updatePotentialChats,
-    searchUserforPotentialChats
+    searchUserforPotentialChats,
   } = useContext(ChatContext);
   const scroll = useRef();
 
   const unreadnotifications = unreadnotificationFucn(notificaiton);
+
   const modifiedNotification = notificaiton?.map((n) => {
     const sender = loggedInUserfriend.find(
       (user) => user.friend_ID === n.senderId
@@ -43,6 +47,7 @@ const RightBar = () => {
       sendername: sender?.friendName,
     };
   });
+  // console.log("MN", modifiedNotification)
   const [openChatwindow, setOpenChatwindow] = useState(false);
   const [miniMizedChatWindow, setMiniMizedChatWindow] = useState(false);
   const [minimizeChats, setMinimizeChats] = useState([]);
@@ -52,7 +57,6 @@ const RightBar = () => {
   const handleChatwindow = (data) => {
     getMessages(data.friend_ID);
     setOpenChatwindow(true);
-    setChatWindowData(data);
     CreateNewChat(user._id, data.friend_ID);
   };
 
@@ -64,7 +68,7 @@ const RightBar = () => {
     setOpenChatwindow(false);
     const index = minimizeChats.indexOf(chatWindowData);
     minimizeChats.splice(index, 1);
-    setChatWindowData([]);
+    updateChatWindowData([]);
   };
 
   const handleMinimizeChatWindow = (user) => {
@@ -90,12 +94,13 @@ const RightBar = () => {
       setMinimizeChats([...minimizeChats, chatWindowData]);
     }
 
-    setChatWindowData(user);
+    updateChatWindowData(user);
   };
 
   const sortedMessages = existingMessages.sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
+
 
   // const allSortedMessage = allMessages.sort(
   //   (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
@@ -203,7 +208,7 @@ const RightBar = () => {
             {potentialChat.map((item, index) => {
               return (
                 <>
-                  <d iv className="flex items-start p-2" id={index + 1}>
+                  <div className="flex items-start p-2" id={index + 1}>
                     <img
                       src={item.friend_dp}
                       className="rounded-full h-10 w-10 object-cover "
@@ -225,7 +230,7 @@ const RightBar = () => {
                         </Button>
                       </div>
                     </div>
-                  </d>
+                  </div>
                 </>
               );
             })}
@@ -235,31 +240,39 @@ const RightBar = () => {
           loggedInUserfriend.map((item, index) => {
             return (
               <>
-                <button
-                  onClick={() => handleChatwindow(item)}
-                  key={index + 5}
-                  className="flex items-center justify-start relative mt-4  active:bg-gray-300 px-2 py-2 rounded-xl w-full"
-                >
-                  <img
-                    src={item.friend_dp}
-                    className="object-cover rounded-full h-12 w-12"
-                  />
-                  <span
-                    className={
-                      onlineUsers?.some(
-                        (user) => user.userId === item.friend_ID
-                      )
-                        ? "before:absolute before:flex before:top-0.5 before:left-1 before:shadow-2xl before:bg-[#34C300] before:rounded-full before:h-4 before:w-4"
-                        : ""
-                    }
-                  ></span>
-                  <div className="flex flex-col justify-start items-center">
-                    <strong className="ml-2">{item.friendName}</strong>
-                    <small className="text-left ml-2 text-muted">
-                      {item.text}
-                    </small>
+                <div className="flex items-center justify-between active:bg-gray-300 rounded-r-xl bg bg-[#F0F2F5] mt-3 p-2 hover:cursor-pointer ">
+                  <div
+                    onClick={() => {
+                      handleChatwindow(item);
+                      updateChatWindowData(item);
+                    }}
+                    key={index + 5}
+                    className="flex items-center  relative  active:bg-gray-300 px-2 py-2 rounded-l-lg"
+                  >
+                    <img
+                      src={item.friend_dp}
+                      className="object-cover rounded-full h-12 w-12"
+                    />
+                    <span
+                      className={
+                        onlineUsers?.some(
+                          (user) => user.userId === item.friend_ID
+                        )
+                          ? "before:absolute before:flex before:top-0.5 before:left-1 before:shadow-2xl before:bg-[#34C300] before:rounded-full before:h-4 before:w-4"
+                          : ""
+                      }
+                    ></span>
+                    <div className="flex flex-col justify-start items-center">
+                      <strong className="ml-2">{item.friendName}</strong>
+                      <small className="text-left ml-2 text-muted">
+                        {item.text}
+                      </small>
+                    </div>
                   </div>
-                </button>
+                  <small>
+                    {getDays(item.createdAt)}
+                  </small>
+                </div>
               </>
             );
           })}
@@ -347,47 +360,6 @@ const RightBar = () => {
                   You're friends on socialbook
                 </small>
               </div>
-              {/* {existingMessages.length !== 0 &&
-                existingMessages
-                  .filter((item) => item.senderId === loggedInUser._id)
-                  .map((user, i) => {
-                    return (
-                      <>
-                        <div
-                          className="flex items-center justify-end"
-                        >
-                           
-                          <div className="flex items-center  bg-[#F0F2F5] mt-2 mx-2 p-2 rounded-2xl">
-                            <p className="text-muted mx-2 text-center">{user.text}</p>
-                          </div>
-                          <img
-                            src={user.senderDp}
-                            className="w-8 h-8 rounded-full object-cover"
-                          />
-                        </div>
-                      </>
-                    );
-                  })} */}
-              {/* {existingMessages.length !== 0 &&
-                existingMessages
-                  .filter((item) => item.senderId == chatWindowData.friend_ID)
-                  .map((user, i) => {
-                    return (
-                      <>
-                        <div
-                          className="flex items-center justify-start"
-                        >
-                            <img
-                            src={user.senderDp}
-                            className="w-8 h-8 rounded-full object-cover"
-                          />
-                          <div className="flex items-center  bg-[#F0F2F5] mt-2 mx-2 p-2 rounded-2xl">
-                            <p className="text-muted mx-2">{user.text}</p>
-                          </div>
-                        </div>
-                      </>
-                    );
-                  })} */}
               {sortedMessages.map((message, index) => {
                 const isCurrentUser = message.senderId === user._id;
                 const alignClass = isCurrentUser

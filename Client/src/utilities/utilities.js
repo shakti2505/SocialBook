@@ -4,16 +4,40 @@ const getDays = (dateTime) => {
   const currentDate = Date.now();
   const dt = new Date(dateTime).getTime();
   const millisec = dt - currentDate;
-
   const hours = Math.abs(millisec) / (1000 * 60 * 60);
   const minutes = Math.abs(millisec) / (1000 * 60);
+
   if (hours >= 24) {
     return `${Math.floor(hours / 24)} Days ago`; // return days
   } else if (hours >= 1) {
-    return `${Math.floor(hours)} hours ago`; // return hours
+    return `${Math.floor(hours)} hrs ago`; // return hours
   } else {
-    return `${Math.floor(minutes)} minutes ago`; // return minutes
+    return `${Math.floor(minutes)} min ago`; // return minutes
   }
+};
+
+const getTime = (dateString) => {
+  const time = new Date(dateString);
+  const year = time.getFullYear();
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const monthName = monthNames[time.getMonth()];
+  const day = time.getDate().toString().padStart(2, "0");
+
+  const res = `${monthName} ${day} ${year}`;
+  return res;
 };
 
 // const get_request = async (url) => {
@@ -42,9 +66,9 @@ const get_request = async (url) => {
   const response = await axios.get(url, {
     withCredentials: "include",
   });
-  if (!response.status==200) {
-    console.log(response.data)
-  }else{
+  if (!response.status == 200) {
+    console.log(response.data);
+  } else {
     return response.data;
   }
 };
@@ -61,6 +85,4 @@ const postRequest = async (url, body) => {
   }
 };
 
-
-
-export { getDays, get_request, postRequest };
+export { getDays, get_request, postRequest , getTime};

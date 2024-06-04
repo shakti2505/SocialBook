@@ -5,10 +5,10 @@ import postModel from "../models/Post.js";
 import userModel from "../models/user.js";
 import monitorRequests from "../ChangeStreams/ChangeStreams.js";
 import friendRequestModal from "../models/FrientRequest.js";
-import UserFriendList from "../models/FriendList.js";
 import monitor from "../ChangeStreams/ChangeStreams.js";
 import PostNotificationModal from "../models/Notifications/PostNotification.js";
-
+import { io, OnlineUser } from "../app.js";
+import UserFriendList from "../models/FriendList.js";
 const storage = multer.memoryStorage();
 const uploadPostMedia = multer({
   storage: storage,
@@ -48,13 +48,14 @@ router.post("/createPost", authorization, async (req, res) => {
       postOwnerDP: postOwnerDP,
     });
     const savedPost = await newpost.save();
-
     //closing streams
     closeChangeStreams(ChangeStreams);
-    res.status(201).send({ message: "Post added successfully!", savedPost });
+    return res
+      .status(201)
+      .json({ message: "Post added successfully!", savedPost });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -213,7 +214,7 @@ router.post("/like_post", authorization, async (req, res) => {
 router.get("/get-posts-notifications", async (req, res) => {
   try {
     // const UserId = req.userId;
-    const postNoti = await PostNotificationModal.distinct("userID")
+    const postNoti = await PostNotificationModal.distinct("userID");
     console.log(postNoti);
   } catch (error) {
     console.log(error);

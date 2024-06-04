@@ -58,12 +58,15 @@ const ChatContextProvider = ({ children, user }) => {
   const updateSearchedUser = useCallback((info) => {
     setSerchedUsers(info);
   }, []);
+  const updateSocket = useCallback((info) => {
+    setSocket(info);
+  }, []);
 
-  //
+  //https://socialbook-x3jq.onrender.com
 
   // initial socket
   useEffect(() => {
-    const newSocket = io(" https://socialbook-x3jq.onrender.com");
+    const newSocket = io("https://socialbook-x3jq.onrender.com");
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
@@ -95,15 +98,13 @@ const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     if (socket === null) return;
     socket.on("getMessage", (res) => {
-      // console.log(res, "of get message event from server");
-      // console.log(userChats, "userchats");
+
       if (userChats.some((item) => item._id == res.chatId)) {
         setExistingMessages((prev) => [...prev, res]);
       }
     });
 
     socket.on("getNotification", (res) => {
-      console.log(chatWindowData, "chat window data");
       const isChatOpen =
         res.senderId === chatWindowData.friend_ID ? true : false;
       if (isChatOpen) {
@@ -172,12 +173,9 @@ const ChatContextProvider = ({ children, user }) => {
   });
 
   const sendMessage = useCallback(async (senderid, receiverId) => {
-    console.log(userChats, 'userchas')
-    console.log(senderid, receiverId)
     const existingChat = userChats.find(chat => {
       return chat.members[0] === receiverId || senderid && chat.members[1] === senderid || receiverId;
     });
-    console.log(existingChat, 'existingChat')
     const apicall = await axios.post(
       BASE_URL_API + apiVariables.sendMessages.url,
       {
@@ -322,6 +320,8 @@ const ChatContextProvider = ({ children, user }) => {
         searchUserforPotentialChats,
         potentialChat,
         updatePotentialChats,
+        socket,
+        updateSocket
       }}
     >
       {children}

@@ -5,13 +5,13 @@ import logo from "../../../images/logo/logo.png";
 import { AuthContext } from "../../../Context/AuthContext.js";
 import { ChatContext } from "../../../Context/ChatContext.js";
 import { apiVariables } from "../../../utilities/apiVariables.js";
+import Alert from "react-bootstrap/Alert";
 
 const Login = () => {
   const navitage = useNavigate();
   const { updateLogininfo, loginError, loginUser, isLoginLoading, loginInfo } =
     useContext(AuthContext);
   const { get_logged_in_user_friends } = useContext(ChatContext);
-
   // const [isError, setIserror] = useState(false);
   // const [error, setError] = useState("");
 
@@ -111,7 +111,7 @@ const Login = () => {
                 name="email"
               />
               <input
-                type="password"
+              type="password"
                 className="w-100 bg-[#FDFFFE] max-sm:placeholder-black outline-none	h-16 rounded-full	shadow-md text-xl px-4 mt-3 max-sm:bg-transparent max-sm:ring-1"
                 placeholder="Password"
                 onChange={(e) =>
@@ -119,13 +119,20 @@ const Login = () => {
                 }
                 name="password"
               />
-
+              {loginError && 
+                <Alert key="danger" variant="danger">
+                {loginError}
+              </Alert>
+              }
+              
               <button
+              disabled={isLoginLoading ? true :false}
                 onClick={(e) => {
                   loginUser(e);
                   get_logged_in_user_friends(
                     apiVariables.getLoggedInUserFriends.url
                   );
+                  updateLogininfo({});
                 }}
                 className=" bg-[#007DF9] flex justify-center items-center w-100 h-16 shadow-md mt-3 rounded-full text-light text-2xl hover:cursor-pointer max-sm:bg-transparent max-sm:ring-1 hover:bg-blue-800 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-900"
               >
