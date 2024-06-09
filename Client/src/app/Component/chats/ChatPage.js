@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useEffect } from "react";
+import React, { useContext, useRef, useEffect, useState } from "react";
 import Stack from "react-bootstrap/Stack";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -6,9 +6,13 @@ import Col from "react-bootstrap/Col";
 import { ChatContext } from "../../../Context/ChatContext";
 import { getTime } from "../../../utilities/utilities";
 import { Link } from "react-router-dom";
-import Button from "react-bootstrap/esm/Button";
+import VideoChat from "./VideoChat";
+
 
 const ChatPage = () => {
+  const [videoCall, setVideoCall] = useState(false);
+
+  
   const user = JSON.parse(localStorage.getItem("User"));
   const {
     onlineUsers,
@@ -34,6 +38,17 @@ const ChatPage = () => {
     potentialChat,
     updatePotentialChats,
     searchUserforPotentialChats,
+    streams,
+    myVideo,
+    userVideo,
+    callAccepted,
+    callEnded,
+    callUser,
+    leaveCall,
+    answerCall,
+    updateVideoCallerName,
+    receivingCall,
+    modalShow,updateModalShow
   } = useContext(ChatContext);
 
   const handleMessage = (e) => {
@@ -56,6 +71,7 @@ const ChatPage = () => {
   useEffect(() => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
   }, [existingMessages]);
+
   return (
     <>
       <Container fluid>
@@ -242,14 +258,14 @@ const ChatPage = () => {
           </Col>
           <Col xs={12} md={7}>
             <Stack direction="horizontal" gap={3}>
-              <div className="  p-3 flex items-center justify-between border-l-2 relative">
+              <div className="p-3 flex items-center justify-between border-l-2 relative">
                 {chatWindowData.friend_dp ? (
                   <img
                     src={chatWindowData.friend_dp}
                     className="w-10 h-10 object-cover rounded-full"
                   />
                 ) : (
-                  <div className=" animate-pulse h-10 w-10 bg-[#EAF1F9] rounded-full"></div>
+                  <div className="animate-pulse h-10 w-10 bg-[#EAF1F9] rounded-full"></div>
                 )}
 
                 {chatWindowData.friendName ? (
@@ -281,7 +297,16 @@ const ChatPage = () => {
               </div>
               <div className="p-2 flex  items-center  ms-auto">
                 <div className="group relative">
-                  <button>
+                  <button
+                    onClick={() => {
+                      updateVideoCallerName(
+                        chatWindowData.friendName
+                      );
+                      updateModalShow(!modalShow);
+                      callUser();
+                    
+                    }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 576 512"
@@ -455,6 +480,7 @@ const ChatPage = () => {
           </Col>
         </Row>
       </Container>
+      <VideoChat/>
     </>
   );
 };

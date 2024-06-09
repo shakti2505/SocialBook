@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import { get_request } from "../utilities/utilities.js";
 import { io } from "socket.io-client";
@@ -12,6 +13,7 @@ import { AuthContext } from "./AuthContext.js";
 import axios from "axios";
 import BASE_URL_API from "../utilities/baseURL";
 import { apiVariables } from "../utilities/apiVariables";
+import Peer from "simple-peer";
 const ChatContext = createContext();
 
 const ChatContextProvider = ({ children, user }) => {
@@ -35,9 +37,31 @@ const ChatContextProvider = ({ children, user }) => {
   const [searchUserforPotentialChats, setSearchUserforPotentialChats] =
     useState("");
   const [potentialChat, setPotentialChat] = useState([]);
+  const [me, setMe] = useState();
+  const [streams, setStreams] = useState();
+  const [receivingCall, setReceivingCall] = useState(false);
+  const [caller, setCaller] = useState("");
+  const [callerSignal, setCallerSignal] = useState("");
+  const [callAccepted, setCallAcceptted] = useState(false);
+  const [idToCall, setIdToCall] = useState("");
+  const [callEnded, setCallEnded] = useState(false);
+  const [name, setName] = useState("");
+  const [modalShow, setModalShow] = useState(false);
+  const [callerName, setCallerName] = useState()
 
+  const myVideo = useRef();
+  const userVideo = useRef();
+
+  const connectionRef = useRef();
+
+  const updateModalShow = useCallback((info) => {
+    setModalShow(info);
+  }, []);
   const updateSearchUser = useCallback((info) => {
     setSearchUser(info);
+  }, []);
+  const updateVideoCallerName = useCallback((info) => {
+    setName(info);
   }, []);
 
   const updateSearchUserforPotentialChats = useCallback((info) => {
@@ -45,6 +69,9 @@ const ChatContextProvider = ({ children, user }) => {
   }, []);
   const updatePotentialChats = useCallback((info) => {
     setPotentialChat(info);
+  }, []);
+  const updateChatWindowData = useCallback((info) => {
+    setChatWindowData(info);
   }, []);
 
   const updateLoggedInUserFriend = useCallback((info) => {
@@ -98,12 +125,10 @@ const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     if (socket === null) return;
     socket.on("getMessage", (res) => {
-
       if (userChats.some((item) => item._id == res.chatId)) {
         setExistingMessages((prev) => [...prev, res]);
       }
     });
-
     socket.on("getNotification", (res) => {
       const isChatOpen =
         res.senderId === chatWindowData.friend_ID ? true : false;
@@ -113,11 +138,129 @@ const ChatContextProvider = ({ children, user }) => {
         setNotification((prev) => [res, ...prev]);
       }
     });
+
+    navigator.mediaDevices
+      .getUserMedia({
+        video: true,
+        audio: true,
+      })
+      .then((stream) => {
+        setStreams(stream);
+        if (myVideo.current) {
+          myVideo.current.srcObject = stream;
+        }
+      });
+    socket.on("me", (OnlineUser) => {
+      console.log(OnlineUser, "online user");
+      const matchingUser = OnlineUser.find((item) => item.userId == user._id);
+      if (matchingUser) {
+        setMe(matchingUser.socketId);
+      }
+      console.log(loggedInUserfriend, "logged in user friend");
+      const res = OnlineUser.filter((obj1) =>
+        loggedInUserfriend?.some((obj2) => obj2.friend_ID === obj1.userId)
+      );
+      console.log(res, "res");
+      setIdToCall(res[0]?.socketId);
+    });
+
+    socket.on("callUser", (data) => {
+      setReceivingCall(true);
+      updateModalShow(true);
+      setCaller(data.from);
+      setCallerName(data.name);
+      setCallerSignal(data.signal);
+    });
+
     return () => {
       socket.off("getMessage");
       socket.off("getNotification");
+      socket.off("me");
     };
-  }, [socket, userChats]);
+  }, [socket, userChats, loggedInUserfriend]);
+
+  // //vidoe call
+  // useEffect(() => {
+
+  //   return () => {
+  //     socket.off("callUser");
+  //     socket.off("me");
+  //   };
+  // }, [socket]);
+
+  const callUser = useCallback(() => {
+    console.log("Initializing Peer connection...");
+
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: streams,
+    });
+    peer.on("signal", (data) => {
+      socket.emit("callUser", {
+        userToCall: idToCall,
+        signalData: data,
+        from: me,
+        name: user.firstName + " " + user.LastName,
+      });
+    });
+
+    peer.on("stream", (streams) => {
+      userVideo.current.srcObject = streams;
+    });
+
+    peer.on("close", () => {
+      alert("Peer connection closed");
+    });
+
+    peer.on("error", (err) => {
+      console.error("Peer connection error: ", err);
+    });
+
+    socket.on(
+      "callAccepted",
+      (signal) => {
+        console.log("Call accepted, signal data: ", signal);
+        setCallAcceptted(true);
+        peer.signal(signal);
+      },
+      [idToCall, me, name, streams, socket, userVideo]
+    );
+
+    connectionRef.current = peer;
+    console.log("Peer connection established, waiting for events...");
+  });
+
+  const answerCall = useCallback(() => {
+    setCallAcceptted(true);
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: streams,
+    });
+
+    peer.on("signal", (data) => {
+      alert("answering call");
+      console.log(data, "in answer call");
+      socket.emit("answerCall", { signal: data, to: caller });
+    });
+
+    peer.on("stream", (streams) => {
+      userVideo.current.srcObject = streams;
+    });
+
+    peer.signal(callerSignal);
+    connectionRef.current = peer;
+  });
+
+  const leaveCall = useCallback(() => {
+    if (connectionRef.current) {
+      setCallEnded(true);
+      connectionRef.current.destroy();
+    }else{
+      console.log('connection is still on !!!!!')
+    }
+  });
 
   const CreateNewChat = useCallback(async (firstId, secondId) => {
     const apicall = await axios.post(
@@ -173,8 +316,12 @@ const ChatContextProvider = ({ children, user }) => {
   });
 
   const sendMessage = useCallback(async (senderid, receiverId) => {
-    const existingChat = userChats.find(chat => {
-      return chat.members[0] === receiverId || senderid && chat.members[1] === senderid || receiverId;
+    const existingChat = userChats.find((chat) => {
+      return (
+        chat.members[0] === receiverId ||
+        (senderid && chat.members[1] === senderid) ||
+        receiverId
+      );
     });
     const apicall = await axios.post(
       BASE_URL_API + apiVariables.sendMessages.url,
@@ -276,7 +423,7 @@ const ChatContextProvider = ({ children, user }) => {
 
   useEffect(() => {
     get_logged_in_user_friends(apiVariables.getLoggedInUserFriends.url);
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     const getdata = setTimeout(() => {
@@ -300,7 +447,6 @@ const ChatContextProvider = ({ children, user }) => {
         sendMessage,
         existingMessages,
         chatWindowData,
-        setChatWindowData,
         loggedInUserfriend,
         getMessages,
         notificaiton,
@@ -321,7 +467,23 @@ const ChatContextProvider = ({ children, user }) => {
         potentialChat,
         updatePotentialChats,
         socket,
-        updateSocket
+        updateSocket,
+        updateChatWindowData,
+        streams,
+        myVideo,
+        userVideo,
+        callAccepted,
+        callEnded,
+        callUser,
+        leaveCall,
+        answerCall,
+        updateVideoCallerName,
+        receivingCall,
+        modalShow,
+        updateModalShow,
+        name,
+        caller,
+        callerName
       }}
     >
       {children}

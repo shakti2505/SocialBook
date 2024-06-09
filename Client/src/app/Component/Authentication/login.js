@@ -129,9 +129,6 @@ const Login = () => {
               disabled={isLoginLoading ? true :false}
                 onClick={(e) => {
                   loginUser(e);
-                  get_logged_in_user_friends(
-                    apiVariables.getLoggedInUserFriends.url
-                  );
                   updateLogininfo({});
                 }}
                 className=" bg-[#007DF9] flex justify-center items-center w-100 h-16 shadow-md mt-3 rounded-full text-light text-2xl hover:cursor-pointer max-sm:bg-transparent max-sm:ring-1 hover:bg-blue-800 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-900"

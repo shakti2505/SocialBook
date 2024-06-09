@@ -88,7 +88,6 @@ const LandingPage = () => {
   }
 
   useEffect(()=>{
-    console.log('regesting service worker')
     swDev();
   },[])
 

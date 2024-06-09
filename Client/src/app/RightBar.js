@@ -5,6 +5,7 @@ import { apiVariables } from "../utilities/apiVariables";
 import Button from "react-bootstrap/esm/Button";
 import { Link } from "react-router-dom";
 import { getDays } from "../utilities/utilities";
+import VideoChat from "./Component/chats/VideoChat";
 
 const RightBar = () => {
   const user = JSON.parse(localStorage.getItem("User"));
@@ -33,6 +34,10 @@ const RightBar = () => {
     potentialChat,
     updatePotentialChats,
     searchUserforPotentialChats,
+    callUser,
+    updateModalShow,
+    modalShow,
+    updateVideoCallerName,
   } = useContext(ChatContext);
   const scroll = useRef();
 
@@ -100,7 +105,6 @@ const RightBar = () => {
   const sortedMessages = existingMessages.sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
-
 
   // const allSortedMessage = allMessages.sort(
   //   (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
@@ -269,9 +273,7 @@ const RightBar = () => {
                       </small>
                     </div>
                   </div>
-                  <small>
-                    {getDays(item.createdAt)}
-                  </small>
+                  <small>{getDays(item.createdAt)}</small>
                 </div>
               </>
             );
@@ -309,10 +311,16 @@ const RightBar = () => {
                   />
                 </svg>
                 <svg
+                  onClick={() => {
+                    updateVideoCallerName(chatWindowData.friendName);
+                    updateModalShow(!modalShow);
+                    callUser();
+                  }}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 576 512"
                   width="20"
                   height="20"
+                  className="hover:cursor-pointer"
                 >
                   <path
                     fill="#0866FF"
@@ -493,6 +501,7 @@ const RightBar = () => {
           </div>
         )}
       </div>
+      <VideoChat />
     </>
   );
 };

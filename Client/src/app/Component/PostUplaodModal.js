@@ -105,7 +105,6 @@ const PostUplaodModal = () => {
       const isFriend = loggedInUserfriend?.some(
         (item) => item.friend_ID === res.users
       );
-      console.log(isFriend, "isFriend");
       if (navigator.serviceWorker.controller && isFriend) {
         navigator.serviceWorker.controller.postMessage(res);
       }

@@ -23,6 +23,8 @@ import subscriptionRoute from "./Services/Subscription/SubscriptionForPushNotifi
 import textStoryRoute from "./Services/Story/Stories.js";
 import chatRoute from "./Services/chat/chat.js";
 import messageRoute from "./Services/chat/message.js";
+import { v4 as uuidv4 } from "uuid";
+
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 4600;
@@ -118,6 +120,7 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
     io.emit("getOnlineUser", OnlineUser);
+    socket.emit("me", OnlineUser);
   });
 
   // add message
@@ -133,22 +136,8 @@ io.on("connection", (socket) => {
     }
   });
 
-  // postCaption: 'Test socket.io 3',
-  // postImagesURls: [],
-  // users: '65bb88178b5fd24e0e5c8b10',
-  // postOwner: 'shivani tiwari',
-  // postOwnerDP: 'http://res.cloudinary.com/dtbz1n84e/image/upload/v1707383907/Profile%20Picture/myp2xdgohz6is54gphyr.jpg',
-  // totalComments: 0,
-  // likeCount: 0,
-  // LikedBy: [],
-  // public: false,
-  // _id: '665e9d99d7119896489ba369',
-  // createdAt: '2024-06-04T04:52:41.711Z',
-  // updatedAt: '2024-06-04T04:52:41.711Z',
-
   // get post notification
   socket.on("getPostUplaodNotification", (postNotification) => {
-    console.log(postNotification, "getPostUplaodNotification");
     socket.broadcast.emit("getPostNotification", {
       postOwner: postNotification.postOwner,
       postOwnerDP: postNotification.postOwnerDP,
@@ -157,8 +146,21 @@ io.on("connection", (socket) => {
     });
   });
 
+  // connection for video call
+  socket.on("callUser", (data) => {
+    io.to(data.userToCall).emit("callUser", {
+      signal: data.signalData,
+      from: data.from,
+      name: data.name,
+    });
+  });
+
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal);
+  });
   //disconnecting the user when logout
   socket.on("disconnect", () => {
+    socket.broadcast.emit("callEnded");
     OnlineUser = OnlineUser.filter((user) => user.socketId !== socket.id);
     io.emit("getOnlineUser", OnlineUser);
   });
