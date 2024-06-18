@@ -107,7 +107,7 @@ const ChatContextProvider = ({ children, user }) => {
 
   // initial socket
   useEffect(() => {
-    const newSocket = io("http://localhost:4600");
+    const newSocket = io("https://socialbook-x3jq.onrender.com");
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
