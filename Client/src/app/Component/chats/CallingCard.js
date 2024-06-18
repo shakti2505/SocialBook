@@ -29,7 +29,6 @@ const CallCard = () => {
     chatWindowData
 
   } = useContext(ChatContext);
-  console.log(callerProfilePic, "callerProfilePic");
 
   return (
     <Modal
@@ -132,7 +131,7 @@ const CallCard = () => {
             autoPlay
             className="w-52 h-52"
           ></video>
-        ) : <VideoLoader/>}
+        ) : null}
       </div>
     </Modal>
   );
