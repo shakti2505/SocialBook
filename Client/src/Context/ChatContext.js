@@ -6,7 +6,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { get_request } from "../utilities/utilities.js";
+import { getCurrentISTDateTime, get_request } from "../utilities/utilities.js";
 import { io } from "socket.io-client";
 import UserDataContext from "./UserContext.js";
 import { AuthContext } from "./AuthContext.js";
@@ -14,6 +14,7 @@ import axios from "axios";
 import BASE_URL_API from "../utilities/baseURL";
 import { apiVariables } from "../utilities/apiVariables";
 import Peer from "simple-peer";
+
 const ChatContext = createContext();
 
 const ChatContextProvider = ({ children, user }) => {
@@ -47,12 +48,25 @@ const ChatContextProvider = ({ children, user }) => {
   const [callEnded, setCallEnded] = useState(false);
   const [name, setName] = useState("");
   const [modalShow, setModalShow] = useState(false);
-  const [callerName, setCallerName] = useState()
-
+  const [callerName, setCallerName] = useState();
+  const [callerProfilePic, setCallerProfilePic] = useState();
+  const [newVideoChat, setNewVideoChat] = useState([]);
+  const [videoCallDuration, setVideoCallDuration] = useState([])
+  const [friend_ID, setFriendId] = useState('')
   const myVideo = useRef();
   const userVideo = useRef();
 
   const connectionRef = useRef();
+
+  const handleChatwindow = useCallback((info)=>{
+    getMessages(info.friend_ID);
+    CreateNewChat(user._id, info.friend_ID);
+    setChatWindowData(info);
+  })
+
+  const updatecallerProfilePic = useCallback((info) => {
+    setCallerProfilePic(info);
+  }, []);
 
   const updateModalShow = useCallback((info) => {
     setModalShow(info);
@@ -89,7 +103,7 @@ const ChatContextProvider = ({ children, user }) => {
     setSocket(info);
   }, []);
 
-  //https://socialbook-x3jq.onrender.com
+  //
 
   // initial socket
   useEffect(() => {
@@ -151,12 +165,11 @@ const ChatContextProvider = ({ children, user }) => {
         }
       });
     socket.on("me", (OnlineUser) => {
-      console.log(OnlineUser, "online user");
       const matchingUser = OnlineUser.find((item) => item.userId == user._id);
+      console.log(matchingUser, 'matching user');
       if (matchingUser) {
         setMe(matchingUser.socketId);
       }
-      console.log(loggedInUserfriend, "logged in user friend");
       const res = OnlineUser.filter((obj1) =>
         loggedInUserfriend?.some((obj2) => obj2.friend_ID === obj1.userId)
       );
@@ -169,7 +182,9 @@ const ChatContextProvider = ({ children, user }) => {
       updateModalShow(true);
       setCaller(data.from);
       setCallerName(data.name);
+      setCallerProfilePic(data.profilePic);
       setCallerSignal(data.signal);
+      setFriendId(data.friendId)
     });
 
     return () => {
@@ -197,11 +212,14 @@ const ChatContextProvider = ({ children, user }) => {
       stream: streams,
     });
     peer.on("signal", (data) => {
+      console.log(data, 'signal from peer');
       socket.emit("callUser", {
         userToCall: idToCall,
         signalData: data,
         from: me,
         name: user.firstName + " " + user.LastName,
+        profilePic: user.profilePic,
+        userID:user._id
       });
     });
 
@@ -210,25 +228,27 @@ const ChatContextProvider = ({ children, user }) => {
     });
 
     peer.on("close", () => {
-      alert("Peer connection closed");
+      console.log("connection closed");
     });
 
     peer.on("error", (err) => {
       console.error("Peer connection error: ", err);
     });
 
-    socket.on(
-      "callAccepted",
-      (signal) => {
-        console.log("Call accepted, signal data: ", signal);
+    socket.on("callAccepted",(data) => {
+        console.log("Call accepted, signal data: ", data.signal);
         setCallAcceptted(true);
-        peer.signal(signal);
+        peer.signal(data.signal);
+
       },
       [idToCall, me, name, streams, socket, userVideo]
     );
 
     connectionRef.current = peer;
     console.log("Peer connection established, waiting for events...");
+    // setTimeout(() => {
+    //   leaveCall();
+    // }, 15000);
   });
 
   const answerCall = useCallback(() => {
@@ -240,8 +260,6 @@ const ChatContextProvider = ({ children, user }) => {
     });
 
     peer.on("signal", (data) => {
-      alert("answering call");
-      console.log(data, "in answer call");
       socket.emit("answerCall", { signal: data, to: caller });
     });
 
@@ -251,16 +269,105 @@ const ChatContextProvider = ({ children, user }) => {
 
     peer.signal(callerSignal);
     connectionRef.current = peer;
+
+    recordVideoCallStartTime();
   });
 
   const leaveCall = useCallback(() => {
+    if(userVideo){
+      recordVideoCallEndTime();
+    }
     if (connectionRef.current) {
       setCallEnded(true);
       connectionRef.current.destroy();
-    }else{
-      console.log('connection is still on !!!!!')
+      
+    } else {
+      console.log("connection is still on !!!!!");
     }
   });
+
+  const CreateVideoChat = useCallback(
+    async (
+      senderId,
+      receiverId,
+      senderDp,
+      receiverDp,
+      senderName,
+      receiverName,
+      callStartTime,
+      callEndTime,
+      callDuration
+    ) => {
+      const apicall = await axios.post(
+        BASE_URL_API + apiVariables.createVideoChat.url,
+        {
+          senderId: senderId,
+          receiverId: receiverId,
+          senderDp: senderDp,
+          receiverDp: receiverDp,
+          senderName: senderName,
+          receiverName: receiverName,
+          callStartTime: callStartTime,
+        },
+        { withCredentials: "include" }
+      );
+      if (apicall.status !== 201 || 500) {
+        setNewVideoChat(apicall.data);
+      } else {
+        setNewVideoChat(apicall.data);
+        console.log(apicall.data, 'apicall')
+      }
+    }
+  );
+
+  const recordVideoCallStartTime = async () => {
+      let callStartTime = getCurrentISTDateTime()
+      const apicall = await axios.post(
+        BASE_URL_API + apiVariables.recordVideoStartTime.url,
+        {
+          senderid:user._id,
+          receiverId:chatWindowData.friend_ID ? chatWindowData.friend_ID :friend_ID,
+          callStartTime: callStartTime
+        },
+        { withCredentials: "include" }
+      );
+      if (apicall.status !== 201 || 500) {
+        setVideoCallDuration(apicall.data);
+      } else {
+        setVideoCallDuration(apicall.data);
+      }
+    }
+
+    const recordVideoCallEndTime = async () => {
+      let callEndTime = getCurrentISTDateTime()
+      const apicall = await axios.post(
+        BASE_URL_API + apiVariables.recordVideoEndTime.url,
+        {
+          senderid:user._id,
+          receiverId:chatWindowData.friend_ID ? chatWindowData.friend_ID :friend_ID,
+          callEndTime: callEndTime
+        },
+        { withCredentials: "include" }
+      );
+      if (apicall.status !== 201 || 500) {
+        setVideoCallDuration(apicall.data);
+      } else {
+        setVideoCallDuration(apicall.data);
+      }
+    }
+
+    const getVideoChatRecords = useCallback(async (senderId, receiveId) => {
+      const res = userChats.find((item) => item.members.includes(friend_ID));
+      const apicall = await axios.get(
+        BASE_URL_API + apiVariables.getVideoChatRecords().url,
+        { withCredentials: true }
+      );
+      if (apicall.status !== 200) {
+        console.log("Internal sever error");
+      } else {
+        // setExistingMessages(apicall.data);
+      }
+    });
 
   const CreateNewChat = useCallback(async (firstId, secondId) => {
     const apicall = await axios.post(
@@ -483,7 +590,12 @@ const ChatContextProvider = ({ children, user }) => {
         updateModalShow,
         name,
         caller,
-        callerName
+        callerName,
+        callerProfilePic,
+        updatecallerProfilePic,
+        CreateVideoChat,
+        handleChatwindow,
+        getVideoChatRecords
       }}
     >
       {children}

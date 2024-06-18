@@ -3,7 +3,7 @@
 .call-card {
     width: 100%;
     height: 100%;
-    border-radius: 1em;
+    border-radius: 0.3em;
     flex-direction: column;
     justify-content: space-evenly;
     background-color: #080808;
@@ -14,11 +14,11 @@
     color: #fff;
   }
   
-  .call-card:hover {
+  /* .call-card:hover {
     rotate: 1deg;
     scale: 1.05;
   }
-  
+   */
   .call-card, .call-imgBox, .call-caller {
     display: flex;
     align-items: center;

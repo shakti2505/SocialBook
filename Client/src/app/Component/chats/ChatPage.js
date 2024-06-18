@@ -6,7 +6,8 @@ import Col from "react-bootstrap/Col";
 import { ChatContext } from "../../../Context/ChatContext";
 import { getTime } from "../../../utilities/utilities";
 import { Link } from "react-router-dom";
-import VideoChat from "./VideoChat";
+import CallCard from "./CallingCard";
+// import VideoChat from "./VideoChat";
 
 
 const ChatPage = () => {
@@ -48,17 +49,19 @@ const ChatPage = () => {
     answerCall,
     updateVideoCallerName,
     receivingCall,
-    modalShow,updateModalShow
+    modalShow,updateModalShow,
+    handleChatwindow,
+    getVideoChatRecords
   } = useContext(ChatContext);
 
   const handleMessage = (e) => {
     updateMessage(e.target.value);
   };
 
-  const handleChatwindow = (data) => {
-    getMessages(data.friend_ID);
-    CreateNewChat(user._id, data.friend_ID);
-  };
+  // const handleChatwindow = (data) => {
+  //   getMessages(data.friend_ID);
+  //   CreateNewChat(user._id, data.friend_ID);
+  // };
   const scroll = useRef();
 
   const sortedMessages = existingMessages.sort(
@@ -222,7 +225,7 @@ const ChatPage = () => {
                     <div
                       onClick={() => {
                         handleChatwindow(item);
-                        updateChatWindowData(item);
+                        // updateChatWindowData(item);
                       }}
                       key={index + 5}
                       className="flex items-center justify-between active:bg-gray-300 rounded-r-xl bg mt-3 p-2 hover:cursor-pointer "
@@ -480,7 +483,8 @@ const ChatPage = () => {
           </Col>
         </Row>
       </Container>
-      <VideoChat/>
+      <CallCard/>
+    
     </>
   );
 };

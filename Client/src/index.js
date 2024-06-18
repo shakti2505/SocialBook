@@ -7,7 +7,14 @@ import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import swDev from "./serveiceWorkerDev.js";
 import { AuthContextProvider } from "./Context/AuthContext.js";
+import * as process from 'process';
 
+window.global = window;
+window.process = process;
+window.Buffer = [];
+
+
+ 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>

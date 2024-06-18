@@ -148,15 +148,18 @@ io.on("connection", (socket) => {
 
   // connection for video call
   socket.on("callUser", (data) => {
+    console.log(data, 'call user event fired')
     io.to(data.userToCall).emit("callUser", {
       signal: data.signalData,
       from: data.from,
       name: data.name,
+      profilePic:data.profilePic,
+      friendId:data.userID
     });
   });
 
   socket.on("answerCall", (data) => {
-    io.to(data.to).emit("callAccepted", data.signal);
+    io.to(data.to).emit("callAccepted", data);
   });
   //disconnecting the user when logout
   socket.on("disconnect", () => {

@@ -95,6 +95,15 @@ export const apiVariables = {
   createChat:{
     url:"/services/chat/createchat"
   },
+  createVideoChat:{
+    url:"/services/chat/createvideochat"
+  },
+  recordVideoStartTime:{
+    url:"/services/chat/recordVideoStartTime"
+  },
+  recordVideoEndTime:{
+    url:"/services/chat/recordVideoEndTime"
+  },
   sendMessages:{
     url:"/services/message/createmessages"
   },
@@ -111,7 +120,10 @@ export const apiVariables = {
   getLastMessages:{
     url:"/services/message/getlastmessage"
 
-  }
+  },
+  getVideoChatRecords: (senderId, receiverId) => ({
+    url: `/services/chat/getVideoChatRecords/${senderId}/${receiverId}`
+  }),
 }
 
 

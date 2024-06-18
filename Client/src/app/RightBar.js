@@ -4,8 +4,8 @@ import { unreadnotificationFucn } from "../utilities/UnReadNotification";
 import { apiVariables } from "../utilities/apiVariables";
 import Button from "react-bootstrap/esm/Button";
 import { Link } from "react-router-dom";
-import { getDays } from "../utilities/utilities";
-import VideoChat from "./Component/chats/VideoChat";
+import { getDays, getCurrentISTDateTime } from "../utilities/utilities";
+import CallCard from "./Component/chats/CallingCard";
 
 const RightBar = () => {
   const user = JSON.parse(localStorage.getItem("User"));
@@ -38,6 +38,9 @@ const RightBar = () => {
     updateModalShow,
     modalShow,
     updateVideoCallerName,
+    updatecallerProfilePic,
+    CreateVideoChat,
+    get_logged_in_user_friends
   } = useContext(ChatContext);
   const scroll = useRef();
 
@@ -249,6 +252,7 @@ const RightBar = () => {
                     onClick={() => {
                       handleChatwindow(item);
                       updateChatWindowData(item);
+                      // get_logged_in_user_friends(apiVariables.getLoggedInUserFriends.url);
                     }}
                     key={index + 5}
                     className="flex items-center  relative  active:bg-gray-300 px-2 py-2 rounded-l-lg"
@@ -312,9 +316,21 @@ const RightBar = () => {
                 </svg>
                 <svg
                   onClick={() => {
+                    updatecallerProfilePic(chatWindowData.friend_dp);
                     updateVideoCallerName(chatWindowData.friendName);
                     updateModalShow(!modalShow);
-                    callUser();
+                    CreateVideoChat(
+                      user._id,
+                      chatWindowData.friend_ID,
+                      user.profilePic,
+                      chatWindowData.friend_dp,
+                      user.firstName + " " + user.LastName,
+                      chatWindowData.friendName,
+                      getCurrentISTDateTime()
+                    );
+                    onlineUsers?.some(
+                      (user) => user.userId === chatWindowData.friend_ID
+                    ) && callUser();
                   }}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 576 512"
@@ -501,7 +517,7 @@ const RightBar = () => {
           </div>
         )}
       </div>
-      <VideoChat />
+      <CallCard />
     </>
   );
 };

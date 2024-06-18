@@ -85,4 +85,30 @@ const postRequest = async (url, body) => {
   }
 };
 
-export { getDays, get_request, postRequest , getTime};
+const getCurrentISTDateTime = () => {
+  const currentDate = new Date();
+
+  // Current time in milliseconds adjusted for IST
+  const istTime = new Date(currentDate.getTime());
+
+  // Extract and format date and time components
+  const year = istTime.getFullYear();
+  const month = String(istTime.getMonth() + 1).padStart(2, '0');
+  const day = String(istTime.getDate()).padStart(2, '0');
+  const hours = String(istTime.getHours()).padStart(2, '0');
+  const minutes = String(istTime.getMinutes()).padStart(2, '0');
+  const seconds = String(istTime.getSeconds()).padStart(2, '0');
+
+  // Format date and time
+  const formattedDate = `${year}-${month}-${day}`;
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+  return {
+    date: formattedDate,
+    time: formattedTime,
+  };
+};
+
+
+
+export { getDays, get_request, postRequest , getTime, getCurrentISTDateTime};

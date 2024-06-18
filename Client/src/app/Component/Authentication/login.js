@@ -98,7 +98,8 @@ const Login = () => {
             backgroundPosition: "-10rem",
           }}
         >
-          <div className="flex flex-wrap justify-evenly items-center h-screen w-100  max-sm:p-4">
+          <div className="flex flex-wrap justify-evenly items-center h-screen w-100  max-sm:p-4
+          ">
             <div className="flex-col justify-center items-center mb-5">
               <h1 className="text-center">Welcome to Socialbook!</h1>
               <input
