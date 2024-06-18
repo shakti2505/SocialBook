@@ -103,11 +103,11 @@ const ChatContextProvider = ({ children, user }) => {
     setSocket(info);
   }, []);
 
-  //
+  //https://socialbook-x3jq.onrender.com
 
   // initial socket
   useEffect(() => {
-    const newSocket = io("https://socialbook-x3jq.onrender.com");
+    const newSocket = io("http://localhost:4600");
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
@@ -153,17 +153,17 @@ const ChatContextProvider = ({ children, user }) => {
       }
     });
 
-    navigator.mediaDevices
-      .getUserMedia({
-        video: true,
-        audio: true,
-      })
-      .then((stream) => {
-        setStreams(stream);
-        if (myVideo.current) {
-          myVideo.current.srcObject = stream;
-        }
-      });
+    // navigator.mediaDevices
+    //   .getUserMedia({
+    //     video: true,
+    //     audio: true,
+    //   })
+    //   .then((stream) => {
+    //     setStreams(stream);
+    //     if (myVideo.current) {
+    //       myVideo.current.srcObject = stream;
+    //     }
+    //   });
     socket.on("me", (OnlineUser) => {
       const matchingUser = OnlineUser.find((item) => item.userId == user._id);
       console.log(matchingUser, 'matching user');
@@ -203,7 +203,22 @@ const ChatContextProvider = ({ children, user }) => {
   //   };
   // }, [socket]);
 
+  const getVideo = useCallback(() =>{
+    navigator.mediaDevices
+    .getUserMedia({
+      video: true,
+      audio: true,
+    })
+    .then((stream) => {
+      setStreams(stream);
+      if (myVideo.current) {
+        myVideo.current.srcObject = stream;
+      }
+    });
+  });
+
   const callUser = useCallback(() => {
+    getVideo();
     console.log("Initializing Peer connection...");
 
     const peer = new Peer({
@@ -252,6 +267,7 @@ const ChatContextProvider = ({ children, user }) => {
   });
 
   const answerCall = useCallback(() => {
+    getVideo();
     setCallAcceptted(true);
     const peer = new Peer({
       initiator: false,
@@ -595,7 +611,8 @@ const ChatContextProvider = ({ children, user }) => {
         updatecallerProfilePic,
         CreateVideoChat,
         handleChatwindow,
-        getVideoChatRecords
+        getVideoChatRecords,
+        getVideo
       }}
     >
       {children}

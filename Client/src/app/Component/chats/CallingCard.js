@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import Modal from "react-bootstrap/Modal";
 import "./CallingCard.css"; // Import the CSS file
 import { ChatContext } from "../../../Context/ChatContext";
+import VideoLoader from "./VideoLoader";
 
 const CallCard = () => {
   const user = JSON.parse(localStorage.getItem("User"));
@@ -124,14 +125,14 @@ const CallCard = () => {
             className="w-52 h-52"
           ></video>
         )}
-        {callAccepted && !callEnded ? (
+        {callAccepted && !callEnded  ? (
           <video
             playsInline
             ref={userVideo}
             autoPlay
             className="w-52 h-52"
           ></video>
-        ) : null}
+        ) : <VideoLoader/>}
       </div>
     </Modal>
   );

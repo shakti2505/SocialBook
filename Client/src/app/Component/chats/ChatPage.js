@@ -45,6 +45,7 @@ const ChatPage = () => {
     callAccepted,
     callEnded,
     callUser,
+    getVideo,
     leaveCall,
     answerCall,
     updateVideoCallerName,
